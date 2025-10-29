@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+      </profile>
+      <profile name="Annotation profile for APPMIC-QuotingPlugins" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.5.5.Final/mapstruct-processor-1.5.5.Final.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.5.5.Final/mapstruct-1.5.5.Final.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.5.5.Final/mapstruct-processor-1.5.5.Final.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.5.5.Final/mapstruct-1.5.5.Final.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="APPMIC-QuotingPlugins-quotations" />
+        <module name="APPMIC-QuotingPlugins-employees" />
+        <module name="APPMIC-QuotingPlugins-gateway" />
+        <module name="APPMIC-QuotingPlugins-materials" />
+        <module name="APPMIC-QuotingPlugins-commons" />
+        <module name="APPMIC-QuotingPlugins-reports" />
+        <module name="APPMIC-QuotingPlugins-catalogs" />
+        <module name="APPMIC-QuotingPlugins-modules" />
+        <module name="APPMIC-QuotingPlugins-customers" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="APPMIC-QuotingPlugins-materials (1)" target="21" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="APPMIC-QuotingPlugins-catalogs" options="-parameters" />
+      <module name="APPMIC-QuotingPlugins-commons" options="-parameters" />
+      <module name="APPMIC-QuotingPlugins-customers" options="-parameters" />
+      <module name="APPMIC-QuotingPlugins-employees" options="-parameters" />
+      <module name="APPMIC-QuotingPlugins-gateway" options="-parameters" />
+      <module name="APPMIC-QuotingPlugins-materials" options="-parameters" />
+      <module name="APPMIC-QuotingPlugins-materials (1)" options="-parameters" />
+      <module name="APPMIC-QuotingPlugins-modules" options="-parameters" />
+      <module name="APPMIC-QuotingPlugins-quotations" options="-parameters" />
+      <module name="APPMIC-QuotingPlugins-reports" options="-parameters" />
+    </option>
+  </component>
+</project>

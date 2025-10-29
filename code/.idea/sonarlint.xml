@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SonarLintProjectSettings">
+    <option name="moduleMapping">
+      <map>
+        <entry key="APPMIC-QuotingPlugins-catalogs" value="APPMIC-QuotingPlugins-catalog" />
+        <entry key="APPMIC-QuotingPlugins-commons" value="APPMIC-QuotingPlugins-common" />
+        <entry key="APPMIC-QuotingPlugins-materials" value="APPMIC-QuotingPlugins-products" />
+        <entry key="APPMIC-QuotingPlugins-quotations" value="APPMIC-QuotingPlugins-orders" />
+        <entry key="APPMIC-QuotingPlugins-reports" value="APPMIC-QuotingPlugins-auth" />
+      </map>
+    </option>
+  </component>
+</project>
