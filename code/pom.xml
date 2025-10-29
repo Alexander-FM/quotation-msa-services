@@ -1,28 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.7</version>
-    <relativePath /> <!-- lookup parent from repository -->
-  </parent>
-
-  <groupId>com.codesoft</groupId>
   <artifactId>APPMIC-QuotingPlugins</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
-  <name>APPMIC-QuotingPlugins</name>
+  <build>
+    <finalName>${project.artifactId}-${project.version}</finalName>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <annotationProcessorPaths>
+              <path>
+                <artifactId>mapstruct-processor</artifactId>
+                <groupId>org.mapstruct</groupId>
+                <version>${org.mapstruct.version}</version>
+              </path>
+              <path>
+                <artifactId>lombok-mapstruct-binding</artifactId>
+                <groupId>org.projectlombok</groupId>
+                <version>0.2.0</version>
+              </path>
+              <path>
+                <artifactId>lombok</artifactId>
+                <groupId>org.projectlombok</groupId>
+                <version>${org.lombok.version}</version>
+              </path>
+            </annotationProcessorPaths>
+            <source>21</source>
+            <target>21</target>
+          </configuration>
+          <groupId>org.apache.maven.plugins</groupId>
+          <version>3.13.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <artifactId>APPMIC-QuotingPlugins-auth</artifactId>
+        <groupId>${project.groupId}</groupId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>APPMIC-QuotingPlugins-common</artifactId>
+        <groupId>${project.groupId}</groupId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>APPMIC-QuotingPlugins-gateway</artifactId>
+        <groupId>${project.groupId}</groupId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>APPMIC-QuotingPlugins-orders</artifactId>
+        <groupId>${project.groupId}</groupId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>APPMIC-QuotingPlugins-products</artifactId>
+        <groupId>${project.groupId}</groupId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- Others dependencies -->
+      <dependency>
+        <artifactId>lombok</artifactId>
+        <groupId>org.projectlombok</groupId>
+        <scope>provided</scope>
+        <version>${org.lombok.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>mapstruct</artifactId>
+        <groupId>org.mapstruct</groupId>
+        <version>${org.mapstruct.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>commons-lang3</artifactId>
+        <groupId>org.apache.commons</groupId>
+        <version>3.18.0</version>
+      </dependency>
+      <dependency>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+        <groupId>org.springframework.boot</groupId>
+        <version>${spring.boot.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <groupId>org.springframework.boot</groupId>
+        <version>${spring.boot.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>hibernate-validator</artifactId>
+        <groupId>org.hibernate.validator</groupId>
+        <version>${hibernate.validator.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <description>Microservices for management quotation</description>
-  <packaging>pom</packaging>
-  <url />
-  <licenses>
-    <license />
-  </licenses>
   <developers>
     <developer />
   </developers>
-
+  <groupId>com.codesoft</groupId>
+  <licenses>
+    <license />
+  </licenses>
+  <modelVersion>4.0.0</modelVersion>
   <modules>
     <module>APPMIC-QuotingPlugins-reports</module>
     <module>APPMIC-QuotingPlugins-commons</module>
@@ -34,6 +117,23 @@
     <module>APPMIC-QuotingPlugins-employees</module>
     <module>APPMIC-QuotingPlugins-customers</module>
   </modules>
+  <name>APPMIC-QuotingPlugins</name>
+  <packaging>pom</packaging>
+
+  <parent>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <groupId>org.springframework.boot</groupId>
+    <relativePath />
+    <version>3.5.7</version> <!-- lookup parent from repository -->
+  </parent>
+
+  <properties>
+    <hibernate.validator.version>8.0.3.Final</hibernate.validator.version>
+    <java.version>21</java.version>
+    <org.lombok.version>1.18.30</org.lombok.version>
+    <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+    <spring.boot.version>3.5.7</spring.boot.version>
+  </properties>
 
   <scm>
     <connection />
@@ -42,107 +142,7 @@
     <url />
   </scm>
 
-  <properties>
-    <java.version>21</java.version>
-    <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
-    <org.lombok.version>1.18.30</org.lombok.version>
-    <spring.boot.version>3.5.7</spring.boot.version>
-    <hibernate.validator.version>8.0.3.Final</hibernate.validator.version>
-  </properties>
+  <url />
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>APPMIC-QuotingPlugins-auth</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>APPMIC-QuotingPlugins-common</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>APPMIC-QuotingPlugins-gateway</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>APPMIC-QuotingPlugins-orders</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>APPMIC-QuotingPlugins-products</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <!-- Others dependencies -->
-      <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>${org.lombok.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.mapstruct</groupId>
-        <artifactId>mapstruct</artifactId>
-        <version>${org.mapstruct.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
-        <version>3.18.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-data-jpa</artifactId>
-        <version>${spring.boot.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-        <version>${spring.boot.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate.validator</groupId>
-        <artifactId>hibernate-validator</artifactId>
-        <version>${hibernate.validator.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
-  <build>
-    <finalName>${project.artifactId}-${project.version}</finalName>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.13.0</version>
-          <configuration>
-            <source>21</source>
-            <target>21</target>
-            <annotationProcessorPaths>
-              <path>
-                <groupId>org.mapstruct</groupId>
-                <artifactId>mapstruct-processor</artifactId>
-                <version>${org.mapstruct.version}</version>
-              </path>
-              <path>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok-mapstruct-binding</artifactId>
-                <version>0.2.0</version>
-              </path>
-              <path>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${org.lombok.version}</version>
-              </path>
-            </annotationProcessorPaths>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
+  <version>1.0.0-SNAPSHOT</version>
 </project>

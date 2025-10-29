@@ -1,7 +1,6 @@
 package com.codesoft.catalogs.adjustment_factor.service;
 
 import java.util.List;
-import java.util.stream.StreamSupport;
 
 import com.codesoft.catalogs.adjustment_factor.dto.response.AdjustmentFactorResponseDto;
 import com.codesoft.catalogs.adjustment_factor.mapper.AdjustmentFactorFieldsMapper;
@@ -15,13 +14,12 @@ import org.springframework.stereotype.Service;
 public class AdjustmentFactorServiceImpl implements AdjustmentFactorService {
 
   private final AdjustmentFactorRepository adjustmentFactorRepository;
+
   private final AdjustmentFactorFieldsMapper adjustmentFactorFieldsMapper;
 
   @Override
   public List<AdjustmentFactorResponseDto> findAll() {
-    List<AdjustmentFactorEntity> entities = StreamSupport
-        .stream(adjustmentFactorRepository.findAll().spliterator(), false)
-        .toList();
+    final List<AdjustmentFactorEntity> entities = adjustmentFactorRepository.findAll().stream().toList();
     return adjustmentFactorFieldsMapper.toDtoList(entities);
   }
 

@@ -1,11 +1,14 @@
 # Read Me First
+
 The following was discovered as part of building this project:
 
-* The original package name 'com.codesoft.APPMIC-QuotingPlugins-common' is invalid and this project uses 'com.codesoft.APPMIC_QuotingPlugins_common' instead.
+* The original package name 'com.codesoft.APPMIC-QuotingPlugins-common' is invalid and this project uses '
+  com.codesoft.APPMIC_QuotingPlugins_common' instead.
 
 # Getting Started
 
 ### Reference Documentation
+
 For further reference, please consider the following sections:
 
 * [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)

@@ -1,11 +1,14 @@
 # Read Me First
+
 The following was discovered as part of building this project:
 
-* The original package name 'com.codesoft.APPMIC-QuotingPlugins-auth' is invalid and this project uses 'com.codesoft.APPMIC_QuotingPlugins_auth' instead.
+* The original package name 'com.codesoft.APPMIC-QuotingPlugins-auth' is invalid and this project uses '
+  com.codesoft.APPMIC_QuotingPlugins_auth' instead.
 
 # Getting Started
 
 ### Reference Documentation
+
 For further reference, please consider the following sections:
 
 * [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
@@ -14,6 +17,7 @@ For further reference, please consider the following sections:
 * [Spring Security](https://docs.spring.io/spring-boot/3.5.6/reference/web/spring-security.html)
 
 ### Guides
+
 The following guides illustrate how to use some features concretely:
 
 * [Securing a Web Application](https://spring.io/guides/gs/securing-web/)
