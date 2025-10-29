@@ -7,7 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
       </profile>
-      <profile name="Annotation profile for APPMIC-QuotingPlugins" enabled="true">
+      <profile name="Annotation profile for Unknown" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -16,24 +16,21 @@
           <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.5.5.Final/mapstruct-1.5.5.Final.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.5.5.Final/mapstruct-processor-1.5.5.Final.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.5.5.Final/mapstruct-1.5.5.Final.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
         </processorPath>
-        <module name="APPMIC-QuotingPlugins-quotations" />
-        <module name="APPMIC-QuotingPlugins-employees" />
         <module name="APPMIC-QuotingPlugins-gateway" />
-        <module name="APPMIC-QuotingPlugins-materials" />
-        <module name="APPMIC-QuotingPlugins-commons" />
-        <module name="APPMIC-QuotingPlugins-reports" />
-        <module name="APPMIC-QuotingPlugins-catalogs" />
-        <module name="APPMIC-QuotingPlugins-modules" />
-        <module name="APPMIC-QuotingPlugins-customers" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="APPMIC-QuotingPlugins" target="1.5" />
+      <module name="APPMIC-QuotingPlugins-catalogs" target="21" />
+      <module name="APPMIC-QuotingPlugins-commons" target="21" />
+      <module name="APPMIC-QuotingPlugins-customers" target="21" />
+      <module name="APPMIC-QuotingPlugins-employees" target="21" />
+      <module name="APPMIC-QuotingPlugins-materials" target="21" />
       <module name="APPMIC-QuotingPlugins-materials (1)" target="21" />
+      <module name="APPMIC-QuotingPlugins-modules" target="21" />
+      <module name="APPMIC-QuotingPlugins-quotations" target="21" />
+      <module name="APPMIC-QuotingPlugins-reports" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
