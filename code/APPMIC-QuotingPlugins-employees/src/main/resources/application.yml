@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: APPMIC-QuotingPlugins-employees
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/quoting_db # Cambia 'localhost' por la IP o nombre del host de tu base de datos y 'tu_base_de_datos' por el nombre de la base de datos.
+    driver-class-name: org.postgresql.Driver
+    username: postgres # Reemplaza con el nombre de usuario de la base de datos.
+    password:  # Reemplaza con la contraseña de la base de datos.
+    hikari:
+      maximum-pool-size: 10  # Configura el tamaño del pool de conexiones según tus necesidades.
+
+  jpa:
+    hibernate:
+      ddl-auto: update # Puede ser 'create', 'update', 'validate', o 'none' según lo que necesites.
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true # Para que se muestren las consultas SQL ejecutadas por Hibernate en los logs.
+    properties:
+      hibernate:
+        format_sql: true # Para formatear las consultas SQL y hacerlas más legibles.
