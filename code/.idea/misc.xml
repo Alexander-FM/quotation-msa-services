@@ -10,6 +10,7 @@
         <option value="$PROJECT_DIR$/APPMIC-QuotingPlugins-orders/pom.xml" />
         <option value="$PROJECT_DIR$/APPMIC-QuotingPlugins-gateway/pom.xml" />
         <option value="$PROJECT_DIR$/APPMIC-QuotingPlugins-products/pom.xml" />
+        <option value="$PROJECT_DIR$/APPMIC-QuotingPlugins-employees/pom.xml" />
       </list>
     </option>
   </component>
