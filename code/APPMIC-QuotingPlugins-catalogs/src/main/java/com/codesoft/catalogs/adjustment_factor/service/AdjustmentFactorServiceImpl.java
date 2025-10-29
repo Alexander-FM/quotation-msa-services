@@ -1,6 +1,7 @@
 package com.codesoft.catalogs.adjustment_factor.service;
 
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 import com.codesoft.catalogs.adjustment_factor.dto.response.AdjustmentFactorResponseDto;
 import com.codesoft.catalogs.adjustment_factor.mapper.AdjustmentFactorFieldsMapper;
@@ -18,7 +19,9 @@ public class AdjustmentFactorServiceImpl implements AdjustmentFactorService {
 
   @Override
   public List<AdjustmentFactorResponseDto> findAll() {
-    List<AdjustmentFactorEntity> entities = (List<AdjustmentFactorEntity>) adjustmentFactorRepository.findAll();
+    List<AdjustmentFactorEntity> entities = StreamSupport
+        .stream(adjustmentFactorRepository.findAll().spliterator(), false)
+        .toList();
     return adjustmentFactorFieldsMapper.toDtoList(entities);
   }
 
