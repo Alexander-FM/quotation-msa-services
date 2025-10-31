@@ -22,6 +22,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(AdjustmentFactorController.class)
 public class AdjustmentFactorControllerTests {
 
+  private static final String ADJUSTMENT_FACTOR_DTO = "adjustment_factor_dto.json";
+
   @Autowired
   private MockMvc mockMvc;
 
@@ -32,7 +34,6 @@ public class AdjustmentFactorControllerTests {
 
   @BeforeEach
   public void setUp() throws IOException {
-    String ADJUSTMENT_FACTOR_DTO = "adjustment_factor_dto.json";
     this.adjustmentFactorResponseDto = TestUtils.getResource(ADJUSTMENT_FACTOR_DTO,
       AdjustmentFactorResponseDto.class, getClass());
   }
