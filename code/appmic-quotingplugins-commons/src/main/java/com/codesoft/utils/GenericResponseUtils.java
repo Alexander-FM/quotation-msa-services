@@ -13,8 +13,10 @@ public class GenericResponseUtils {
    * @return GenericResponse The generic response of any type.
    */
   public static <T> GenericResponse<T> buildGenericResponseSuccess(final String message, final T object) {
-    return new GenericResponse<>(GenericResponseConstants.RESPONSE_OK,
-      StringUtils.joinWith(GenericResponseConstants.DASH, GenericResponseConstants.CORRECT_OPERATION, message), object);
+    final String msg = StringUtils.isNotEmpty(message)
+      ? StringUtils.joinWith(GenericResponseConstants.DASH, GenericResponseConstants.CORRECT_OPERATION, message)
+      : GenericResponseConstants.CORRECT_OPERATION;
+    return new GenericResponse<>(GenericResponseConstants.RESPONSE_OK, msg, object);
   }
 
   /**
@@ -23,8 +25,10 @@ public class GenericResponseUtils {
    * @return GenericResponse The generic response of any type.
    */
   public static <T> GenericResponse<T> buildGenericResponseError(final String message, final T object) {
-    return new GenericResponse<>(GenericResponseConstants.RESPONSE_ERROR,
-      StringUtils.joinWith(GenericResponseConstants.DASH, GenericResponseConstants.INCORRECT_OPERATION, message), object);
+    final String msg = StringUtils.isNotEmpty(message)
+      ? StringUtils.joinWith(GenericResponseConstants.DASH, GenericResponseConstants.INCORRECT_OPERATION, message)
+      : GenericResponseConstants.INCORRECT_OPERATION;
+    return new GenericResponse<>(GenericResponseConstants.RESPONSE_ERROR, msg, object);
   }
 
   /**
@@ -33,7 +37,9 @@ public class GenericResponseUtils {
    * @return GenericResponse The generic response of any type.
    */
   public static <T> GenericResponse<T> buildGenericResponseWarning(final String message, final T object) {
-    return new GenericResponse<>(GenericResponseConstants.RESPONSE_WARNING,
-      StringUtils.joinWith(GenericResponseConstants.DASH, GenericResponseConstants.WRONG_OPERATION, message), object);
+    final String msg = StringUtils.isNotEmpty(message)
+      ? StringUtils.joinWith(GenericResponseConstants.DASH, GenericResponseConstants.WRONG_OPERATION, message)
+      : GenericResponseConstants.WRONG_OPERATION;
+    return new GenericResponse<>(GenericResponseConstants.RESPONSE_WARNING, msg, object);
   }
 }

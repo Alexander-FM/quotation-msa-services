@@ -7,6 +7,7 @@ import com.codesoft.catalogs.adjustment_factor.dto.response.AdjustmentFactorResp
 public interface AdjustmentFactorService {
 
   List<AdjustmentFactorResponseDto> findAll();
+
   AdjustmentFactorResponseDto findById(final Integer id);
 
 }
