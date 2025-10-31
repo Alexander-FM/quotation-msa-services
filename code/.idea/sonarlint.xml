@@ -3,11 +3,16 @@
   <component name="SonarLintProjectSettings">
     <option name="moduleMapping">
       <map>
-        <entry key="APPMIC-QuotingPlugins-catalogs" value="APPMIC-QuotingPlugins-catalog" />
-        <entry key="APPMIC-QuotingPlugins-commons" value="APPMIC-QuotingPlugins-common" />
-        <entry key="APPMIC-QuotingPlugins-materials" value="APPMIC-QuotingPlugins-products" />
-        <entry key="APPMIC-QuotingPlugins-quotations" value="APPMIC-QuotingPlugins-orders" />
-        <entry key="APPMIC-QuotingPlugins-reports" value="APPMIC-QuotingPlugins-auth" />
+        <entry key="appmic-quotingplugins" value="APPMIC-QuotingPlugins" />
+        <entry key="appmic-quotingplugins-catalogs" value="APPMIC-QuotingPlugins-catalog" />
+        <entry key="appmic-quotingplugins-commons" value="APPMIC-QuotingPlugins-common" />
+        <entry key="appmic-quotingplugins-customers" value="APPMIC-QuotingPlugins-customers" />
+        <entry key="appmic-quotingplugins-employees" value="APPMIC-QuotingPlugins-employees" />
+        <entry key="appmic-quotingplugins-gateway" value="APPMIC-QuotingPlugins-gateway" />
+        <entry key="appmic-quotingplugins-materials" value="APPMIC-QuotingPlugins-products" />
+        <entry key="appmic-quotingplugins-modules" value="APPMIC-QuotingPlugins-modules" />
+        <entry key="appmic-quotingplugins-quotations" value="APPMIC-QuotingPlugins-orders" />
+        <entry key="appmic-quotingplugins-reports" value="APPMIC-QuotingPlugins-auth" />
       </map>
     </option>
   </component>
