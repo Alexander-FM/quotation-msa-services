@@ -11,7 +11,7 @@ mvnw
 mvnw.cmd
 
 # IDEs
-.idea/
+/.idea
 *.iml
 *.iws
 *.ipr
