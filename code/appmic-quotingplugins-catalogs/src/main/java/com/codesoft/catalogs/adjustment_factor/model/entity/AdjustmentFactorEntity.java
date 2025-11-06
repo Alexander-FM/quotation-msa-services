@@ -35,6 +35,6 @@ public class AdjustmentFactorEntity {
   @Column(name = "value", precision = 10, scale = 2, nullable = false)
   private BigDecimal value;
 
-  @Column(name = "is_active", nullable = false)
+  @Column(name = "is_active")
   private Boolean isActive = true;
 }

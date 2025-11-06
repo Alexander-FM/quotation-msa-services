@@ -6,10 +6,10 @@ CREATE SEQUENCE unit_of_measurement_id_seq
 -- Table
 CREATE TABLE unit_of_measurement
 (
-    id          INTEGER PRIMARY KEY   DEFAULT NEXTVAL('unit_of_measurement_id_seq'),
+    id          INTEGER PRIMARY KEY DEFAULT NEXTVAL('unit_of_measurement_id_seq'),
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(255) NULL,
-    is_active   BOOLEAN      NOT NULL DEFAULT TRUE
+    is_active   BOOLEAN NULL DEFAULT TRUE
 );
 -- Unique Values
 ALTER TABLE unit_of_measurement
@@ -41,11 +41,11 @@ CREATE SEQUENCE catalog_item_id_seq
 -- Table
 CREATE TABLE catalog_item
 (
-    id          INTEGER PRIMARY KEY  DEFAULT NEXTVAL('catalog_item_id_seq'),
+    id          INTEGER PRIMARY KEY DEFAULT NEXTVAL('catalog_item_id_seq'),
     category    VARCHAR(50) NOT NULL,
     code        VARCHAR(20) NOT NULL,
     description VARCHAR(255) NULL,
-    is_active   BOOLEAN     NOT NULL DEFAULT TRUE
+    is_active   BOOLEAN NULL DEFAULT TRUE
 );
 -- Unique Values
 ALTER TABLE catalog_item
@@ -80,10 +80,10 @@ CREATE SEQUENCE adjustment_factor_id_seq
 -- Table
 CREATE TABLE adjustment_factor
 (
-    id        INTEGER PRIMARY KEY     DEFAULT NEXTVAL('adjustment_factor_id_seq'),
+    id        INTEGER PRIMARY KEY DEFAULT NEXTVAL('adjustment_factor_id_seq'),
     name      VARCHAR(255)   NOT NULL,
     value     DECIMAL(10, 2) NOT NULL,
-    is_active BOOLEAN        NOT NULL DEFAULT TRUE
+    is_active BOOLEAN NULL DEFAULT TRUE
 );
 -- Unique Values
 ALTER TABLE adjustment_factor

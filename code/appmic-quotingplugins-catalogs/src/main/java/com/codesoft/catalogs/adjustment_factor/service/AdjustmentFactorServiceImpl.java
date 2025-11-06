@@ -8,7 +8,6 @@ import com.codesoft.catalogs.adjustment_factor.dto.response.AdjustmentFactorResp
 import com.codesoft.catalogs.adjustment_factor.mapper.AdjustmentFactorFieldsMapper;
 import com.codesoft.catalogs.adjustment_factor.model.entity.AdjustmentFactorEntity;
 import com.codesoft.catalogs.adjustment_factor.repository.AdjustmentFactorRepository;
-import com.codesoft.catalogs.adjustment_factor.utils.AdjustmentFactorConstants;
 import com.codesoft.exception.BaseException;
 import com.codesoft.utils.BaseErrorMessage;
 import lombok.RequiredArgsConstructor;
@@ -31,27 +30,20 @@ public class AdjustmentFactorServiceImpl implements AdjustmentFactorService {
   @Override
   public AdjustmentFactorResponseDto findById(final Integer id) {
     final Optional<AdjustmentFactorEntity> adjustmentFactorEntity = this.adjustmentFactorRepository.findById(id);
-    return adjustmentFactorEntity.map(this.adjustmentFactorFieldsMapper::toDto).orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
+    return adjustmentFactorEntity.map(this.adjustmentFactorFieldsMapper::toDto)
+        .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
   }
 
   @Override
   public AdjustmentFactorResponseDto create(final AdjustmentFactorRequestDto requestDto) {
-    final AdjustmentFactorEntity entity = this.adjustmentFactorFieldsMapper.toEntity(requestDto);
-    final AdjustmentFactorEntity savedEntity = this.adjustmentFactorRepository.save(entity);
-    return this.adjustmentFactorFieldsMapper.toDto(savedEntity);
+    final AdjustmentFactorEntity entity = this.adjustmentFactorRepository.save(this.adjustmentFactorFieldsMapper.toEntity(requestDto));
+    return this.adjustmentFactorFieldsMapper.toDto(entity);
   }
 
   @Override
-  public AdjustmentFactorResponseDto update(final Integer id, final AdjustmentFactorRequestDto requestDto) {
+  public void deleteById(Integer id) {
     final AdjustmentFactorEntity existingEntity = this.adjustmentFactorRepository.findById(id)
-      .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
-
-    existingEntity.setName(requestDto.getName());
-    existingEntity.setValue(requestDto.getValue());
-    existingEntity.setIsActive(requestDto.getIsActive() != null ? requestDto.getIsActive() : existingEntity.getIsActive());
-
-    final AdjustmentFactorEntity updatedEntity = this.adjustmentFactorRepository.save(existingEntity);
-    return this.adjustmentFactorFieldsMapper.toDto(updatedEntity);
+        .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
+    this.adjustmentFactorRepository.deleteById(existingEntity.getId());
   }
-
 }

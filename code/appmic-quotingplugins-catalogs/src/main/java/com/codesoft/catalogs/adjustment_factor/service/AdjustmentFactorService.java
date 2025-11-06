@@ -13,6 +13,6 @@ public interface AdjustmentFactorService {
 
   AdjustmentFactorResponseDto create(final AdjustmentFactorRequestDto requestDto);
 
-  AdjustmentFactorResponseDto update(final Integer id, final AdjustmentFactorRequestDto requestDto);
+  void deleteById(final Integer id);
 
 }

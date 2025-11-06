@@ -128,43 +128,43 @@ public class AdjustmentFactorServiceImplTests {
     verify(mapper).toDto(entity);
   }
 
-  @Test
-  void updateSuccessfullyTest() throws IOException {
-    final AdjustmentFactorRequestDto requestDto = TestUtils.getResource(ADJUSTMENT_FACTOR_UPDATE_REQUEST,
-      AdjustmentFactorRequestDto.class, getClass());
-    final AdjustmentFactorEntity existingEntity = TestUtils.getResource(ADJUSTMENT_FACTOR_ENTITY,
-      AdjustmentFactorEntity.class, getClass());
-    final AdjustmentFactorResponseDto responseDto = TestUtils.getResource(ADJUSTMENT_FACTOR_RESPONSE,
-      AdjustmentFactorResponseDto.class, getClass());
-
-    when(repository.findById(EXISTING_ID)).thenReturn(Optional.of(existingEntity));
-    when(repository.save(any(AdjustmentFactorEntity.class))).thenReturn(existingEntity);
-    when(mapper.toDto(any(AdjustmentFactorEntity.class))).thenReturn(responseDto);
-
-    final AdjustmentFactorResponseDto result = service.update(EXISTING_ID, requestDto);
-
-    assertNotNull(result);
-    assertEquals(responseDto, result);
-    verify(repository).findById(EXISTING_ID);
-    verify(repository).save(any(AdjustmentFactorEntity.class));
-    verify(mapper).toDto(any(AdjustmentFactorEntity.class));
-  }
-
-  @Test
-  void updateShouldThrowBaseExceptionWhenIdDoesNotExistTest() {
-    final AdjustmentFactorRequestDto requestDto = AdjustmentFactorRequestDto.builder()
-      .name("Factor Updated")
-      .value(java.math.BigDecimal.valueOf(3.75))
-      .isActive(false)
-      .build();
-
-    when(repository.findById(NO_EXISTING_ID)).thenReturn(Optional.empty());
-
-    final BaseException baseExceptionExpected = assertThrows(BaseException.class, 
-      () -> service.update(NO_EXISTING_ID, requestDto));
-
-    assertEquals(BaseErrorMessage.NOT_FOUND, baseExceptionExpected.getErrorMessage());
-    verify(repository).findById(NO_EXISTING_ID);
-  }
+//  @Test
+//  void updateSuccessfullyTest() throws IOException {
+//    final AdjustmentFactorRequestDto requestDto = TestUtils.getResource(ADJUSTMENT_FACTOR_UPDATE_REQUEST,
+//      AdjustmentFactorRequestDto.class, getClass());
+//    final AdjustmentFactorEntity existingEntity = TestUtils.getResource(ADJUSTMENT_FACTOR_ENTITY,
+//      AdjustmentFactorEntity.class, getClass());
+//    final AdjustmentFactorResponseDto responseDto = TestUtils.getResource(ADJUSTMENT_FACTOR_RESPONSE,
+//      AdjustmentFactorResponseDto.class, getClass());
+//
+//    when(repository.findById(EXISTING_ID)).thenReturn(Optional.of(existingEntity));
+//    when(repository.save(any(AdjustmentFactorEntity.class))).thenReturn(existingEntity);
+//    when(mapper.toDto(any(AdjustmentFactorEntity.class))).thenReturn(responseDto);
+//
+//    final AdjustmentFactorResponseDto result = service.update(EXISTING_ID, requestDto);
+//
+//    assertNotNull(result);
+//    assertEquals(responseDto, result);
+//    verify(repository).findById(EXISTING_ID);
+//    verify(repository).save(any(AdjustmentFactorEntity.class));
+//    verify(mapper).toDto(any(AdjustmentFactorEntity.class));
+//  }
+//
+//  @Test
+//  void updateShouldThrowBaseExceptionWhenIdDoesNotExistTest() {
+//    final AdjustmentFactorRequestDto requestDto = AdjustmentFactorRequestDto.builder()
+//      .name("Factor Updated")
+//      .value(java.math.BigDecimal.valueOf(3.75))
+//      .isActive(false)
+//      .build();
+//
+//    when(repository.findById(NO_EXISTING_ID)).thenReturn(Optional.empty());
+//
+//    final BaseException baseExceptionExpected = assertThrows(BaseException.class,
+//      () -> service.update(NO_EXISTING_ID, requestDto));
+//
+//    assertEquals(BaseErrorMessage.NOT_FOUND, baseExceptionExpected.getErrorMessage());
+//    verify(repository).findById(NO_EXISTING_ID);
+//  }
 
 }

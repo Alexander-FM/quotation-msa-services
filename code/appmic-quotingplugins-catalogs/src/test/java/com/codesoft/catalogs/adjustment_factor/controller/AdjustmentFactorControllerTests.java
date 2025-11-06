@@ -92,39 +92,39 @@ public class AdjustmentFactorControllerTests {
       .andReturn();
   }
 
-  @Test
-  public void updateSuccessfullyTest() throws Exception {
-    final AdjustmentFactorResponseDto updatedResponse = AdjustmentFactorResponseDto.builder()
-      .id(1)
-      .name("Factor Controller Test")
-      .value(new java.math.BigDecimal("1.85"))
-      .isActive(true)
-      .build();
-
-    when(adjustmentFactorService.update(eq(1), any(AdjustmentFactorRequestDto.class)))
-      .thenReturn(updatedResponse);
-
-    mockMvc.perform(MockMvcRequestBuilders.put("/api/adjustment-factors/1")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(adjustmentFactorRequestDto)))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.body.id").value(updatedResponse.getId()))
-      .andExpect(jsonPath("$.body.name").value(updatedResponse.getName()))
-      .andExpect(jsonPath("$.body.value").value(updatedResponse.getValue()))
-      .andReturn();
-  }
-
-  @Test
-  public void updateShouldReturnNotFoundWhenIdDoesNotExistTest() throws Exception {
-    when(adjustmentFactorService.update(eq(999), any(AdjustmentFactorRequestDto.class)))
-      .thenThrow(new BaseException(BaseErrorMessage.NOT_FOUND));
-
-    mockMvc.perform(MockMvcRequestBuilders.put("/api/adjustment-factors/999")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(adjustmentFactorRequestDto)))
-      .andExpect(status().isNotFound())
-      .andExpect(jsonPath("$.body.errorCode").value(HttpStatus.NOT_FOUND.value()))
-      .andReturn();
-  }
+//  @Test
+//  public void updateSuccessfullyTest() throws Exception {
+//    final AdjustmentFactorResponseDto updatedResponse = AdjustmentFactorResponseDto.builder()
+//      .id(1)
+//      .name("Factor Controller Test")
+//      .value(new java.math.BigDecimal("1.85"))
+//      .isActive(true)
+//      .build();
+//
+//    when(adjustmentFactorService.update(eq(1), any(AdjustmentFactorRequestDto.class)))
+//      .thenReturn(updatedResponse);
+//
+//    mockMvc.perform(MockMvcRequestBuilders.put("/api/adjustment-factors/1")
+//        .contentType(MediaType.APPLICATION_JSON)
+//        .content(objectMapper.writeValueAsString(adjustmentFactorRequestDto)))
+//      .andExpect(status().isOk())
+//      .andExpect(jsonPath("$.body.id").value(updatedResponse.getId()))
+//      .andExpect(jsonPath("$.body.name").value(updatedResponse.getName()))
+//      .andExpect(jsonPath("$.body.value").value(updatedResponse.getValue()))
+//      .andReturn();
+//  }
+//
+//  @Test
+//  public void updateShouldReturnNotFoundWhenIdDoesNotExistTest() throws Exception {
+//    when(adjustmentFactorService.update(eq(999), any(AdjustmentFactorRequestDto.class)))
+//      .thenThrow(new BaseException(BaseErrorMessage.NOT_FOUND));
+//
+//    mockMvc.perform(MockMvcRequestBuilders.put("/api/adjustment-factors/999")
+//        .contentType(MediaType.APPLICATION_JSON)
+//        .content(objectMapper.writeValueAsString(adjustmentFactorRequestDto)))
+//      .andExpect(status().isNotFound())
+//      .andExpect(jsonPath("$.body.errorCode").value(HttpStatus.NOT_FOUND.value()))
+//      .andReturn();
+//  }
 
 }

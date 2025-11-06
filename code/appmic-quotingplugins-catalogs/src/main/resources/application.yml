@@ -1,6 +1,9 @@
 spring:
   application:
     name: appmic-quotingplugins-catalogs
+  web:
+    resources:
+      add-mappings: false
 
   datasource:
     # Usar variables de entorno para facilitar despliegues (dev/stage/prod)
