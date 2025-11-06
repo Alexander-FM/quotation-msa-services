@@ -30,7 +30,9 @@ public class CatalogExceptionHandler {
   @ExceptionHandler(Exception.class)
   @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
   public GenericResponse<Object> genericException(final Exception ex) {
-    return GenericResponseUtils.buildGenericResponseError("Internal Server Error", ex.getMessage());
+    final String message = "An unexpected internal error occurred. The support team has been notified.";
+    log.error("Exception: {}", ex.getMessage(), ex);
+    return GenericResponseUtils.buildGenericResponseError("Internal Server Error", message);
   }
 
   @ExceptionHandler(DataIntegrityViolationException.class)
@@ -55,13 +57,17 @@ public class CatalogExceptionHandler {
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
   @ResponseStatus(code = HttpStatus.METHOD_NOT_ALLOWED)
   public GenericResponse<Object> handleHttpRequestMethodNotSupportedException(final HttpRequestMethodNotSupportedException ex) {
-    return GenericResponseUtils.buildGenericResponseError("Method Not Allowed", ex.getMessage());
+    final String message = "Method not permitted for this resource.";
+    log.warn("Attempt at an unauthorized method: {}", ex.getMessage());
+    return GenericResponseUtils.buildGenericResponseError("Method Not Allowed", message);
   }
 
   @ExceptionHandler(NoHandlerFoundException.class)
   @ResponseStatus(code = HttpStatus.NOT_FOUND)
   public GenericResponse<Object> handleNoHandlerFoundException(final NoHandlerFoundException ex) {
-    return GenericResponseUtils.buildGenericResponseError("Not Found", ex.getMessage());
+    final String message = "The requested resource was not found.";
+    log.warn("Resource not found (404): {}", ex.getMessage());
+    return GenericResponseUtils.buildGenericResponseError("Not Found", message);
   }
 
   @ExceptionHandler(BaseException.class)
