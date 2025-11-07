@@ -33,15 +33,15 @@ CREATE TABLE usuarios
     id        INTEGER PRIMARY KEY   DEFAULT NEXTVAL('usuarios_seq'),
     username  VARCHAR(100) NOT NULL,
     password  VARCHAR(255) NOT NULL,
-    is_active BOOLEAN      NOT NULL DEFAULT TRUE,
+    is_active BOOLEAN      NOT NULL DEFAULT TRUE
 );
 -- Unique Values
 ALTER TABLE usuarios
     ADD CONSTRAINT usuarios_username UNIQUE (username);
 -- Insert
 INSERT INTO usuarios (username, password, is_active)
-VALUES ('XP2345', '123', true),
-       ('XP3453', '123', true);
+VALUES ('XP2345', '$2a$12$1sAlBuYjmk0B.4ZS/JQJGeVUwJmbwleirC/CBhqt9yXN3nikfj242', true),
+       ('XP3453', '$2a$12$1sAlBuYjmk0B.4ZS/JQJGeVUwJmbwleirC/CBhqt9yXN3nikfj242', true);
 -- Query
 SELECT *
 FROM usuarios;
@@ -50,9 +50,9 @@ FROM usuarios;
 -- Table
 CREATE TABLE usuarios_roles
 (
-    usuario_id INTEGER(100) NOT NULL,
-    role_id    INTEGER(255) NOT NULL,
-    PRIMARY KEY (usuario_id, role_id),
+    usuario_id INTEGER NOT NULL,
+    role_id    INTEGER NOT NULL,
+    PRIMARY KEY (usuario_id, role_id)
 );
 -- Insert
 INSERT INTO usuarios_roles (usuario_id, role_id)
@@ -103,7 +103,7 @@ COMMENT
 ON COLUMN employees.is_active IS 'Campo para verificar si el empleado está activo';
 -- Insert
 INSERT INTO employees (fullName, document_type_code, document_number, phone_number, phone_number2, street_address, user_id, is_active)
-VALUES ('Eloy Max Huallama Perez', 'DNI', '89632541', '963258756', null, 'San Jose 423 - Lambayeque', 1),
+VALUES ('Eloy Max Huallama Perez', 'DNI', '89632541', '963258756', null, 'San Jose 423 - Lambayeque', 1);
 -- Query
 SELECT *
 FROM employees;
