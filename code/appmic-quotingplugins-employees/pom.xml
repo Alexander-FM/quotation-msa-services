@@ -23,6 +23,10 @@
 
   <dependencies>
     <dependency>
+      <artifactId>appmic-quotingplugins-commons</artifactId>
+      <groupId>${project.groupId}</groupId>
+    </dependency>
+    <dependency>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
       <groupId>org.springframework.boot</groupId>
     </dependency>

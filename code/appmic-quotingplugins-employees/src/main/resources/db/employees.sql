@@ -71,11 +71,11 @@ CREATE SEQUENCE employees_seq
 CREATE TABLE employees
 (
     id                 INTEGER PRIMARY KEY   DEFAULT NEXTVAL('employees_seq'),
-    fullName           VARCHAR(255) NOT NULL,
+    fullname           VARCHAR(255) NOT NULL,
     document_type_code VARCHAR(20)  NOT NULL,
     document_number    VARCHAR(20)  NOT NULL,
-    phone_number       VARCHAR(15)  NOT NULL,
-    phone_number2      VARCHAR(15) NULL,
+    phone_number       VARCHAR(9)  NOT NULL,
+    phone_number2      VARCHAR(9) NULL,
     street_address     VARCHAR(255) NOT NULL,
     user_id            INTEGER      NOT NULL,
     is_active          BOOLEAN      NOT NULL DEFAULT TRUE,
