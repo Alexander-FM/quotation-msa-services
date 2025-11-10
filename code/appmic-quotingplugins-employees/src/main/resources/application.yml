@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: appmic-quotingplugins-employees
+  banner:
+    location: classpath:/banner.txt
   web:
     resources:
       add-mappings: false
