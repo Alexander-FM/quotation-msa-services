@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum BaseErrorMessage {
   BAD_REQUEST(400, "Bad Request"),
+  ID_PROVIDED_ON_CREATE(400, "The ID should not be provided when creating a new entity"),
   UNAUTHORIZED(401, "The token is invalid or has been modified"),
   NOT_FOUND(404, "The resource ID does not exist in the database"),
   ERROR_INTERNAL(500, "Internal Server Error"),

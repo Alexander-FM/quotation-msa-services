@@ -25,7 +25,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 @RestControllerAdvice
 @Log4j2
-public class CatalogExceptionHandler {
+public class EmployeeExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
