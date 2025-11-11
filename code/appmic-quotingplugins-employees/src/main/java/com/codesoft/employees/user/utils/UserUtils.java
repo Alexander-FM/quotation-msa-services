@@ -8,8 +8,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserUtils {
 
-
-
   public static void encodePassword(final UserRequestDto requestDto, final BCryptPasswordEncoder passwordEncoder) {
     requestDto.setPassword(passwordEncoder.encode(requestDto.getPassword()));
   }
