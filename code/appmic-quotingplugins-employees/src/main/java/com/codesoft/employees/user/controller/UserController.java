@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -86,5 +87,13 @@ public class UserController {
     this.userService.deleteById(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
         .body(GenericResponseUtils.buildGenericResponseSuccess(UserConstants.REMOVED_MESSAGE, null));
+  }
+
+  @GetMapping("/login")
+  public ResponseEntity<GenericResponse<UserResponseDto>> loginByUsername(@RequestParam(name = "username") final String username,
+      @RequestParam(name = "password") final String password) {
+    final UserResponseDto response = this.userService.findByUsername(username, password);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(GenericResponseUtils.buildGenericResponseSuccess(UserConstants.FOUND_MESSAGE, response));
   }
 }

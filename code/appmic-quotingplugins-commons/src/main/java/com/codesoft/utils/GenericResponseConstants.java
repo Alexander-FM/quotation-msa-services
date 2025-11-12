@@ -36,6 +36,8 @@ public class GenericResponseConstants {
 
   public static final String PREFIX_TOKEN = "Bearer ";
 
+  public static final String HEADER_AUTHORIZATION = "Authorization";
+
   public static final String VIEW = "/view";
 
   public static final String DASH = " - ";

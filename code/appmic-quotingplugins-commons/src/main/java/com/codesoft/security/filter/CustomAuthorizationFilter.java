@@ -43,7 +43,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
       filterChain.doFilter(request, response);
       return;
     }
-    final String token = StringUtils.substringAfter(header, GenericResponseConstants.PREFIX_TOKEN);
+    final String token = StringUtils.substring(header, GenericResponseConstants.PREFIX_TOKEN.length());
     try {
       final Claims claims = Jwts.parser()
           .verifyWith(this.secretKey)

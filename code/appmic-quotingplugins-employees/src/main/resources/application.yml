@@ -31,4 +31,4 @@ spring:
         default_schema: ${DB_SCHEMA:employees}
 # Other configurations
 jwt:
-  secret: "appmic-quotingplugins-secret-key"
+  secret: appmic-quotingplugins-secret-key
