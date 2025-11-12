@@ -18,9 +18,23 @@ public class GenericResponseConstants {
 
   public static final String WRONG_OPERATION = "An error occurred while performing the operation";
 
-  public static final String CONFLICT = "The resource already exists in the database";
+  public static final String BAD_REQUEST = "Bad Request";
+
+  public static final String ID_PROVIDED_ON_CREATE = "The ID should not be provided when creating a new entity";
+
+  public static final String UNAUTHORIZED = "The token is invalid or has been modified";
+
+  public static final String ACCESS_DENIED = "You do not have the necessary permissions";
+
+  public static final String NOT_FOUND = "The resource ID does not exist in the database";
+
+  public static final String ERROR_INTERNAL = "Internal Server Error";
 
   public static final String UNAVAILABLE_SERVICE = "The service is not available, please try again later.";
+
+  public static final String CONTENT_TYPE = "application/json";
+
+  public static final String PREFIX_TOKEN = "Bearer ";
 
   public static final String VIEW = "/view";
 

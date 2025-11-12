@@ -29,3 +29,6 @@ spring:
       hibernate:
         format_sql: true
         default_schema: ${DB_SCHEMA:employees}
+# Other configurations
+jwt:
+  secret: "appmic-quotingplugins-secret-key"

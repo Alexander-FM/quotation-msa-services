@@ -1,17 +1,19 @@
 package com.codesoft.utils;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
 public enum BaseErrorMessage {
-  BAD_REQUEST(400, "Bad Request"),
-  ID_PROVIDED_ON_CREATE(400, "The ID should not be provided when creating a new entity"),
-  UNAUTHORIZED(401, "The token is invalid or has been modified"),
-  NOT_FOUND(404, "The resource ID does not exist in the database"),
-  ERROR_INTERNAL(500, "Internal Server Error"),
-  SERVICE_NOT_AVAILABLE(503, "The resource could not be verified, the service is not available");
+  BAD_REQUEST(HttpServletResponse.SC_BAD_REQUEST, GenericResponseConstants.BAD_REQUEST),
+  ID_PROVIDED_ON_CREATE(HttpServletResponse.SC_BAD_REQUEST, GenericResponseConstants.ID_PROVIDED_ON_CREATE),
+  UNAUTHORIZED(HttpServletResponse.SC_UNAUTHORIZED, GenericResponseConstants.UNAUTHORIZED),
+  ACCESS_DENIED(HttpServletResponse.SC_FORBIDDEN, GenericResponseConstants.ACCESS_DENIED),
+  NOT_FOUND(HttpServletResponse.SC_NOT_FOUND, GenericResponseConstants.NOT_FOUND),
+  ERROR_INTERNAL(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, GenericResponseConstants.ERROR_INTERNAL),
+  SERVICE_NOT_AVAILABLE(HttpServletResponse.SC_SERVICE_UNAVAILABLE, GenericResponseConstants.UNAVAILABLE_SERVICE);
 
   private final Integer errorCode;
 

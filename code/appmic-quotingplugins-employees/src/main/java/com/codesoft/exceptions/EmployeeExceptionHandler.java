@@ -79,6 +79,7 @@ public class EmployeeExceptionHandler {
       case SERVICE_NOT_AVAILABLE -> HttpStatus.SERVICE_UNAVAILABLE;
       case ERROR_INTERNAL -> HttpStatus.INTERNAL_SERVER_ERROR;
       case UNAUTHORIZED -> HttpStatus.UNAUTHORIZED;
+      case ACCESS_DENIED -> HttpStatus.FORBIDDEN;
     };
     return new ResponseEntity<>(GenericResponseUtils.buildGenericResponseError(StringUtils.EMPTY,
         new ErrorResponse(ex.getErrorCode(), errorMessage.getErrorMessage())), status);
