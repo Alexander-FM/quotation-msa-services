@@ -1,14 +1,14 @@
 package com.codesoft.catalogs.catalog_item.utils;
 
-import com.codesoft.utils.CategoryEmun;
+import com.codesoft.utils.CategoryEnum;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
-public class CategoryEnumConverter implements AttributeConverter<CategoryEmun, String> {
+public class CategoryEnumConverter implements AttributeConverter<CategoryEnum, String> {
 
   @Override
-  public String convertToDatabaseColumn(final CategoryEmun category) {
+  public String convertToDatabaseColumn(final CategoryEnum category) {
     if (category == null) {
       return null;
     }
@@ -17,11 +17,11 @@ public class CategoryEnumConverter implements AttributeConverter<CategoryEmun, S
   }
 
   @Override
-  public CategoryEmun convertToEntityAttribute(final String dbData) {
+  public CategoryEnum convertToEntityAttribute(final String dbData) {
     if (dbData == null) {
       return null;
     }
     // Lee de la BD y usa tu lógica flexible para encontrar el Enum
-    return CategoryEmun.fromValue(dbData);
+    return CategoryEnum.fromValue(dbData);
   }
 }

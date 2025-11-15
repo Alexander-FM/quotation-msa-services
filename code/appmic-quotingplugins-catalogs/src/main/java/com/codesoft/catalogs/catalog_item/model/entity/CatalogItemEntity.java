@@ -1,6 +1,6 @@
 package com.codesoft.catalogs.catalog_item.model.entity;
 
-import com.codesoft.utils.CategoryEmun;
+import com.codesoft.utils.CategoryEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,7 +26,7 @@ public class CatalogItemEntity {
   private Integer id;
 
   @Column(nullable = false, length = 50)
-  private CategoryEmun category;
+  private CategoryEnum category;
 
   @Column(nullable = false, length = 20, unique = true)
   private String code;

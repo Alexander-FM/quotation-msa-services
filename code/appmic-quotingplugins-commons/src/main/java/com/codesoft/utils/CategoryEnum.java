@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum CategoryEmun {
+public enum CategoryEnum {
   DOCUMENT_TYPE("document_type"),
   IDENTIFICATION_TYPE("identification_type");
 
@@ -18,7 +18,7 @@ public enum CategoryEmun {
   private final String value;
 
   @JsonCreator
-  public static CategoryEmun fromValue(final String value) {
+  public static CategoryEnum fromValue(final String value) {
     if (value == null) {
       return null;
     }

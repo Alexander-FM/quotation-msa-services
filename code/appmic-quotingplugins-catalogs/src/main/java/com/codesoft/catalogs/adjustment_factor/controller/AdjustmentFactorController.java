@@ -47,6 +47,9 @@ public class AdjustmentFactorController {
 
   @PostMapping
   public ResponseEntity<GenericResponse<AdjustmentFactorResponseDto>> create(@RequestBody final AdjustmentFactorRequestDto requestDto) {
+    if (requestDto.getId() != null) {
+      throw new BaseException(BaseErrorMessage.ID_PROVIDED_ON_CREATE);
+    }
     ValidateInputObject.validRequestDto(requestDto);
     final AdjustmentFactorResponseDto responseDto = this.adjustmentFactorService.create(requestDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, responseDto));
@@ -56,7 +59,7 @@ public class AdjustmentFactorController {
   public ResponseEntity<GenericResponse<AdjustmentFactorResponseDto>> update(@PathVariable(value = "id") final Integer id,
       @RequestBody final AdjustmentFactorRequestDto requestDto) {
     if (id == null || id <= 0) {
-      throw new BaseException(BaseErrorMessage.ID_PROVIDED_ON_CREATE);
+      throw new BaseException(BaseErrorMessage.BAD_REQUEST);
     }
     final AdjustmentFactorResponseDto existing = adjustmentFactorService.findById(id);
     if (ObjectUtils.isNotEmpty(existing)) {

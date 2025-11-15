@@ -1,6 +1,6 @@
 package com.codesoft.catalogs.catalog_item.dto.response;
 
-import com.codesoft.utils.CategoryEmun;
+import com.codesoft.utils.CategoryEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +14,7 @@ public class CatalogItemResponseDto {
 
   private Integer id;
 
-  private CategoryEmun category;
+  private CategoryEnum category;
 
   private String code;
 
