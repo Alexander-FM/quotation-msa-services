@@ -60,13 +60,13 @@ ON COLUMN catalog_item.code IS 'Abreviatura del documento';
 COMMENT
 ON COLUMN catalog_item.description IS 'Descripción del documento';
 -- Insert
-INSERT INTO catalog_item (category, code, description)
-VALUES ('document_type', 'BOL', 'Boleta'),
-       ('document_type', 'FAC', 'Factura'),
-       ('document_type', 'GR', 'Guía de remisión'),
-       ('identification_type', 'DNI', 'Documento Nacional de Identidad'),
-       ('identification_type', 'RUC', 'Registro Único de Contribuyentes'),
-       ('identification_type', 'PASS', 'Pasaporte');
+INSERT INTO catalog_item (category, code, description, is_active)
+VALUES ('document_type', 'BOL', 'Boleta', true),
+       ('document_type', 'FAC', 'Factura', true),
+       ('document_type', 'GR', 'Guía de remisión', true),
+       ('identification_type', 'DNI', 'Documento Nacional de Identidad', true),
+       ('identification_type', 'RUC', 'Registro Único de Contribuyentes', true),
+       ('identification_type', 'PASS', 'Pasaporte', true);
 -- Query
 SELECT *
 FROM catalog_item;
