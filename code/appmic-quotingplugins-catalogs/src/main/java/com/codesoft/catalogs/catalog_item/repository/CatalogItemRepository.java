@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface CatalogItemRepository extends JpaRepository<CatalogItemEntity, Integer> {
 
   /**
-   * Find the document type by code and is active true.
+   * Find the document type or identification_type by code and is active true.
    *
    * @param code the code.
    * @return the optional catalog item entity.
