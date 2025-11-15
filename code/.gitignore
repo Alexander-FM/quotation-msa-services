@@ -1,0 +1,35 @@
+# Maven: ignorar cualquier directorio target en cualquier módulo
+**/target/
+
+# Evitar subir artefactos temporales dentro de src (si aplica)
+**/build/
+**/out/
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+mvnw
+mvnw.cmd
+
+# IDEs
+/.idea
+*.iml
+*.iws
+*.ipr
+
+# STS, NetBeans, VSCode y sistema
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
