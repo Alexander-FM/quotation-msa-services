@@ -74,8 +74,8 @@ CREATE TABLE employees
     fullname           VARCHAR(255) NOT NULL,
     document_type_code VARCHAR(20)  NOT NULL,
     document_number    VARCHAR(20)  NOT NULL,
-    phone_number       VARCHAR(9)  NOT NULL,
-    phone_number2      VARCHAR(9) NULL,
+    phone_number       VARCHAR(9)   NOT NULL,
+    phone_number2      VARCHAR(9)   NULL,
     street_address     VARCHAR(255) NOT NULL,
     user_id            INTEGER      NOT NULL,
     is_active          BOOLEAN      NOT NULL DEFAULT TRUE,
@@ -86,24 +86,24 @@ ALTER TABLE employees
     ADD CONSTRAINT employees_document_number UNIQUE (document_number);
 -- Comments
 COMMENT
-ON TABLE employees IS 'Tabla para almacenar información de los empleados';
+    ON TABLE employees IS 'Tabla para almacenar información de los empleados';
 COMMENT
-ON COLUMN employees.fullName IS 'Nombre completo del empleado';
+    ON COLUMN employees.fullName IS 'Nombre completo del empleado';
 COMMENT
-ON COLUMN employees.document_type_code IS 'Tipo de documento de identidad';
+    ON COLUMN employees.document_type_code IS 'Tipo de documento de identidad';
 COMMENT
-ON COLUMN employees.document_number IS 'Numero de documento';
+    ON COLUMN employees.document_number IS 'Numero de documento';
 COMMENT
-ON COLUMN employees.phone_number IS 'Telefono principal del empleado';
+    ON COLUMN employees.phone_number IS 'Telefono principal del empleado';
 COMMENT
-ON COLUMN employees.phone_number2 IS 'Telefono secundario del empleado';
+    ON COLUMN employees.phone_number2 IS 'Telefono secundario del empleado';
 COMMENT
-ON COLUMN employees.street_address IS 'Dirección de la calle de sus vivienda del empleado';
+    ON COLUMN employees.street_address IS 'Dirección de la calle de sus vivienda del empleado';
 COMMENT
-ON COLUMN employees.is_active IS 'Campo para verificar si el empleado está activo';
+    ON COLUMN employees.is_active IS 'Campo para verificar si el empleado está activo';
 -- Insert
 INSERT INTO employees (fullName, document_type_code, document_number, phone_number, phone_number2, street_address, user_id, is_active)
-VALUES ('Eloy Max Huallama Perez', 'DNI', '89632541', '963258756', null, 'San Jose 423 - Lambayeque', 1);
+VALUES ('Eloy Max Huallama Perez', 'DNI', '89632541', '963258756', null, 'San Jose 423 - Lambayeque', 1, true);
 -- Query
 SELECT *
 FROM employees;
