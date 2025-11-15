@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/adjustment-factors")
+@RequestMapping("/api/catalogs/adjustment-factor")
 @RequiredArgsConstructor
 public class AdjustmentFactorController {
 
@@ -56,7 +56,7 @@ public class AdjustmentFactorController {
   public ResponseEntity<GenericResponse<AdjustmentFactorResponseDto>> update(@PathVariable(value = "id") final Integer id,
       @RequestBody final AdjustmentFactorRequestDto requestDto) {
     if (id == null || id <= 0) {
-      throw new BaseException(BaseErrorMessage.BAD_REQUEST);
+      throw new BaseException(BaseErrorMessage.ID_PROVIDED_ON_CREATE);
     }
     final AdjustmentFactorResponseDto existing = adjustmentFactorService.findById(id);
     if (ObjectUtils.isNotEmpty(existing)) {

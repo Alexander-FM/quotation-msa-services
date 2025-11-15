@@ -10,6 +10,7 @@ import com.codesoft.exception.ErrorResponse;
 import com.codesoft.utils.BaseErrorMessage;
 import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.GenericResponseUtils;
+import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.log4j.Log4j2;
@@ -17,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -68,6 +70,35 @@ public class CatalogExceptionHandler {
     final String message = "The requested resource was not found.";
     log.warn("Resource not found (404): {}", ex.getMessage());
     return GenericResponseUtils.buildGenericResponseError("Not Found", message);
+  }
+
+  /**
+   * Manejo especial para excepciones lanzadas durante el parsing JSON (Por ejemplo, en @JsonCreator In EnumClass).
+   *
+   * @param ex the exception
+   * @return the response entity
+   */
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ResponseEntity<GenericResponse<Object>> handleJsonParseException(HttpMessageNotReadableException ex) {
+
+    // 1. Intentamos obtener la causa raíz (la excepción original)
+    Throwable cause = ex.getCause();
+
+    // 2. Jackson envuelve las excepciones del @JsonCreator en ValueInstantiationException
+    if (cause instanceof ValueInstantiationException) {
+      Throwable innerCause = cause.getCause();
+
+      // 3. ¡Aquí está! Si la causa interna es TU BaseException, delegamos al manejador correcto
+      if (innerCause instanceof BaseException) {
+        return handleOrderException((BaseException) innerCause);
+      }
+    }
+
+    // 4. Si no fue tu excepción (ej. JSON mal formado, falta una coma, etc.), devolvemos 400 genérico
+    return new ResponseEntity<>(
+        GenericResponseUtils.buildGenericResponseError("Malformed JSON Request", "The request body is invalid or cannot be parsed."),
+        HttpStatus.BAD_REQUEST
+    );
   }
 
   @ExceptionHandler(BaseException.class)
