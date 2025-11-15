@@ -2,7 +2,7 @@ package com.codesoft.security;
 
 import java.io.IOException;
 
-import com.codesoft.exception.ErrorResponse;
+import com.codesoft.utils.ErrorResponse;
 import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.GenericResponseConstants;
 import com.codesoft.utils.GenericResponseUtils;

@@ -102,7 +102,7 @@ public class AdjustmentFactorServiceImplTests {
 
     final BaseException baseExceptionExpected = assertThrows(BaseException.class, () -> service.findById(NO_EXISTING_ID));
 
-    assertEquals(BaseErrorMessage.NOT_FOUND, baseExceptionExpected.getErrorMessage());
+    assertEquals(BaseErrorMessage.NOT_FOUND, baseExceptionExpected.getErrorCodeInterface());
     verify(repository).findById(NO_EXISTING_ID);
   }
 

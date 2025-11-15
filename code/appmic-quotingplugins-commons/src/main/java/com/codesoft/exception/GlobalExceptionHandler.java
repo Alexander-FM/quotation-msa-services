@@ -1,15 +1,14 @@
-package com.codesoft.exceptions;
+package com.codesoft.exception;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.codesoft.exception.BaseException;
-import com.codesoft.exception.ErrorResponse;
-import com.codesoft.utils.BaseErrorMessage;
+import com.codesoft.utils.ErrorResponse;
 import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.GenericResponseUtils;
+import com.codesoft.utils.IErrorCode;
 import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -27,7 +26,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 @RestControllerAdvice
 @Log4j2
-public class CatalogExceptionHandler {
+public class GlobalExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
@@ -42,7 +41,7 @@ public class CatalogExceptionHandler {
   public GenericResponse<Object> dataIntegrityViolationException(final DataIntegrityViolationException ex) {
     final String message = "Conflict error. A record with this data already exists, or a data restriction was violated.";
     log.error("DataIntegrityViolationException: {}", ex.getMostSpecificCause().getMessage());
-    return GenericResponseUtils.buildGenericResponseError("Conflict", message);
+    return GenericResponseUtils.buildGenericResponseError("Duplicate Data", message);
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
@@ -80,21 +79,13 @@ public class CatalogExceptionHandler {
    */
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<GenericResponse<Object>> handleJsonParseException(HttpMessageNotReadableException ex) {
-
-    // 1. Intentamos obtener la causa raíz (la excepción original)
     Throwable cause = ex.getCause();
-
-    // 2. Jackson envuelve las excepciones del @JsonCreator en ValueInstantiationException
     if (cause instanceof ValueInstantiationException) {
       Throwable innerCause = cause.getCause();
-
-      // 3. ¡Aquí está! Si la causa interna es TU BaseException, delegamos al manejador correcto
       if (innerCause instanceof BaseException) {
         return handleOrderException((BaseException) innerCause);
       }
     }
-
-    // 4. Si no fue tu excepción (ej. JSON mal formado, falta una coma, etc.), devolvemos 400 genérico
     return new ResponseEntity<>(
         GenericResponseUtils.buildGenericResponseError("Malformed JSON Request", "The request body is invalid or cannot be parsed."),
         HttpStatus.BAD_REQUEST
@@ -103,16 +94,9 @@ public class CatalogExceptionHandler {
 
   @ExceptionHandler(BaseException.class)
   public ResponseEntity<GenericResponse<Object>> handleOrderException(final BaseException ex) {
-    BaseErrorMessage errorMessage = ex.getErrorMessage();
-    HttpStatus status = switch (errorMessage) {
-      case BAD_REQUEST, ID_PROVIDED_ON_CREATE -> HttpStatus.BAD_REQUEST;
-      case NOT_FOUND -> HttpStatus.NOT_FOUND;
-      case SERVICE_NOT_AVAILABLE -> HttpStatus.SERVICE_UNAVAILABLE;
-      case ERROR_INTERNAL -> HttpStatus.INTERNAL_SERVER_ERROR;
-      case UNAUTHORIZED -> HttpStatus.UNAUTHORIZED;
-      case ACCESS_DENIED -> HttpStatus.FORBIDDEN;
-    };
+    IErrorCode error = ex.getErrorCodeInterface();
+    HttpStatus status = error.getHttpStatus();
     return new ResponseEntity<>(GenericResponseUtils.buildGenericResponseError(StringUtils.EMPTY,
-        new ErrorResponse(ex.getErrorCode(), errorMessage.getErrorMessage())), status);
+        new ErrorResponse(error.getErrorCode(), error.getErrorMessage())), status);
   }
 }

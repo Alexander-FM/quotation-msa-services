@@ -1,4 +1,4 @@
-package com.codesoft.exception;
+package com.codesoft.utils;
 
 public record ErrorResponse(Integer errorCode, String errorMessage) {
 
