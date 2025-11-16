@@ -26,17 +26,17 @@ public class SecurityConfig {
 
   private static final String ROLE_USER = "USER";
 
-  private static final String EMPLOYEE_ROOT_PATH = "/api/employees";
+  private static final String EMPLOYEE_ROOT_PATH = "/api/employees/employee";
 
-  private static final String EMPLOYEE_PATH = "/api/employees/{id}";
+  private static final String EMPLOYEE_PATH = "/api/employees/employee/{id}";
 
-  private static final String ROLE_ROOT_PATH = "/api/roles";
+  private static final String ROLE_ROOT_PATH = "/api/employees/role";
 
-  private static final String ROLE_PATH = "/api/roles/{id}";
+  private static final String ROLE_PATH = "/api/employees/role/{id}";
 
-  private static final String USER_ROOT_PATH = "/api/users";
+  private static final String USER_ROOT_PATH = "/api/employees/user";
 
-  private static final String USER_PATH = "/api/users/{id}";
+  private static final String USER_PATH = "/api/employees/user/{id}";
 
   private final CustomAuthorizationFilter customAuthorizationFilter;
 
@@ -45,7 +45,7 @@ public class SecurityConfig {
   private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
   public SecurityConfig(final CustomAuthorizationFilter customAuthorizationFilter, CustomAccessDeniedHandler customAccessDeniedHandler,
-      CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+    CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
     this.customAuthorizationFilter = customAuthorizationFilter;
     this.customAccessDeniedHandler = customAccessDeniedHandler;
     this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
@@ -54,21 +54,21 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
     return http.authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/users/login", "/api/users").permitAll()
-            .requestMatchers(HttpMethod.GET, EMPLOYEE_ROOT_PATH, ROLE_ROOT_PATH).hasAnyRole(ROLE_ADMIN, ROLE_USER)
-            .requestMatchers(HttpMethod.POST, EMPLOYEE_ROOT_PATH, ROLE_ROOT_PATH, USER_ROOT_PATH).hasAnyRole(ROLE_ADMIN, ROLE_USER)
-            .requestMatchers(HttpMethod.PUT, EMPLOYEE_PATH, ROLE_PATH, USER_PATH).hasRole(ROLE_ADMIN)
-            .requestMatchers(HttpMethod.DELETE, EMPLOYEE_PATH, ROLE_PATH, USER_PATH).hasRole(ROLE_ADMIN)
-            .requestMatchers(HttpMethod.PATCH, EMPLOYEE_PATH, ROLE_PATH, USER_PATH).hasRole(ROLE_ADMIN)
-            .anyRequest().authenticated())
-        .exceptionHandling(exception -> exception
-            .accessDeniedHandler(customAccessDeniedHandler)
-            .authenticationEntryPoint(customAuthenticationEntryPoint))
-        .addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
-        .csrf(AbstractHttpConfigurer::disable)
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .build();
+        .requestMatchers("/api/employee/user/login", "/api/employee/user").permitAll()
+        .requestMatchers(HttpMethod.GET, EMPLOYEE_ROOT_PATH, ROLE_ROOT_PATH).hasAnyRole(ROLE_ADMIN, ROLE_USER)
+        .requestMatchers(HttpMethod.POST, EMPLOYEE_ROOT_PATH, ROLE_ROOT_PATH, USER_ROOT_PATH).hasAnyRole(ROLE_ADMIN, ROLE_USER)
+        .requestMatchers(HttpMethod.PUT, EMPLOYEE_PATH, ROLE_PATH, USER_PATH).hasRole(ROLE_ADMIN)
+        .requestMatchers(HttpMethod.DELETE, EMPLOYEE_PATH, ROLE_PATH, USER_PATH).hasRole(ROLE_ADMIN)
+        .requestMatchers(HttpMethod.PATCH, EMPLOYEE_PATH, ROLE_PATH, USER_PATH).hasRole(ROLE_ADMIN)
+        .anyRequest().authenticated())
+      .exceptionHandling(exception -> exception
+        .accessDeniedHandler(customAccessDeniedHandler)
+        .authenticationEntryPoint(customAuthenticationEntryPoint))
+      .addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
+      .csrf(AbstractHttpConfigurer::disable)
+      .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+      .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+      .build();
   }
 
   @Bean
@@ -87,7 +87,7 @@ public class SecurityConfig {
   @Bean
   FilterRegistrationBean<CorsFilter> corsFilter() {
     FilterRegistrationBean<CorsFilter> corsBean = new FilterRegistrationBean<>(
-        new CorsFilter(corsConfigurationSource()));
+      new CorsFilter(corsConfigurationSource()));
     corsBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
     return corsBean;
   }

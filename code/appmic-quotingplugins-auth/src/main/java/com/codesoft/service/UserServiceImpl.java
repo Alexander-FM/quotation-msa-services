@@ -3,6 +3,8 @@ package com.codesoft.service;
 import java.util.Objects;
 
 import com.codesoft.dto.UserResponseDto;
+import com.codesoft.exception.AuthException;
+import com.codesoft.exception.AuthMessageEnum;
 import com.codesoft.exception.BaseException;
 import com.codesoft.utils.BaseErrorMessage;
 import com.codesoft.utils.GenericResponse;
@@ -40,26 +42,26 @@ public class UserServiceImpl implements UserService {
       final WebClient client = getWebClient();
       final String uri = env.getProperty("MS_MAINTENANCE_NAME", "http://127.0.0.1:8082/api/users/login");
       final GenericResponse<UserResponseDto> userResponseDto = client.get()
-          .uri(uri, uriBuilder -> uriBuilder
-              .queryParam("username", username)
-              .queryParam("password", password)
-              .build())
-          .accept(MediaType.APPLICATION_JSON)
-          .retrieve()
-          .bodyToMono(new ParameterizedTypeReference<GenericResponse<UserResponseDto>>() {
-          })
-          .block();
+        .uri(uri, uriBuilder -> uriBuilder
+          .queryParam("username", username)
+          .queryParam("password", password)
+          .build())
+        .accept(MediaType.APPLICATION_JSON)
+        .retrieve()
+        .bodyToMono(new ParameterizedTypeReference<GenericResponse<UserResponseDto>>() {
+        })
+        .block();
       if (Objects.nonNull(userResponseDto) && ObjectUtils.isNotEmpty(userResponseDto.getBody())) {
         return userResponseDto.getBody();
       }
       throw new BaseException(BaseErrorMessage.NOT_FOUND);
     } catch (final WebClientRequestException ex) {
       log.error("Servicio de empleados no disponible (connection refused): {}", ex.getMessage());
-      throw new BaseException(BaseErrorMessage.SERVICE_NOT_AVAILABLE);
+      throw new AuthException(AuthMessageEnum.AUTH_EMPLOYEE_SERVICE_UNAVAILABLE);
     } catch (final BaseException ex) {
       throw ex;
     } catch (final Exception ex) {
-      log.error("Error validando usuario", ex);
+      log.error("Exception: {}", ex.getMessage());
       throw new BaseException(BaseErrorMessage.ERROR_INTERNAL);
     }
   }

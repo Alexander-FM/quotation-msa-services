@@ -62,51 +62,51 @@ public class AuthController {
 
   @PostMapping("/login")
   public ResponseEntity<GenericResponse<TokenResponse>> login(@RequestBody final LoginRequest loginRequest,
-      HttpServletResponse httpServletResponse) {
+    HttpServletResponse httpServletResponse) {
     if (ObjectUtils.isEmpty(loginRequest.username()) || ObjectUtils.isEmpty(loginRequest.password())) {
       throw new BaseException(BaseErrorMessage.BAD_REQUEST);
     }
     final UserResponseDto user = userService.validateUser(loginRequest.username(), loginRequest.password());
-    if (ObjectUtils.isEmpty(user) || !user.getIsActive()) {
+    if (ObjectUtils.isEmpty(user) || Boolean.TRUE.equals(!user.getIsActive())) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-          GenericResponseUtils.buildGenericResponseWarning(JwtConstants.INVALID_USER, null));
+        GenericResponseUtils.buildGenericResponseWarning(JwtConstants.INVALID_USER, null));
     }
     final List<String> roles = user.getRoles().stream()
-        .map(RoleResponseDto::getRoleName)
-        .toList();
+      .map(RoleResponseDto::getRoleName)
+      .toList();
     final Claims claims = Jwts.claims()
-        .add("username", user.getUsername())
-        .add("roles", roles)
-        .build();
+      .add("username", user.getUsername())
+      .add("roles", roles)
+      .build();
     final String token = Jwts.builder()
-        .subject(user.getUsername())
-        .claims(claims)
-        .issuedAt(new Date())
-        .expiration(new Date(System.currentTimeMillis() + 3600000)) // 1 hora
-        .signWith(getSecretKey())
-        .compact();
+      .subject(user.getUsername())
+      .claims(claims)
+      .issuedAt(new Date())
+      .expiration(new Date(System.currentTimeMillis() + 3600000)) // 1 hora
+      .signWith(getSecretKey())
+      .compact();
     httpServletResponse.addHeader(GenericResponseConstants.HEADER_AUTHORIZATION, token);
     return ResponseEntity.ok(
-        GenericResponseUtils.buildGenericResponseSuccess(JwtConstants.GENERATED_TOKEN, new TokenResponse(token, user.getUsername())));
+      GenericResponseUtils.buildGenericResponseSuccess(JwtConstants.GENERATED_TOKEN, new TokenResponse(token, user.getUsername())));
   }
 
   @PostMapping("/validate")
   public ResponseEntity<GenericResponse<Object>> validateToken(
-      @RequestHeader(GenericResponseConstants.HEADER_AUTHORIZATION) final String authHeader) {
+    @RequestHeader(GenericResponseConstants.HEADER_AUTHORIZATION) final String authHeader) {
     try {
       if (authHeader == null || !authHeader.startsWith(GenericResponseConstants.PREFIX_TOKEN)) {
         throw new BaseException(BaseErrorMessage.UNAUTHORIZED);
       }
       final String token = StringUtils.substring(authHeader, GenericResponseConstants.PREFIX_TOKEN.length());
       Claims claims = Jwts.parser()
-          .verifyWith(getSecretKey())
-          .build()
-          .parseSignedClaims(token)
-          .getPayload();
+        .verifyWith(getSecretKey())
+        .build()
+        .parseSignedClaims(token)
+        .getPayload();
       return ResponseEntity.ok(GenericResponseUtils.buildGenericResponseSuccess(JwtConstants.VALID_TOKEN, claims));
     } catch (final Exception e) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body(GenericResponseUtils.buildGenericResponseError(JwtConstants.INVALID_TOKEN, null));
+        .body(GenericResponseUtils.buildGenericResponseError(JwtConstants.INVALID_TOKEN, null));
     }
   }
 }
