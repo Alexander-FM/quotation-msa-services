@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
   public UserResponseDto validateUser(final String username, final String password) {
     try {
       final WebClient client = getWebClient();
-      final String uri = env.getProperty("MS_MAINTENANCE_NAME", "http://127.0.0.1:8082/api/users/login");
+      final String uri = env.getProperty("MS_MAINTENANCE_NAME", "http://127.0.0.1:8082/api/employees/user/login");
       final GenericResponse<UserResponseDto> userResponseDto = client.get()
         .uri(uri, uriBuilder -> uriBuilder
           .queryParam("username", username)
