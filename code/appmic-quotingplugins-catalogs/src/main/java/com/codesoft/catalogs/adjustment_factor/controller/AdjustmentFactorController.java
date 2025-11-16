@@ -5,11 +5,12 @@ import java.util.List;
 import com.codesoft.catalogs.adjustment_factor.dto.request.AdjustmentFactorRequestDto;
 import com.codesoft.catalogs.adjustment_factor.dto.response.AdjustmentFactorResponseDto;
 import com.codesoft.catalogs.adjustment_factor.service.AdjustmentFactorService;
+import com.codesoft.catalogs.adjustment_factor.utils.AdjustmentFactorConstants;
 import com.codesoft.exception.BaseException;
 import com.codesoft.utils.BaseErrorMessage;
 import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.GenericResponseUtils;
-import com.codesoft.utils.ValidateInputObject;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,38 +36,39 @@ public class AdjustmentFactorController {
   public ResponseEntity<GenericResponse<List<AdjustmentFactorResponseDto>>> retrieve() {
     final List<AdjustmentFactorResponseDto> adjustmentFactors = adjustmentFactorService.findAll();
     return ResponseEntity.status(HttpStatus.OK)
-        .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, adjustmentFactors));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(AdjustmentFactorConstants.FOUND_MESSAGE, adjustmentFactors));
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<GenericResponse<AdjustmentFactorResponseDto>> retrieveById(@PathVariable(value = "id") final Integer id) {
     final AdjustmentFactorResponseDto adjustmentFactors = adjustmentFactorService.findById(id);
     return ResponseEntity.status(HttpStatus.OK)
-        .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, adjustmentFactors));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(AdjustmentFactorConstants.FOUND_MESSAGE, adjustmentFactors));
   }
 
   @PostMapping
-  public ResponseEntity<GenericResponse<AdjustmentFactorResponseDto>> create(@RequestBody final AdjustmentFactorRequestDto requestDto) {
+  public ResponseEntity<GenericResponse<AdjustmentFactorResponseDto>> create(
+    @Valid @RequestBody final AdjustmentFactorRequestDto requestDto) {
     if (requestDto.getId() != null) {
       throw new BaseException(BaseErrorMessage.ID_PROVIDED_ON_CREATE);
     }
-    ValidateInputObject.validRequestDto(requestDto);
     final AdjustmentFactorResponseDto responseDto = this.adjustmentFactorService.create(requestDto);
-    return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, responseDto));
+    return ResponseEntity.status(HttpStatus.CREATED)
+      .body(GenericResponseUtils.buildGenericResponseSuccess(AdjustmentFactorConstants.SAVED_MESSAGE, responseDto));
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<GenericResponse<AdjustmentFactorResponseDto>> update(@PathVariable(value = "id") final Integer id,
-      @RequestBody final AdjustmentFactorRequestDto requestDto) {
+    @Valid @RequestBody final AdjustmentFactorRequestDto requestDto) {
     if (id == null || id <= 0) {
       throw new BaseException(BaseErrorMessage.BAD_REQUEST);
     }
     final AdjustmentFactorResponseDto existing = adjustmentFactorService.findById(id);
     if (ObjectUtils.isNotEmpty(existing)) {
-      ValidateInputObject.validRequestDto(requestDto);
       requestDto.setId(existing.getId());
       return ResponseEntity.status(HttpStatus.OK)
-          .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, this.adjustmentFactorService.create(requestDto)));
+        .body(GenericResponseUtils.buildGenericResponseSuccess(AdjustmentFactorConstants.UPDATED_MESSAGE,
+          this.adjustmentFactorService.create(requestDto)));
     } else {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(GenericResponseUtils.buildGenericResponseError(StringUtils.EMPTY, null));
     }
@@ -76,6 +78,6 @@ public class AdjustmentFactorController {
   public ResponseEntity<GenericResponse<Object>> delete(@PathVariable(value = "id") final Integer id) {
     this.adjustmentFactorService.deleteById(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
-        .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, null));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(AdjustmentFactorConstants.REMOVED_MESSAGE, null));
   }
 }

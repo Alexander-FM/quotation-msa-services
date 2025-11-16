@@ -14,11 +14,13 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -49,9 +51,23 @@ public class GlobalExceptionHandler {
   public GenericResponse<Object> constraintValidations(final ConstraintViolationException ex) {
     final Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
     final List<String> errorMessages = violations.stream()
-        .map(ConstraintViolation::getMessage)
-        .toList();
+      .map(ConstraintViolation::getMessage)
+      .toList();
     final Map<String, List<String>> listHashMap = Collections.singletonMap("violations", errorMessages);
+    return GenericResponseUtils.buildGenericResponseError("Bad Request", listHashMap);
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public GenericResponse<Object> handleMethodArgumentNotValidException(final MethodArgumentNotValidException ex) {
+    // Extraemos la lista de errores
+    List<String> errorMessages = ex.getBindingResult()
+      .getAllErrors()
+      .stream()
+      .map(DefaultMessageSourceResolvable::getDefaultMessage) // "The adjustment factor name must not be empty."
+      .toList();
+    Map<String, List<String>> listHashMap = Collections.singletonMap("violations", errorMessages);
+    log.warn("MethodArgumentNotValidException: {}", ex.getMessage());
     return GenericResponseUtils.buildGenericResponseError("Bad Request", listHashMap);
   }
 
@@ -59,7 +75,7 @@ public class GlobalExceptionHandler {
   @ResponseStatus(code = HttpStatus.METHOD_NOT_ALLOWED)
   public GenericResponse<Object> handleHttpRequestMethodNotSupportedException(final HttpRequestMethodNotSupportedException ex) {
     final String message = "Method not permitted for this resource.";
-    log.warn("Attempt at an unauthorized method: {}", ex.getMessage());
+    log.warn("HttpRequestMethodNotSupportedException: {}", ex.getMessage());
     return GenericResponseUtils.buildGenericResponseError("Method Not Allowed", message);
   }
 
@@ -67,7 +83,7 @@ public class GlobalExceptionHandler {
   @ResponseStatus(code = HttpStatus.NOT_FOUND)
   public GenericResponse<Object> handleNoHandlerFoundException(final NoHandlerFoundException ex) {
     final String message = "The requested resource was not found.";
-    log.warn("Resource not found (404): {}", ex.getMessage());
+    log.warn("NoHandlerFoundException: {}", ex.getMessage());
     return GenericResponseUtils.buildGenericResponseError("Not Found", message);
   }
 
@@ -82,21 +98,22 @@ public class GlobalExceptionHandler {
     Throwable cause = ex.getCause();
     if (cause instanceof ValueInstantiationException) {
       Throwable innerCause = cause.getCause();
-      if (innerCause instanceof BaseException) {
-        return handleOrderException((BaseException) innerCause);
+      if (innerCause instanceof BaseException baseException) {
+        return handleGlobalException(baseException);
       }
     }
     return new ResponseEntity<>(
-        GenericResponseUtils.buildGenericResponseError("Malformed JSON Request", "The request body is invalid or cannot be parsed."),
-        HttpStatus.BAD_REQUEST
+      GenericResponseUtils.buildGenericResponseError("Malformed JSON Request", "The request body is invalid or cannot be parsed."),
+      HttpStatus.BAD_REQUEST
     );
   }
 
   @ExceptionHandler(BaseException.class)
-  public ResponseEntity<GenericResponse<Object>> handleOrderException(final BaseException ex) {
+  public ResponseEntity<GenericResponse<Object>> handleGlobalException(final BaseException ex) {
+    log.warn("BaseException: {}", ex.getMessage());
     IErrorCode error = ex.getErrorCodeInterface();
     HttpStatus status = error.getHttpStatus();
     return new ResponseEntity<>(GenericResponseUtils.buildGenericResponseError(StringUtils.EMPTY,
-        new ErrorResponse(error.getErrorCode(), error.getErrorMessage())), status);
+      new ErrorResponse(error.getErrorCode(), error.getErrorMessage())), status);
   }
 }

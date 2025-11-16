@@ -11,7 +11,7 @@ import com.codesoft.exception.BaseException;
 import com.codesoft.utils.BaseErrorMessage;
 import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.GenericResponseUtils;
-import com.codesoft.utils.ValidateInputObject;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,44 +41,42 @@ public class UserController {
   public ResponseEntity<GenericResponse<List<UserResponseDto>>> retrieve() {
     final List<UserResponseDto> users = this.userService.findAll();
     return ResponseEntity.status(HttpStatus.OK)
-        .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, users));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, users));
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<GenericResponse<UserResponseDto>> retrieveById(@PathVariable(value = "id") final Integer id) {
     final UserResponseDto users = this.userService.findById(id);
     return ResponseEntity.status(HttpStatus.OK)
-        .body(GenericResponseUtils.buildGenericResponseSuccess(UserConstants.FOUND_MESSAGE, users));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(UserConstants.FOUND_MESSAGE, users));
   }
 
   @PostMapping
-  public ResponseEntity<GenericResponse<UserResponseDto>> create(@RequestBody final UserRequestDto requestDto) {
+  public ResponseEntity<GenericResponse<UserResponseDto>> create(@Valid @RequestBody final UserRequestDto requestDto) {
     if (requestDto.getId() != null) {
       throw new BaseException(BaseErrorMessage.ID_PROVIDED_ON_CREATE);
     }
-    ValidateInputObject.validRequestDto(requestDto);
     UserUtils.encodePassword(requestDto, passwordEncoder);
     final UserResponseDto responseDto = this.userService.create(requestDto);
     return ResponseEntity.status(HttpStatus.CREATED)
-        .body(GenericResponseUtils.buildGenericResponseSuccess(UserConstants.SAVED_MESSAGE, responseDto));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(UserConstants.SAVED_MESSAGE, responseDto));
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<GenericResponse<UserResponseDto>> update(@PathVariable(value = "id") final Integer id,
-      @RequestBody final UserRequestDto requestDto) {
+    @Valid @RequestBody final UserRequestDto requestDto) {
     if (id == null || id <= 0) {
       throw new BaseException(BaseErrorMessage.BAD_REQUEST);
     }
     final UserResponseDto existing = this.userService.findById(id);
     if (ObjectUtils.isNotEmpty(existing)) {
-      ValidateInputObject.validRequestDto(requestDto);
       requestDto.setId(existing.getId());
       UserUtils.encodePassword(requestDto, passwordEncoder);
       return ResponseEntity.status(HttpStatus.OK)
-          .body(GenericResponseUtils.buildGenericResponseSuccess(UserConstants.UPDATED_MESSAGE, this.userService.create(requestDto)));
+        .body(GenericResponseUtils.buildGenericResponseSuccess(UserConstants.UPDATED_MESSAGE, this.userService.create(requestDto)));
     } else {
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
-          .body(GenericResponseUtils.buildGenericResponseError(UserConstants.FIND_ERROR_MESSAGE, null));
+        .body(GenericResponseUtils.buildGenericResponseError(UserConstants.FIND_ERROR_MESSAGE, null));
     }
   }
 
@@ -86,14 +84,14 @@ public class UserController {
   public ResponseEntity<GenericResponse<Object>> delete(@PathVariable(value = "id") final Integer id) {
     this.userService.deleteById(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
-        .body(GenericResponseUtils.buildGenericResponseSuccess(UserConstants.REMOVED_MESSAGE, null));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(UserConstants.REMOVED_MESSAGE, null));
   }
 
   @GetMapping("/login")
   public ResponseEntity<GenericResponse<UserResponseDto>> loginByUsername(@RequestParam(name = "username") final String username,
-      @RequestParam(name = "password") final String password) {
+    @RequestParam(name = "password") final String password) {
     final UserResponseDto response = this.userService.findByUsername(username, password);
     return ResponseEntity.status(HttpStatus.OK)
-        .body(GenericResponseUtils.buildGenericResponseSuccess(UserConstants.FOUND_MESSAGE, response));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(UserConstants.FOUND_MESSAGE, response));
   }
 }
