@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class GenericResponse<T> {
 
-  private Integer responseCode;
+  private Integer code;
 
   private String message;
 

@@ -8,5 +8,5 @@ public interface IErrorCode {
 
   Integer getErrorCode();
 
-  HttpStatus getHttpStatus(); // <--- Agregamos esto para eliminar el switch
+  HttpStatus getHttpStatus();
 }

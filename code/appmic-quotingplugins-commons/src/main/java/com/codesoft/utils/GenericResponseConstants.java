@@ -18,7 +18,7 @@ public class GenericResponseConstants {
 
   public static final String WRONG_OPERATION = "An error occurred while performing the operation";
 
-  public static final String BAD_REQUEST = "Bad Request";
+  public static final String BAD_REQUEST = "Invalid request: incorrect parameters or missing required fields";
 
   public static final String ID_PROVIDED_ON_CREATE = "The ID should not be provided when creating a new entity";
 
@@ -28,7 +28,7 @@ public class GenericResponseConstants {
 
   public static final String NOT_FOUND = "The resource ID does not exist in the database";
 
-  public static final String ERROR_INTERNAL = "Internal Server Error";
+  public static final String ERROR_INTERNAL = "An unexpected internal server error occurred. Please try again later or contact support.";
 
   public static final String UNAVAILABLE_SERVICE = "The service is not available, please try again later.";
 
@@ -49,4 +49,23 @@ public class GenericResponseConstants {
   public static final String COMMA = ", ";
 
   public static final String SPACE = " ";
+
+  // Numbers of the generic error codes
+  public static final int APPMIC_COMMONS_ERROR_CODE = 10;
+
+  public static final int APPMIC_AUTH_ERROR_CODE = 20;
+
+  public static final int APPMIC_CATALOGS_ERROR_CODE = 30;
+
+  public static final int APPMIC_CUSTOMERS_ERROR_CODE = 40;
+
+  public static final int APPMIC_EMPLOYEES_ERROR_CODE = 50;
+
+  public static final int APPMIC_MATERIALS_ERROR_CODE = 60;
+
+  public static final int APPMIC_MODULES_ERROR_CODE = 70;
+
+  public static final int APPMIC_QUOTING_ERROR_CODE = 80;
+
+  public static final int APPMIC_REPORTS_ERROR_CODE = 90;
 }

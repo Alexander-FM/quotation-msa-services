@@ -9,7 +9,7 @@ import com.codesoft.exception.BaseException;
 import com.codesoft.utils.BaseErrorMessage;
 import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.GenericResponseUtils;
-import com.codesoft.utils.ValidateInputObject;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/employees")
+@RequestMapping("/api/employees/employee")
 @RequiredArgsConstructor
 public class EmployeeController {
 
@@ -35,35 +35,33 @@ public class EmployeeController {
   public ResponseEntity<GenericResponse<List<EmployeeResponseDto>>> retrieve() {
     final List<EmployeeResponseDto> employees = employeeService.findAll();
     return ResponseEntity.status(HttpStatus.OK)
-        .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, employees));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, employees));
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<GenericResponse<EmployeeResponseDto>> retrieveById(@PathVariable(value = "id") final Integer id) {
     final EmployeeResponseDto employees = employeeService.findById(id);
     return ResponseEntity.status(HttpStatus.OK)
-        .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, employees));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, employees));
   }
 
   @PostMapping
-  public ResponseEntity<GenericResponse<EmployeeResponseDto>> create(@RequestBody final EmployeeRequestDto requestDto) {
-    ValidateInputObject.validRequestDto(requestDto);
+  public ResponseEntity<GenericResponse<EmployeeResponseDto>> create(@Valid @RequestBody final EmployeeRequestDto requestDto) {
     final EmployeeResponseDto responseDto = this.employeeService.create(requestDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, responseDto));
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<GenericResponse<EmployeeResponseDto>> update(@PathVariable(value = "id") final Integer id,
-      @RequestBody final EmployeeRequestDto requestDto) {
+    @Valid @RequestBody final EmployeeRequestDto requestDto) {
     if (id == null || id <= 0) {
       throw new BaseException(BaseErrorMessage.BAD_REQUEST);
     }
     final EmployeeResponseDto existing = employeeService.findById(id);
     if (ObjectUtils.isNotEmpty(existing)) {
-      ValidateInputObject.validRequestDto(requestDto);
       requestDto.setId(existing.getId());
       return ResponseEntity.status(HttpStatus.OK)
-          .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, this.employeeService.create(requestDto)));
+        .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, this.employeeService.create(requestDto)));
     } else {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(GenericResponseUtils.buildGenericResponseError(StringUtils.EMPTY, null));
     }
@@ -73,6 +71,6 @@ public class EmployeeController {
   public ResponseEntity<GenericResponse<Object>> delete(@PathVariable(value = "id") final Integer id) {
     this.employeeService.deleteById(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
-        .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, null));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, null));
   }
 }

@@ -14,6 +14,7 @@ import com.codesoft.employees.user.dto.response.UserResponseDto;
 import com.codesoft.employees.user.mapper.UserFieldsMapper;
 import com.codesoft.employees.user.model.entity.UserEntity;
 import com.codesoft.employees.user.repository.UserRepository;
+import com.codesoft.employees.user.utils.UserMessageEnum;
 import com.codesoft.exception.BaseException;
 import com.codesoft.utils.BaseErrorMessage;
 import lombok.RequiredArgsConstructor;
@@ -46,13 +47,13 @@ public class UserServiceImpl implements UserService {
   public UserResponseDto findById(final Integer id) {
     final Optional<UserEntity> entity = this.userRepository.findById(id);
     return entity.map(this.userFieldsMapper::toDto)
-        .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
+      .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
   }
 
   @Override
   public UserResponseDto create(final UserRequestDto requestDto) {
     Set<RoleEntity> roles =
-        new HashSet<>(this.roleRepository.findAllById(requestDto.getRoles().stream().map(RoleRequestDto::getId).toList()));
+      new HashSet<>(this.roleRepository.findAllById(requestDto.getRoles().stream().map(RoleRequestDto::getId).toList()));
     requestDto.setRoles(this.roleFieldsMapper.toRequestDtoSet(roles));
     final UserEntity entity = this.userRepository.save(this.userFieldsMapper.toEntity(requestDto));
     return this.userFieldsMapper.toDto(entity);
@@ -61,26 +62,36 @@ public class UserServiceImpl implements UserService {
   @Override
   public void deleteById(final Integer id) {
     final UserEntity existingEntity = this.userRepository.findById(id)
-        .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
+      .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
     this.userRepository.deleteById(existingEntity.getId());
   }
 
   @Override
   public UserResponseDto findByUsername(final String username, final String password) {
     final UserEntity response = this.userRepository.findByUsername(username)
-        .orElseThrow(() -> {
-          log.error("MessageLog: {}", "User not found");
-          return new BaseException(BaseErrorMessage.NOT_FOUND);
-        });
-
+      .orElseThrow(() -> new BaseException(UserMessageEnum.USER_NOT_FOUND));
     final boolean inactive = !response.getIsActive();
     final boolean passwordMatches = !passwordEncoder.matches(password, response.getPassword());
-
-    if (inactive || passwordMatches) {
+    if (inactive) {
       log.error("MessageLog: {}", "User not found or inactive");
-      throw new BaseException(BaseErrorMessage.NOT_FOUND);
+      throw new BaseException(UserMessageEnum.USER_NOT_ACTIVE);
     }
-    log.info("MessageLog: {}", "User found");
+    if (passwordMatches) {
+      log.error("MessageLog: {}", "Password does not match");
+      throw new BaseException(UserMessageEnum.USER_INCORRECT_PASSWORD);
+    }
+    return this.userFieldsMapper.toDto(response);
+  }
+
+  @Override
+  public UserResponseDto findByUsername(final String username) {
+    final UserEntity response = this.userRepository.findByUsername(username)
+      .orElseThrow(() -> new BaseException(UserMessageEnum.USER_NOT_FOUND));
+    final boolean inactive = !response.getIsActive();
+    if (inactive) {
+      log.error("Intento de refresh token con usuario inactivo: {}", username);
+      throw new BaseException(UserMessageEnum.USER_NOT_ACTIVE);
+    }
     return this.userFieldsMapper.toDto(response);
   }
 }
