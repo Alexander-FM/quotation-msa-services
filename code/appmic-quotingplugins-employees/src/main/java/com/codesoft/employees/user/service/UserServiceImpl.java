@@ -70,10 +70,8 @@ public class UserServiceImpl implements UserService {
   public UserResponseDto findByUsername(final String username, final String password) {
     final UserEntity response = this.userRepository.findByUsername(username)
       .orElseThrow(() -> new BaseException(UserMessageEnum.USER_NOT_FOUND));
-
     final boolean inactive = !response.getIsActive();
     final boolean passwordMatches = !passwordEncoder.matches(password, response.getPassword());
-
     if (inactive) {
       log.error("MessageLog: {}", "User not found or inactive");
       throw new BaseException(UserMessageEnum.USER_NOT_ACTIVE);
@@ -81,6 +79,18 @@ public class UserServiceImpl implements UserService {
     if (passwordMatches) {
       log.error("MessageLog: {}", "Password does not match");
       throw new BaseException(UserMessageEnum.USER_INCORRECT_PASSWORD);
+    }
+    return this.userFieldsMapper.toDto(response);
+  }
+
+  @Override
+  public UserResponseDto findByUsername(final String username) {
+    final UserEntity response = this.userRepository.findByUsername(username)
+      .orElseThrow(() -> new BaseException(UserMessageEnum.USER_NOT_FOUND));
+    final boolean inactive = !response.getIsActive();
+    if (inactive) {
+      log.error("Intento de refresh token con usuario inactivo: {}", username);
+      throw new BaseException(UserMessageEnum.USER_NOT_ACTIVE);
     }
     return this.userFieldsMapper.toDto(response);
   }

@@ -15,7 +15,6 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -36,14 +35,6 @@ public class GlobalExceptionHandler {
     final String message = "An unexpected internal error occurred. The support team has been notified.";
     log.error("Exception: {}", ex.getMessage(), ex);
     return GenericResponseUtils.buildGenericResponseError("Internal Server Error", message);
-  }
-
-  @ExceptionHandler(DataIntegrityViolationException.class)
-  @ResponseStatus(code = HttpStatus.CONFLICT)
-  public GenericResponse<Object> dataIntegrityViolationException(final DataIntegrityViolationException ex) {
-    final String message = "Conflict error. A record with this data already exists, or a data restriction was violated.";
-    log.error("DataIntegrityViolationException: {}", ex.getMostSpecificCause().getMessage());
-    return GenericResponseUtils.buildGenericResponseError("Duplicate Data", message);
   }
 
   @ExceptionHandler(ConstraintViolationException.class)

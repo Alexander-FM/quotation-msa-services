@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class BaseException extends RuntimeException {
 
-  private final IErrorCode errorCodeInterface;
+  private final transient IErrorCode errorCodeInterface;
 
   public BaseException(final IErrorCode errorCodeInterface) {
     super(errorCodeInterface.getErrorMessage());

@@ -16,4 +16,7 @@ public interface UserService {
   void deleteById(final Integer id);
 
   UserResponseDto findByUsername(final String username, final String password);
+
+  UserResponseDto findByUsername(final String username);
+
 }

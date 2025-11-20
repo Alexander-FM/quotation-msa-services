@@ -3,11 +3,11 @@ package com.codesoft.service;
 import java.util.Objects;
 
 import com.codesoft.dto.UserResponseDto;
-import com.codesoft.exception.AuthException;
 import com.codesoft.exception.AuthMessageEnum;
-import com.codesoft.exception.BaseException;
-import com.codesoft.utils.BaseErrorMessage;
+import com.codesoft.utils.AuthConstants;
 import com.codesoft.utils.GenericResponse;
+import com.codesoft.utils.WebClientErrorHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -17,7 +17,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -30,17 +29,22 @@ public class UserServiceImpl implements UserService {
 
   private final Environment env;
 
-  public UserServiceImpl(final WebClient.Builder loadBalancedWebClientBuilder, final WebClient simpleWebClient, final Environment env) {
+  private final ObjectMapper objectMapper;
+
+  public UserServiceImpl(final WebClient.Builder loadBalancedWebClientBuilder, final WebClient simpleWebClient, final Environment env,
+    final ObjectMapper objectMapper) {
     this.loadBalancedWebClientBuilder = loadBalancedWebClientBuilder;
     this.simpleWebClient = simpleWebClient;
     this.env = env;
+    this.objectMapper = objectMapper;
   }
 
   @Override
   public UserResponseDto validateUser(final String username, final String password) {
     try {
       final WebClient client = getWebClient();
-      final String uri = env.getProperty("MS_MAINTENANCE_NAME", "http://127.0.0.1:8082/api/employees/user/login");
+      final String uri =
+        env.getProperty(AuthConstants.MS_AUTH_SERVICE, "http://127.0.0.1:8082/api/employees/user/loginByUsernameAndPassword");
       final GenericResponse<UserResponseDto> userResponseDto = client.get()
         .uri(uri, uriBuilder -> uriBuilder
           .queryParam("username", username)
@@ -54,21 +58,38 @@ public class UserServiceImpl implements UserService {
       if (Objects.nonNull(userResponseDto) && ObjectUtils.isNotEmpty(userResponseDto.getBody())) {
         return userResponseDto.getBody();
       }
-      throw new BaseException(BaseErrorMessage.NOT_FOUND);
-    } catch (final WebClientRequestException ex) {
-      log.error("Servicio de empleados no disponible (connection refused): {}", ex.getMessage());
-      throw new AuthException(AuthMessageEnum.AUTH_EMPLOYEE_SERVICE_UNAVAILABLE);
-    } catch (final BaseException ex) {
-      throw ex;
+      return null;
     } catch (final Exception ex) {
-      log.error("Exception: {}", ex.getMessage());
-      throw new BaseException(BaseErrorMessage.ERROR_INTERNAL);
+      throw WebClientErrorHandler.handle(ex, objectMapper, AuthMessageEnum.AUTH_EMPLOYEE_SERVICE_UNAVAILABLE);
+    }
+  }
+
+  @Override
+  public UserResponseDto findByUsername(String username) {
+    try {
+      final WebClient client = getWebClient();
+      final String uri = env.getProperty(AuthConstants.MS_AUTH_SERVICE, "http://127.0.0.1:8082/api/employees/user/loginByUsername");
+      final GenericResponse<UserResponseDto> userResponseDto = client.get()
+        .uri(uri, uriBuilder -> uriBuilder
+          .queryParam("username", username) // Solo enviamos username
+          .build())
+        .accept(MediaType.APPLICATION_JSON)
+        .retrieve()
+        .bodyToMono(new ParameterizedTypeReference<GenericResponse<UserResponseDto>>() {
+        })
+        .block();
+      if (Objects.nonNull(userResponseDto) && ObjectUtils.isNotEmpty(userResponseDto.getBody())) {
+        return userResponseDto.getBody();
+      }
+      return null;
+    } catch (final Exception ex) {
+      throw WebClientErrorHandler.handle(ex, objectMapper, AuthMessageEnum.AUTH_EMPLOYEE_SERVICE_UNAVAILABLE);
     }
   }
 
   private WebClient getWebClient() {
-    if (StringUtils.isBlank(env.getProperty("MS_MAINTENANCE_NAME"))) {
-      log.info("Using simpleWebClient as MS_MAINTENANCE_NAME is not set.");
+    if (StringUtils.isBlank(env.getProperty(AuthConstants.MS_AUTH_SERVICE))) {
+      log.info("Using simpleWebClient as MS_AUTH_NAME is not set.");
       return simpleWebClient;
     } else {
       log.info("Using loadBalancedWebClient.");

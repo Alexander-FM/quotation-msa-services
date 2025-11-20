@@ -87,10 +87,17 @@ public class UserController {
       .body(GenericResponseUtils.buildGenericResponseSuccess(UserConstants.REMOVED_MESSAGE, null));
   }
 
-  @GetMapping("/login")
+  @GetMapping("/loginByUsernameAndPassword")
   public ResponseEntity<GenericResponse<UserResponseDto>> loginByUsername(@RequestParam(name = "username") final String username,
     @RequestParam(name = "password") final String password) {
     final UserResponseDto response = this.userService.findByUsername(username, password);
+    return ResponseEntity.status(HttpStatus.OK)
+      .body(GenericResponseUtils.buildGenericResponseSuccess(UserConstants.FOUND_MESSAGE, response));
+  }
+
+  @GetMapping("/loginByUsername")
+  public ResponseEntity<GenericResponse<UserResponseDto>> loginByUsername(@RequestParam(name = "username") final String username) {
+    final UserResponseDto response = this.userService.findByUsername(username);
     return ResponseEntity.status(HttpStatus.OK)
       .body(GenericResponseUtils.buildGenericResponseSuccess(UserConstants.FOUND_MESSAGE, response));
   }

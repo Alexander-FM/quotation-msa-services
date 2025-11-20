@@ -15,6 +15,7 @@ import com.codesoft.utils.GenericResponseConstants;
 import com.codesoft.utils.GenericResponseUtils;
 import com.codesoft.utils.JwtConstants;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletResponse;
@@ -67,27 +68,10 @@ public class AuthController {
       throw new BaseException(BaseErrorMessage.BAD_REQUEST);
     }
     final UserResponseDto user = userService.validateUser(loginRequest.username(), loginRequest.password());
-    if (ObjectUtils.isEmpty(user) || Boolean.TRUE.equals(!user.getIsActive())) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-        GenericResponseUtils.buildGenericResponseWarning(JwtConstants.INVALID_USER, null));
-    }
-    final List<String> roles = user.getRoles().stream()
-      .map(RoleResponseDto::getRoleName)
-      .toList();
-    final Claims claims = Jwts.claims()
-      .add("username", user.getUsername())
-      .add("roles", roles)
-      .build();
-    final String token = Jwts.builder()
-      .subject(user.getUsername())
-      .claims(claims)
-      .issuedAt(new Date())
-      .expiration(new Date(System.currentTimeMillis() + 3600000)) // 1 hora
-      .signWith(getSecretKey())
-      .compact();
-    httpServletResponse.addHeader(GenericResponseConstants.HEADER_AUTHORIZATION, token);
+    final TokenResponse tokenResponse = buildTokenResponse(user, null);
+    httpServletResponse.addHeader(GenericResponseConstants.HEADER_AUTHORIZATION, tokenResponse.getAccessToken());
     return ResponseEntity.ok(
-      GenericResponseUtils.buildGenericResponseSuccess(JwtConstants.GENERATED_TOKEN, new TokenResponse(token, user.getUsername())));
+      GenericResponseUtils.buildGenericResponseSuccess(JwtConstants.GENERATED_TOKEN, tokenResponse));
   }
 
   @PostMapping("/validate")
@@ -108,5 +92,78 @@ public class AuthController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
         .body(GenericResponseUtils.buildGenericResponseError(JwtConstants.INVALID_TOKEN, null));
     }
+  }
+
+  @PostMapping("/refresh")
+  public ResponseEntity<GenericResponse<TokenResponse>> refresh(
+    @RequestHeader(GenericResponseConstants.HEADER_AUTHORIZATION) final String authHeader) {
+    if (authHeader == null || !authHeader.startsWith(GenericResponseConstants.PREFIX_TOKEN)) {
+      throw new BaseException(BaseErrorMessage.UNAUTHORIZED);
+    }
+    final String refreshToken = StringUtils.substring(authHeader, GenericResponseConstants.PREFIX_TOKEN.length());
+    try {
+      // 1. Validar el Refresh Token
+      Claims claims = Jwts.parser()
+        .verifyWith(getSecretKey())
+        .build()
+        .parseSignedClaims(refreshToken)
+        .getPayload();
+      final String username = claims.getSubject();
+      // 2. Buscar usuario en BD (Válida si está activo y trae roles frescos)
+      final UserResponseDto userFresh = userService.findByUsername(username);
+      // 3. Generar nuevos tokens
+      final TokenResponse tokenResponse = buildTokenResponse(userFresh, refreshToken);
+
+      return ResponseEntity.ok(GenericResponseUtils.buildGenericResponseSuccess(JwtConstants.REFRESH_TOKEN_SUCCESS, tokenResponse));
+    } catch (JwtException e) {
+      log.warn("Refresh token inválido o expirado para el usuario. Error: {}", e.getMessage());
+      throw new BaseException(BaseErrorMessage.UNAUTHORIZED);
+    }
+  }
+
+  private TokenResponse buildTokenResponse(final UserResponseDto user, final String existingRefreshToken) {
+    Date now = new Date();
+    Date accessValidity = new Date(now.getTime() + JwtConstants.ACCESS_TOKEN_VALIDITY);
+
+    final List<String> roles = user.getRoles().stream()
+      .map(RoleResponseDto::getRoleName)
+      .toList();
+
+    // 1. Crear SIEMPRE un nuevo Access Token
+    final Claims accessClaims = Jwts.claims()
+      .add("username", user.getUsername())
+      .add("roles", roles)
+      .build();
+
+    String accessToken = Jwts.builder()
+      .subject(user.getUsername())
+      .claims(accessClaims)
+      .issuedAt(now)
+      .expiration(accessValidity)
+      .signWith(getSecretKey())
+      .compact();
+
+    // 2. Decidir sobre el Refresh Token
+    String refreshToken;
+    if (StringUtils.isNotBlank(existingRefreshToken)) {
+      // Estamos en flujo de REFRESH: Devolvemos el mismo que nos enviaron
+      refreshToken = existingRefreshToken;
+    } else {
+      // Estamos en flujo de LOGIN: Creamos uno nuevo
+      Date refreshValidity = new Date(now.getTime() + JwtConstants.REFRESH_TOKEN_VALIDITY);
+      refreshToken = Jwts.builder()
+        .subject(user.getUsername())
+        .issuedAt(now)
+        .expiration(refreshValidity)
+        .signWith(getSecretKey())
+        .compact();
+    }
+    return TokenResponse.builder()
+      .accessToken(accessToken)
+      .refreshToken(refreshToken)
+      .expiresIn(JwtConstants.ACCESS_TOKEN_VALIDITY) // Devuelve la duración del access token
+      .issuedAt(now.toString())
+      .username(user.getUsername())
+      .build();
   }
 }

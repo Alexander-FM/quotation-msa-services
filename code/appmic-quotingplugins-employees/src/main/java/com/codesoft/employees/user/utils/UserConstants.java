@@ -6,7 +6,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserConstants {
 
-  public static final String NOT_FOUND_IN_DB_MESSAGE = "User not found in database";
+  public static final String USER_NOT_FOUND_IN_DB_MESSAGE = "User not found in database";
+
+  public static final String USER_NOT_ACTIVE_MESSAGE = "User found successfully, but is not active";
+
+  public static final String USER_INCORRECT_PASSWORD_MESSAGE = "User found successfully, but password does not match";
 
   public static final String FOUND_MESSAGE = "User found successfully";
 
@@ -17,10 +21,4 @@ public class UserConstants {
   public static final String REMOVED_MESSAGE = "User removed successfully";
 
   public static final String FIND_ERROR_MESSAGE = "An error occurred while finding the user";
-
-  public static final String SAVE_ERROR_MESSAGE = "An error occurred while saving the user";
-
-  public static final String UPDATE_ERROR_MESSAGE = "An error occurred while updating the user";
-
-  public static final String DELETE_ERROR_MESSAGE = "An error occurred while deleting the user";
 }
