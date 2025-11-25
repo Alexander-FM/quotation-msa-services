@@ -23,6 +23,10 @@
 
   <dependencies>
     <dependency>
+      <artifactId>appmic-quotingplugins-commons</artifactId>
+      <groupId>${project.groupId}</groupId>
+    </dependency>
+    <dependency>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
       <groupId>org.springframework.boot</groupId>
     </dependency>
@@ -52,6 +56,10 @@
       <artifactId>postgresql</artifactId>
       <groupId>org.postgresql</groupId>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <artifactId>hibernate-validator</artifactId>
+      <groupId>org.hibernate.validator</groupId>
     </dependency>
   </dependencies>
   <description>Microservices to manage modules</description>
