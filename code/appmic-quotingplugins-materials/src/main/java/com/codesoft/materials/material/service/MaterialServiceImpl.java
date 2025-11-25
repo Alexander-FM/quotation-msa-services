@@ -23,7 +23,7 @@ public class MaterialServiceImpl implements MaterialService {
 
   @Override
   public List<MaterialResponseDto> findAll() {
-    final List<MaterialEntity> entities = materialRepository.findAll().stream().toList();
+    final List<MaterialEntity> entities = materialRepository.findAll();
     return materialFieldsMapper.toDtoList(entities);
   }
 
@@ -41,9 +41,9 @@ public class MaterialServiceImpl implements MaterialService {
   }
 
   @Override
-  public void deleteById(Integer id) {
-    final MaterialEntity existingEntity = this.materialRepository.findById(id)
+  public void deleteById(final Integer id) {
+    this.materialRepository.findById(id)
         .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
-    this.materialRepository.deleteById(existingEntity.getId());
+    this.materialRepository.deleteById(id);
   }
 }

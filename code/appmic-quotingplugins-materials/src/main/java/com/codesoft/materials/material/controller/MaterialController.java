@@ -11,7 +11,6 @@ import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.GenericResponseUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,13 +60,9 @@ public class MaterialController {
       throw new BaseException(BaseErrorMessage.BAD_REQUEST);
     }
     final MaterialResponseDto existing = materialService.findById(id);
-    if (ObjectUtils.isNotEmpty(existing)) {
-      requestDto.setId(existing.getId());
-      return ResponseEntity.status(HttpStatus.OK)
-        .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, this.materialService.create(requestDto)));
-    } else {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(GenericResponseUtils.buildGenericResponseError(StringUtils.EMPTY, null));
-    }
+    requestDto.setId(existing.getId());
+    return ResponseEntity.status(HttpStatus.OK)
+      .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, this.materialService.create(requestDto)));
   }
 
   @DeleteMapping("/{id}")
