@@ -12,8 +12,6 @@ import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.GenericResponseUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -60,18 +58,14 @@ public class AdjustmentFactorController {
   @PutMapping("/{id}")
   public ResponseEntity<GenericResponse<AdjustmentFactorResponseDto>> update(@PathVariable(value = "id") final Integer id,
     @Valid @RequestBody final AdjustmentFactorRequestDto requestDto) {
-    if (id == null || id <= 0) {
+    if (id <= 0) {
       throw new BaseException(BaseErrorMessage.BAD_REQUEST);
     }
     final AdjustmentFactorResponseDto existing = adjustmentFactorService.findById(id);
-    if (ObjectUtils.isNotEmpty(existing)) {
-      requestDto.setId(existing.getId());
-      return ResponseEntity.status(HttpStatus.OK)
-        .body(GenericResponseUtils.buildGenericResponseSuccess(AdjustmentFactorConstants.UPDATED_MESSAGE,
-          this.adjustmentFactorService.create(requestDto)));
-    } else {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(GenericResponseUtils.buildGenericResponseError(StringUtils.EMPTY, null));
-    }
+    requestDto.setId(existing.getId());
+    return ResponseEntity.status(HttpStatus.OK)
+      .body(GenericResponseUtils.buildGenericResponseSuccess(AdjustmentFactorConstants.UPDATED_MESSAGE,
+        this.adjustmentFactorService.create(requestDto)));
   }
 
   @DeleteMapping("/{id}")

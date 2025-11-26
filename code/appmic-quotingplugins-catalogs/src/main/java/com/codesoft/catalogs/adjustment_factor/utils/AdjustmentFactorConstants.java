@@ -21,4 +21,6 @@ public class AdjustmentFactorConstants {
   public static final String UPDATE_ERROR_MESSAGE = "An error occurred while updating the adjustment factor";
 
   public static final String DELETE_ERROR_MESSAGE = "An error occurred while deleting the adjustment factor";
+
+  public static final int ADJUSTMENT_FACTOR_ERROR_CODE = 31;
 }

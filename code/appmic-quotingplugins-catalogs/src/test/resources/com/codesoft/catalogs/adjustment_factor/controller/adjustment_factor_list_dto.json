@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "name": "Factor Poliestireno",
+    "value": 1.05,
+    "isActive": true
+  },
+  {
+    "id": 2,
+    "name": "Factor Cartón",
+    "value": 1.04,
+    "isActive": true
+  }
+]
