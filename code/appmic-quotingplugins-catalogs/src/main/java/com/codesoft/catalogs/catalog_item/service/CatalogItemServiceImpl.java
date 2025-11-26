@@ -31,14 +31,14 @@ public class CatalogItemServiceImpl implements CatalogItemService {
   public CatalogItemResponseDto findById(final Integer id) {
     final Optional<CatalogItemEntity> entityOptional = this.catalogItemRepository.findById(id);
     return entityOptional.map(this.catalogItemFieldsMapper::toDto)
-        .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
+      .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
   }
 
   @Override
   public CatalogItemResponseDto findByCode(final String code) {
     final Optional<CatalogItemEntity> entityOptional = this.catalogItemRepository.findByCodeAndIsActiveTrue(code);
     return entityOptional.map(this.catalogItemFieldsMapper::toDto)
-        .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
+      .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
   }
 
   @Override
@@ -48,9 +48,9 @@ public class CatalogItemServiceImpl implements CatalogItemService {
   }
 
   @Override
-  public void deleteById(Integer id) {
+  public void deleteById(final Integer id) {
     final CatalogItemEntity existingEntity = this.catalogItemRepository.findById(id)
-        .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
+      .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
     this.catalogItemRepository.deleteById(existingEntity.getId());
   }
 }

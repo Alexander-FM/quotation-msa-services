@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -94,7 +93,7 @@ public class GlobalExceptionHandler {
       }
     }
     return new ResponseEntity<>(
-      GenericResponseUtils.buildGenericResponseError("Malformed JSON Request", "The request body is invalid or cannot be parsed."),
+      GenericResponseUtils.buildGenericResponseWarning("Malformed JSON Request", "The request body is invalid or cannot be parsed."),
       HttpStatus.BAD_REQUEST
     );
   }
@@ -104,7 +103,7 @@ public class GlobalExceptionHandler {
     log.warn("BaseException: {}", ex.getMessage());
     IErrorCode error = ex.getErrorCodeInterface();
     HttpStatus status = error.getHttpStatus();
-    return new ResponseEntity<>(GenericResponseUtils.buildGenericResponseError(StringUtils.EMPTY,
+    return new ResponseEntity<>(GenericResponseUtils.buildGenericResponseError(
       new ErrorResponse(error.getErrorCode(), error.getErrorMessage())), status);
   }
 }
