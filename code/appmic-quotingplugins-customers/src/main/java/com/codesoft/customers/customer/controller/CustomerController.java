@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.codesoft.customers.customer.dto.request.CustomerRequestDto;
 import com.codesoft.customers.customer.dto.response.CustomerResponseDto;
+import com.codesoft.customers.customer.exception.CustomerException;
+import com.codesoft.customers.customer.exception.CustomerMessage;
 import com.codesoft.customers.customer.service.CustomerService;
-import com.codesoft.exception.BaseException;
-import com.codesoft.utils.BaseErrorMessage;
 import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.GenericResponseUtils;
 import jakarta.validation.Valid;
@@ -55,7 +55,7 @@ public class CustomerController {
   public ResponseEntity<GenericResponse<CustomerResponseDto>> update(@PathVariable(value = "id") final Integer id,
     @Valid @RequestBody final CustomerRequestDto requestDto) {
     if (id == null || id <= 0) {
-      throw new BaseException(BaseErrorMessage.BAD_REQUEST);
+      throw new CustomerException(CustomerMessage.CUSTOMER_NOT_FOUND);
     }
     final CustomerResponseDto existing = customerService.findById(id);
     if (ObjectUtils.isNotEmpty(existing)) {

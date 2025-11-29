@@ -13,19 +13,17 @@ public class CustomerResponseDto {
 
   private Integer id;
 
-  private String fullName;
+  private String companyName;
 
   private String documentTypeCode;
 
   private String documentNumber;
 
+  private String email;
+
   private String phoneNumber;
 
   private String phoneNumber2;
-
-  private String email;
-
-  private String streetAddress;
 
   private Boolean isActive;
 }

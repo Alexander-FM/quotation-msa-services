@@ -15,7 +15,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(
     name = "customers",
-    uniqueConstraints = @UniqueConstraint(name = "customers_document_number", columnNames = "document_number")
+    uniqueConstraints = {
+        @UniqueConstraint(name = "customers_company_name", columnNames = "company_name"),
+        @UniqueConstraint(name = "customers_document_number", columnNames = "document_number")
+    }
 )
 @Data
 @AllArgsConstructor
@@ -23,12 +26,12 @@ import lombok.NoArgsConstructor;
 public class CustomerEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customers_seq")
-  @SequenceGenerator(name = "customers_seq", sequenceName = "customers_seq", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customers_id_seq")
+  @SequenceGenerator(name = "customers_id_seq", sequenceName = "customers_id_seq", allocationSize = 1)
   private Integer id;
 
-  @Column(name = "fullname", nullable = false)
-  private String fullName;
+  @Column(name = "company_name", nullable = false, unique = true)
+  private String companyName;
 
   @Column(name = "document_type_code", nullable = false, length = 20)
   private String documentTypeCode;
@@ -36,17 +39,14 @@ public class CustomerEntity {
   @Column(name = "document_number", nullable = false, length = 20, unique = true)
   private String documentNumber;
 
-  @Column(name = "phone_number", nullable = false, length = 9)
-  private String phoneNumber;
-
-  @Column(name = "phone_number2", length = 9)
-  private String phoneNumber2;
-
-  @Column(name = "email")
+  @Column(name = "email", nullable = false)
   private String email;
 
-  @Column(name = "street_address", nullable = false)
-  private String streetAddress;
+  @Column(name = "phoneNumber", nullable = false, length = 20)
+  private String phoneNumber;
+
+  @Column(name = "phoneNumber2", length = 20)
+  private String phoneNumber2;
 
   @Column(name = "is_active", nullable = false)
   private Boolean isActive;
