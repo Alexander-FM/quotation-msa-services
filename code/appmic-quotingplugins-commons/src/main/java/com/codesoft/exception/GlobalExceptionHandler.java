@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.codesoft.utils.ErrorResponse;
 import com.codesoft.utils.GenericResponse;
+import com.codesoft.utils.GenericResponseConstants;
 import com.codesoft.utils.GenericResponseUtils;
 import com.codesoft.utils.IErrorCode;
 import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
@@ -93,9 +94,7 @@ public class GlobalExceptionHandler {
       }
     }
     return new ResponseEntity<>(
-      GenericResponseUtils.buildGenericResponseWarning("Malformed JSON Request", "The request body is invalid or cannot be parsed."),
-      HttpStatus.BAD_REQUEST
-    );
+      GenericResponseUtils.buildGenericResponseWarning(GenericResponseConstants.BAD_REQUEST_MESSAGE), HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(BaseException.class)

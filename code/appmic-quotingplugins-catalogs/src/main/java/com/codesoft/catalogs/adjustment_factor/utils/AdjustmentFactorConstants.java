@@ -14,13 +14,9 @@ public class AdjustmentFactorConstants {
 
   public static final String REMOVED_MESSAGE = "Adjustment factor removed successfully";
 
-  public static final String FIND_ERROR_MESSAGE = "An error occurred while finding the adjustment factor";
+  public static final String NOT_FOUND_MESSAGE = "The adjustment factor has not been found in the database.";
 
-  public static final String SAVE_ERROR_MESSAGE = "An error occurred while saving the adjustment factor";
-
-  public static final String UPDATE_ERROR_MESSAGE = "An error occurred while updating the adjustment factor";
-
-  public static final String DELETE_ERROR_MESSAGE = "An error occurred while deleting the adjustment factor";
+  public static final String ALREADY_EXISTS_MESSAGE = "The adjustment factor already exists in the database.";
 
   public static final int ADJUSTMENT_FACTOR_ERROR_CODE = 31;
 }
