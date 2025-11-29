@@ -13,9 +13,9 @@ import java.util.List;
 
 import com.codesoft.catalogs.adjustment_factor.dto.request.AdjustmentFactorRequestDto;
 import com.codesoft.catalogs.adjustment_factor.dto.response.AdjustmentFactorResponseDto;
+import com.codesoft.catalogs.adjustment_factor.exception.AdjustmentFactorException;
+import com.codesoft.catalogs.adjustment_factor.exception.AdjustmentFactorMessageEnum;
 import com.codesoft.catalogs.adjustment_factor.service.AdjustmentFactorService;
-import com.codesoft.exception.BaseException;
-import com.codesoft.utils.BaseErrorMessage;
 import com.codesoft.utils.TestUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,11 +86,12 @@ class AdjustmentFactorControllerTests {
 
   @Test
   void retrieveByIdAdjustmentFactorsErrorTest() throws Exception {
-    when(this.adjustmentFactorService.findById(10)).thenThrow(new BaseException(BaseErrorMessage.NOT_FOUND));
+    when(this.adjustmentFactorService.findById(10)).thenThrow(
+      new AdjustmentFactorException(AdjustmentFactorMessageEnum.ADJUSTMENT_FACTOR_NOT_FOUND));
     mockMvc.perform(get("/api/catalogs/adjustment-factor/10"))
       .andExpect(status().isNotFound())
-      .andExpect(jsonPath("$.body.errorCode")
-        .value(10404001)).andReturn();
+      .andExpect(jsonPath("$.body.code")
+        .value(31404001)).andReturn();
   }
 
   @Test
@@ -138,13 +139,14 @@ class AdjustmentFactorControllerTests {
 
   @Test
   void updateAdjustmentFactorWhenIdNotExistErrorTest() throws Exception {
-    when(this.adjustmentFactorService.findById(999)).thenThrow(new BaseException(BaseErrorMessage.NOT_FOUND));
+    when(this.adjustmentFactorService.findById(999)).thenThrow(
+      new AdjustmentFactorException(AdjustmentFactorMessageEnum.ADJUSTMENT_FACTOR_NOT_FOUND));
 
     mockMvc.perform(MockMvcRequestBuilders.put("/api/catalogs/adjustment-factor/999")
         .contentType(MediaType.APPLICATION_JSON)
         .content(this.objectMapper.writeValueAsString(this.adjustmentFactorRequestDto)))
       .andExpect(status().isNotFound())
-      .andExpect(jsonPath("$.body.errorCode").value(10404001))
+      .andExpect(jsonPath("$.body.code").value(31404001))
       .andReturn();
   }
 
@@ -168,11 +170,12 @@ class AdjustmentFactorControllerTests {
 
   @Test
   void deleteAdjustmentFactorNotFoundErrorTest() throws Exception {
-    doThrow(new BaseException(BaseErrorMessage.NOT_FOUND)).when(adjustmentFactorService).deleteById(10);
+    doThrow(new AdjustmentFactorException(AdjustmentFactorMessageEnum.ADJUSTMENT_FACTOR_NOT_FOUND)).when(adjustmentFactorService)
+      .deleteById(10);
 
     mockMvc.perform(MockMvcRequestBuilders.delete("/api/catalogs/adjustment-factor/10"))
       .andExpect(status().isNotFound())
-      .andExpect(jsonPath("$.body.errorCode").value(10404001))
+      .andExpect(jsonPath("$.body.code").value(31404001))
       .andReturn();
   }
 

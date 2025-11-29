@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     try {
       final WebClient client = getWebClient();
       final String uri =
-        env.getProperty(AuthConstants.MS_AUTH_SERVICE, "http://127.0.0.1:8082/api/employees/user/loginByUsernameAndPassword");
+        env.getProperty(AuthConstants.MS_AUTH_SERVICE, AuthConstants.PORT_API_EMPLOYEE_USER_SERVICE);
       final GenericResponse<UserResponseDto> userResponseDto = client.get()
         .uri(uri, uriBuilder -> uriBuilder
           .queryParam("username", username)
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
   public UserResponseDto findByUsername(String username) {
     try {
       final WebClient client = getWebClient();
-      final String uri = env.getProperty(AuthConstants.MS_AUTH_SERVICE, "http://127.0.0.1:8082/api/employees/user/loginByUsername");
+      final String uri = env.getProperty(AuthConstants.MS_AUTH_SERVICE, AuthConstants.PORT_API_EMPLOYEE_USER_SERVICE);
       final GenericResponse<UserResponseDto> userResponseDto = client.get()
         .uri(uri, uriBuilder -> uriBuilder
           .queryParam("username", username) // Solo enviamos username
@@ -89,10 +89,10 @@ public class UserServiceImpl implements UserService {
 
   private WebClient getWebClient() {
     if (StringUtils.isBlank(env.getProperty(AuthConstants.MS_AUTH_SERVICE))) {
-      log.info("Using simpleWebClient as MS_AUTH_NAME is not set.");
+      log.info("El uso de un cliente web simple como MS_AUTH_SERVICE no está configurado.");
       return simpleWebClient;
     } else {
-      log.info("Using loadBalancedWebClient.");
+      log.info("Usando el WebClient del balanceador de carga.");
       return loadBalancedWebClientBuilder.build();
     }
   }

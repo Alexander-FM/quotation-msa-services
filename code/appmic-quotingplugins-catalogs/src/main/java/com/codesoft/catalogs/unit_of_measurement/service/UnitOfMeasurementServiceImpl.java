@@ -5,12 +5,13 @@ import java.util.Optional;
 
 import com.codesoft.catalogs.unit_of_measurement.dto.request.UnitOfMeasurementRequestDto;
 import com.codesoft.catalogs.unit_of_measurement.dto.response.UnitOfMeasurementResponseDto;
+import com.codesoft.catalogs.unit_of_measurement.exception.UnitOfMeasurementException;
+import com.codesoft.catalogs.unit_of_measurement.exception.UnitOfMeasurementMessage;
 import com.codesoft.catalogs.unit_of_measurement.mapper.UnitOfMeasurementFieldsMapper;
 import com.codesoft.catalogs.unit_of_measurement.model.entity.UnitOfMeasurementEntity;
 import com.codesoft.catalogs.unit_of_measurement.repository.UnitOfMeasurementRepository;
-import com.codesoft.exception.BaseException;
-import com.codesoft.utils.BaseErrorMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,7 +32,7 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
   public UnitOfMeasurementResponseDto findById(final Integer id) {
     final Optional<UnitOfMeasurementEntity> entityOptional = this.unitOfMeasurementRepository.findById(id);
     return entityOptional.map(this.unitOfMeasurementFieldsMapper::toDto)
-      .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
+      .orElseThrow(() -> new UnitOfMeasurementException(UnitOfMeasurementMessage.CATALOG_ITEM_NOT_FOUND));
   }
 
   @Override
@@ -39,19 +40,23 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
     final Optional<UnitOfMeasurementEntity> entityOptional =
       this.unitOfMeasurementRepository.findByNameContainingIgnoreCase(name);
     return entityOptional.map(this.unitOfMeasurementFieldsMapper::toDto)
-      .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
+      .orElseThrow(() -> new UnitOfMeasurementException(UnitOfMeasurementMessage.CATALOG_ITEM_NOT_FOUND));
   }
 
   @Override
   public UnitOfMeasurementResponseDto create(final UnitOfMeasurementRequestDto requestDto) {
-    final UnitOfMeasurementEntity entity = this.unitOfMeasurementRepository.save(this.unitOfMeasurementFieldsMapper.toEntity(requestDto));
-    return this.unitOfMeasurementFieldsMapper.toDto(entity);
+    try {
+      final UnitOfMeasurementEntity entity = this.unitOfMeasurementRepository.save(this.unitOfMeasurementFieldsMapper.toEntity(requestDto));
+      return this.unitOfMeasurementFieldsMapper.toDto(entity);
+    } catch (final DataIntegrityViolationException ex) {
+      throw new UnitOfMeasurementException(UnitOfMeasurementMessage.CATALOG_ITEM_ALREADY_EXISTS);
+    }
   }
 
   @Override
   public void deleteById(final Integer id) {
     final UnitOfMeasurementEntity existingEntity = this.unitOfMeasurementRepository.findById(id)
-      .orElseThrow(() -> new BaseException(BaseErrorMessage.NOT_FOUND));
+      .orElseThrow(() -> new UnitOfMeasurementException(UnitOfMeasurementMessage.CATALOG_ITEM_NOT_FOUND));
     this.unitOfMeasurementRepository.deleteById(existingEntity.getId());
   }
 }

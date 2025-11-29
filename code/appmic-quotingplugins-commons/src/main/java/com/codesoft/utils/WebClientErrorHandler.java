@@ -53,10 +53,9 @@ public class WebClientErrorHandler {
       );
       if (errorResponse != null && errorResponse.getBody() != null) {
         Map<String, Object> errorDetails = errorResponse.getBody();
-        final Integer originalCode = (Integer) errorDetails.get("errorCode");
-        final String originalMessage = (String) errorDetails.get("errorMessage");
+        final Integer originalCode = (Integer) errorDetails.get("code");
+        final String originalMessage = (String) errorDetails.get("message");
         final HttpStatus httpStatus = HttpStatus.valueOf(ex.getStatusCode().value());
-
         return new BaseException(DynamicErrorCode.fromOriginal(originalCode, originalMessage, httpStatus));
       }
     } catch (final Exception parseEx) {

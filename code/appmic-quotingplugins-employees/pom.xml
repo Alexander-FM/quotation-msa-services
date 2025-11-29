@@ -66,6 +66,15 @@
       <artifactId>reactor-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- Spring Cloud Kubernetes -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-kubernetes-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-kubernetes-client-loadbalancer</artifactId>
+    </dependency>
     <!-- PostgreSQL Driver -->
     <dependency>
       <groupId>org.postgresql</groupId>

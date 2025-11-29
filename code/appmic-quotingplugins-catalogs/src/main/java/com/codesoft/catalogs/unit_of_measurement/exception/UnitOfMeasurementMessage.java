@@ -1,4 +1,4 @@
-package com.codesoft.catalogs.catalog_item.exception;
+package com.codesoft.catalogs.unit_of_measurement.exception;
 
 import com.codesoft.catalogs.catalog_item.utils.CatalogItemConstants;
 import com.codesoft.utils.GenericResponseUtils;
@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @RequiredArgsConstructor
-public enum CatalogItemMessage implements IErrorCode {
+public enum UnitOfMeasurementMessage implements IErrorCode {
   CATALOG_ITEM_NOT_FOUND(
     GenericResponseUtils.makeCode(CatalogItemConstants.CATALOG_ITEM_ERROR_CODE, HttpStatus.NOT_FOUND, 1),
     HttpStatus.NOT_FOUND,

@@ -5,6 +5,7 @@ import java.util.List;
 import com.codesoft.catalogs.catalog_item.dto.request.CatalogItemRequestDto;
 import com.codesoft.catalogs.catalog_item.dto.response.CatalogItemResponseDto;
 import com.codesoft.catalogs.catalog_item.service.CatalogItemService;
+import com.codesoft.catalogs.catalog_item.utils.CatalogItemConstants;
 import com.codesoft.exception.BaseException;
 import com.codesoft.utils.BaseErrorMessage;
 import com.codesoft.utils.GenericResponse;
@@ -36,14 +37,14 @@ public class CatalogItemController {
   public ResponseEntity<GenericResponse<List<CatalogItemResponseDto>>> retrieve() {
     final List<CatalogItemResponseDto> responseDtoList = catalogItemService.findAll();
     return ResponseEntity.status(HttpStatus.OK)
-      .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, responseDtoList));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(CatalogItemConstants.FOUND_MESSAGE, responseDtoList));
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<GenericResponse<CatalogItemResponseDto>> retrieveById(@PathVariable(value = "id") final Integer id) {
     final CatalogItemResponseDto responseDto = catalogItemService.findById(id);
     return ResponseEntity.status(HttpStatus.OK)
-      .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, responseDto));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(CatalogItemConstants.FOUND_MESSAGE, responseDto));
   }
 
   @GetMapping("/searchByDocumentTypeCode")
@@ -51,7 +52,7 @@ public class CatalogItemController {
     @RequestParam(name = "code") final String code) {
     final CatalogItemResponseDto responseDto = catalogItemService.findByCode(code);
     return ResponseEntity.status(HttpStatus.OK)
-      .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, responseDto));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(CatalogItemConstants.FOUND_MESSAGE, responseDto));
   }
 
   @PostMapping
@@ -60,7 +61,8 @@ public class CatalogItemController {
       throw new BaseException(BaseErrorMessage.ID_PROVIDED_ON_CREATE);
     }
     final CatalogItemResponseDto responseDto = this.catalogItemService.create(requestDto);
-    return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, responseDto));
+    return ResponseEntity.status(HttpStatus.CREATED)
+      .body(GenericResponseUtils.buildGenericResponseSuccess(CatalogItemConstants.SAVED_MESSAGE, responseDto));
   }
 
   @PutMapping("/{id}")
@@ -75,7 +77,8 @@ public class CatalogItemController {
       return ResponseEntity.status(HttpStatus.OK)
         .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, this.catalogItemService.create(requestDto)));
     } else {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(GenericResponseUtils.buildGenericResponseError(StringUtils.EMPTY, null));
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(GenericResponseUtils.buildGenericResponseError(CatalogItemConstants.UPDATED_MESSAGE, null));
     }
   }
 
@@ -83,6 +86,6 @@ public class CatalogItemController {
   public ResponseEntity<GenericResponse<Object>> delete(@PathVariable(value = "id") final Integer id) {
     this.catalogItemService.deleteById(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
-      .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, null));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(CatalogItemConstants.REMOVED_MESSAGE, null));
   }
 }

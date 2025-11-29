@@ -12,11 +12,11 @@ import java.util.Optional;
 
 import com.codesoft.catalogs.adjustment_factor.dto.request.AdjustmentFactorRequestDto;
 import com.codesoft.catalogs.adjustment_factor.dto.response.AdjustmentFactorResponseDto;
+import com.codesoft.catalogs.adjustment_factor.exception.AdjustmentFactorMessageEnum;
 import com.codesoft.catalogs.adjustment_factor.mapper.AdjustmentFactorFieldsMapper;
 import com.codesoft.catalogs.adjustment_factor.model.entity.AdjustmentFactorEntity;
 import com.codesoft.catalogs.adjustment_factor.repository.AdjustmentFactorRepository;
 import com.codesoft.exception.BaseException;
-import com.codesoft.utils.BaseErrorMessage;
 import com.codesoft.utils.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -99,7 +99,7 @@ class AdjustmentFactorServiceImplTests {
 
     final BaseException baseExceptionExpected = assertThrows(BaseException.class, () -> service.findById(NO_EXISTING_ID));
 
-    assertEquals(BaseErrorMessage.NOT_FOUND, baseExceptionExpected.getErrorCodeInterface());
+    assertEquals(AdjustmentFactorMessageEnum.ADJUSTMENT_FACTOR_NOT_FOUND, baseExceptionExpected.getErrorCodeInterface());
     verify(repository).findById(NO_EXISTING_ID);
   }
 

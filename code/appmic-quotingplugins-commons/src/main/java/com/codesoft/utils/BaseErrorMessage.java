@@ -28,4 +28,19 @@ public enum BaseErrorMessage implements IErrorCode {
   private final HttpStatus httpStatus;
 
   private final String errorMessage;
+
+  @Override
+  public String getErrorMessage() {
+    return errorMessage;
+  }
+
+  @Override
+  public Integer getErrorCode() {
+    return errorCode;
+  }
+
+  @Override
+  public HttpStatus getHttpStatus() {
+    return httpStatus;
+  }
 }
