@@ -55,7 +55,7 @@ public class CustomerController {
   public ResponseEntity<GenericResponse<CustomerResponseDto>> update(@PathVariable(value = "id") final Integer id,
     @Valid @RequestBody final CustomerRequestDto requestDto) {
     if (id == null || id <= 0) {
-      throw new CustomerException(CustomerMessage.CUSTOMER_NOT_FOUND);
+      throw new CustomerException(CustomerMessage.CUSTOMER_BAD_REQUEST);
     }
     final CustomerResponseDto existing = customerService.findById(id);
     if (ObjectUtils.isNotEmpty(existing)) {

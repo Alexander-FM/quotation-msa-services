@@ -12,6 +12,8 @@ public class CustomerConstants {
 
   public static final String ALREADY_EXISTS_MESSAGE = "El cliente ya existe en la base de datos";
 
+  public static final String BAD_REQUEST_MESSAGE = "La solicitud es inválida, verifique los parámetros";
+
   public static final String FOUND_MESSAGE = "Cliente encontrado exitosamente";
 
   public static final String SAVED_MESSAGE = "Cliente guardado exitosamente";

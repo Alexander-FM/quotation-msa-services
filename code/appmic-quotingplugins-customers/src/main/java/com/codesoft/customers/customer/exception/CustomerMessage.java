@@ -15,7 +15,11 @@ public enum CustomerMessage implements IErrorCode {
   CUSTOMER_ALREADY_EXISTS(
     GenericResponseUtils.makeCode(CustomerConstants.CUSTOMER_ERROR_CODE, HttpStatus.CONFLICT, 2),
     HttpStatus.CONFLICT,
-    CustomerConstants.ALREADY_EXISTS_MESSAGE);
+    CustomerConstants.ALREADY_EXISTS_MESSAGE),
+  CUSTOMER_BAD_REQUEST(
+    GenericResponseUtils.makeCode(CustomerConstants.CUSTOMER_ERROR_CODE, HttpStatus.BAD_REQUEST, 3),
+    HttpStatus.BAD_REQUEST,
+    CustomerConstants.BAD_REQUEST_MESSAGE);
 
   private final int code;
 
