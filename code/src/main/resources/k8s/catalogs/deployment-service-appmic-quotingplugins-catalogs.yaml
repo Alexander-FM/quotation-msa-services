@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: appmic-quotingplugins-catalogs
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: appmic-quotingplugins-catalogs
@@ -78,4 +78,4 @@ spec:
       port: 8080
       targetPort: 8080
   selector:
-    role: appmic-quotingplugins-catalogs
+    app: appmic-quotingplugins-catalogs
