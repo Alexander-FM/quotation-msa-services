@@ -11,15 +11,15 @@ public enum CustomerMessage implements IErrorCode {
   CUSTOMER_NOT_FOUND(
     GenericResponseUtils.makeCode(CustomerConstants.CUSTOMER_ERROR_CODE, HttpStatus.NOT_FOUND, 1),
     HttpStatus.NOT_FOUND,
-    CustomerConstants.NOT_FOUND_MESSAGE),
+    CustomerConstants.NOT_FOUND_IN_DB_MESSAGE),
   CUSTOMER_ALREADY_EXISTS(
     GenericResponseUtils.makeCode(CustomerConstants.CUSTOMER_ERROR_CODE, HttpStatus.CONFLICT, 2),
     HttpStatus.CONFLICT,
     CustomerConstants.ALREADY_EXISTS_MESSAGE),
-  CUSTOMER_BAD_REQUEST(
-    GenericResponseUtils.makeCode(CustomerConstants.CUSTOMER_ERROR_CODE, HttpStatus.BAD_REQUEST, 3),
-    HttpStatus.BAD_REQUEST,
-    CustomerConstants.BAD_REQUEST_MESSAGE);
+  CATALOG_ITEM_SERVICE_UNAVAILABLE(
+    GenericResponseUtils.makeCode(CustomerConstants.CUSTOMER_ERROR_CODE, HttpStatus.SERVICE_UNAVAILABLE, 3),
+    HttpStatus.SERVICE_UNAVAILABLE,
+    CustomerConstants.CATALOG_ITEM_SERVICE_UNAVAILABLE_MESSAGE);
 
   private final int code;
 

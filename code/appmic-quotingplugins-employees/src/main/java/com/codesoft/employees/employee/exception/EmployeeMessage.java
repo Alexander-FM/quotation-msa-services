@@ -10,11 +10,11 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum EmployeeMessage implements IErrorCode {
   EMPLOYEE_NOT_FOUND(
-    GenericResponseUtils.makeCode(EmployeeConstants.CATALOG_ITEM_ERROR_CODE, HttpStatus.NOT_FOUND, 1),
+    GenericResponseUtils.makeCode(EmployeeConstants.EMPLOYEE_ERROR_CODE, HttpStatus.NOT_FOUND, 1),
     HttpStatus.NOT_FOUND,
-    EmployeeConstants.NOT_FOUND_MESSAGE),
+    EmployeeConstants.NOT_FOUND_IN_DB_MESSAGE),
   EMPLOYEE_ALREADY_EXISTS(
-    GenericResponseUtils.makeCode(EmployeeConstants.CATALOG_ITEM_ERROR_CODE, HttpStatus.CONFLICT, 2),
+    GenericResponseUtils.makeCode(EmployeeConstants.EMPLOYEE_ERROR_CODE, HttpStatus.CONFLICT, 2),
     HttpStatus.CONFLICT,
     EmployeeConstants.ALREADY_EXISTS_MESSAGE),
   CATALOG_ITEM_SERVICE_UNAVAILABLE(
