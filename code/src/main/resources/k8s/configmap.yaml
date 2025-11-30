@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: appmic-quotingplugins-catalogs
+data:
+  profile_active: "dev"
+  port: "8080"
+  db_host: "postgres"
+  db_port: "5432"
+  db_name: "quoting_db"
+  db_schema: "catalogs"
+---

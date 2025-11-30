@@ -1,6 +1,8 @@
 package com.codesoft.catalogs.adjustment_factor.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.codesoft.catalogs.adjustment_factor.dto.request.AdjustmentFactorRequestDto;
 import com.codesoft.catalogs.adjustment_factor.dto.response.AdjustmentFactorResponseDto;
@@ -12,6 +14,9 @@ import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.GenericResponseUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,6 +34,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdjustmentFactorController {
 
   private final AdjustmentFactorService adjustmentFactorService;
+
+  private final ApplicationContext context;
+
+  private final Environment environment;
 
   @GetMapping
   public ResponseEntity<GenericResponse<List<AdjustmentFactorResponseDto>>> retrieve() {
@@ -73,5 +82,19 @@ public class AdjustmentFactorController {
     this.adjustmentFactorService.deleteById(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
       .body(GenericResponseUtils.buildGenericResponseSuccess(AdjustmentFactorConstants.REMOVED_MESSAGE, null));
+  }
+
+  @GetMapping("/crash")
+  public void crash() {
+    ((ConfigurableApplicationContext) context).close();
+  }
+
+  @GetMapping("/testLoadBalancer")
+  public ResponseEntity<Object> testLoadBalancer() {
+    Map<String, Object> body = new HashMap<>();
+    body.put("body", this.adjustmentFactorService.findAll());
+    body.put("podInfo", environment.getProperty("MY_POD_NAME") + ": " + environment.getProperty("MY_POD_IP"));
+    body.put("texto", environment.getProperty("config.texto"));
+    return ResponseEntity.status(HttpStatus.OK).body(body);
   }
 }

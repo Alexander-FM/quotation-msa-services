@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appmic-quotingplugins-catalogs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appmic-quotingplugins-catalogs
+  template:
+    metadata:
+      labels:
+        app: appmic-quotingplugins-catalogs
+    spec:
+      containers:
+        - image: alexanderpe/appmic-quotingplugins-catalogs:latest
+          name: appmic-quotingplugins-catalogs
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-catalogs
+                  key: profile_active
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-catalogs
+                  key: port
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-catalogs
+                  key: db_host
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-catalogs
+                  key: db_port
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-catalogs
+                  key: db_name
+            - name: DB_SCHEMA
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-catalogs
+                  key: db_schema
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: appmic-quotingplugins-catalogs
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: appmic-quotingplugins-catalogs
+                  key: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appmic-quotingplugins-catalogs
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    role: appmic-quotingplugins-catalogs

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-catalogs
+                  key: db_name
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: appmic-quotingplugins-catalogs
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: appmic-quotingplugins-catalogs
+                  key: password
+          volumeMounts:
+            - # Almacenamiento de datos
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-storage
+              subPath: data
+            # Script de inicialización (opcional)
+            - mountPath: /docker-entrypoint-initdb.d
+              name: postgres-init-scripts
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+        # Volumen proyectado desde el ConfigMap para scripts de inicialización
+        - name: postgres-init-scripts
+          configMap:
+            name: postgres-init-scripts
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  ports:
+    - port: 5432
+      protocol: TCP
+      targetPort: 5432
+  selector:
+    app: postgres
+  type: ClusterIP
