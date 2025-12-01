@@ -8,7 +8,6 @@ import com.codesoft.exception.AuthMessageEnum;
 import com.codesoft.utils.AuthConstants;
 import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.WebClientErrorHandler;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,14 +21,15 @@ public class UserServiceImpl implements UserService {
 
   private final WebClient webClient;
 
-  private final ObjectMapper objectMapper;
+  private final WebClientErrorHandler errorHandler;
 
-  public UserServiceImpl(final WebClientFactory webClientFactory, final ObjectMapper objectMapper) {
+  // Inyectas tu clase
+  public UserServiceImpl(final WebClientFactory webClientFactory, final WebClientErrorHandler errorHandler) {
     this.webClient = webClientFactory.retrieveWebClient(
       AuthConstants.MS_AUTH_SERVICE,
       AuthConstants.PORT_API_EMPLOYEE_USER_SERVICE
     );
-    this.objectMapper = objectMapper;
+    this.errorHandler = errorHandler;
   }
 
   @Override
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
       }
       return null;
     } catch (final Exception ex) {
-      throw WebClientErrorHandler.handle(ex, objectMapper, AuthMessageEnum.AUTH_EMPLOYEE_SERVICE_UNAVAILABLE);
+      throw errorHandler.handle(ex, AuthMessageEnum.AUTH_EMPLOYEE_SERVICE_UNAVAILABLE);
     }
   }
 
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
       }
       return null;
     } catch (final Exception ex) {
-      throw WebClientErrorHandler.handle(ex, objectMapper, AuthMessageEnum.AUTH_EMPLOYEE_SERVICE_UNAVAILABLE);
+      throw errorHandler.handle(ex, AuthMessageEnum.AUTH_EMPLOYEE_SERVICE_UNAVAILABLE);
     }
   }
 }

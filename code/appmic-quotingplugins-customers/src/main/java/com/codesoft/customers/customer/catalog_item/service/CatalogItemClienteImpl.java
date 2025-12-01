@@ -2,13 +2,12 @@ package com.codesoft.customers.customer.catalog_item.service;
 
 import java.util.Objects;
 
+import com.codesoft.config.WebClientFactory;
 import com.codesoft.customers.customer.catalog_item.dto.CatalogItemResponseDto;
-import com.codesoft.customers.customer.config.WebClientFactory;
 import com.codesoft.customers.customer.exception.CustomerMessage;
 import com.codesoft.customers.customer.utils.CustomerConstants;
 import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.WebClientErrorHandler;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,21 +21,21 @@ public class CatalogItemClienteImpl implements CatalogItemClient {
 
   private final WebClient webClient;
 
-  private final ObjectMapper objectMapper;
+  private final WebClientErrorHandler errorHandler;
 
-  public CatalogItemClienteImpl(final WebClientFactory webClientFactory, final ObjectMapper objectMapper) {
-    this.objectMapper = objectMapper;
+  public CatalogItemClienteImpl(final WebClientFactory webClientFactory, final WebClientErrorHandler errorHandler) {
     this.webClient = webClientFactory.retrieveWebClient(
       CustomerConstants.MS_CATALOG_ITEM_SERVICE,
       CustomerConstants.PORT_API_CATALOG_ITEM_SERVICE
     );
+    this.errorHandler = errorHandler;
   }
 
   @Override
   public CatalogItemResponseDto searchByDocumentTypeCode(final String code) {
     try {
       final GenericResponse<CatalogItemResponseDto> response = webClient.get()
-        .uri(uriBuilder -> uriBuilder
+        .uri("/catalog-item/searchByDocumentTypeCode", uriBuilder -> uriBuilder
           .queryParam("code", code) // Solo enviamos username
           .build())
         .accept(MediaType.APPLICATION_JSON)
@@ -49,7 +48,7 @@ public class CatalogItemClienteImpl implements CatalogItemClient {
       }
       return null;
     } catch (final Exception ex) {
-      throw WebClientErrorHandler.handle(ex, objectMapper, CustomerMessage.CATALOG_ITEM_SERVICE_UNAVAILABLE);
+      throw errorHandler.handle(ex, CustomerMessage.CATALOG_ITEM_SERVICE_UNAVAILABLE);
     }
   }
 

@@ -8,7 +8,6 @@ import com.codesoft.employees.employee.exception.EmployeeMessage;
 import com.codesoft.employees.employee.utils.EmployeeConstants;
 import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.WebClientErrorHandler;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,21 +21,21 @@ public class CatalogItemClienteImpl implements CatalogItemClient {
 
   private final WebClient webClient;
 
-  private final ObjectMapper objectMapper;
+  private final WebClientErrorHandler errorHandler;
 
-  public CatalogItemClienteImpl(final WebClientFactory webClientFactory, final ObjectMapper objectMapper) {
-    this.objectMapper = objectMapper;
+  public CatalogItemClienteImpl(final WebClientFactory webClientFactory, WebClientErrorHandler errorHandler) {
     this.webClient = webClientFactory.retrieveWebClient(
       EmployeeConstants.MS_CATALOG_ITEM_SERVICE,
       EmployeeConstants.PORT_API_CATALOG_ITEM_SERVICE
     );
+    this.errorHandler = errorHandler;
   }
 
   @Override
   public CatalogItemResponseDto searchByDocumentTypeCode(final String code) {
     try {
       final GenericResponse<CatalogItemResponseDto> response = webClient.get()
-        .uri(uriBuilder -> uriBuilder
+        .uri("/catalog-item/searchByDocumentTypeCode", uriBuilder -> uriBuilder
           .queryParam("code", code) // Solo enviamos username
           .build())
         .accept(MediaType.APPLICATION_JSON)
@@ -49,7 +48,7 @@ public class CatalogItemClienteImpl implements CatalogItemClient {
       }
       return null;
     } catch (final Exception ex) {
-      throw WebClientErrorHandler.handle(ex, objectMapper, EmployeeMessage.CATALOG_ITEM_SERVICE_UNAVAILABLE);
+      throw errorHandler.handle(ex, EmployeeMessage.CATALOG_ITEM_SERVICE_UNAVAILABLE);
     }
   }
 

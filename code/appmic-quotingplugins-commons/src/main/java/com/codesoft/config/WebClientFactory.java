@@ -3,6 +3,7 @@ package com.codesoft.config;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -10,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@ConditionalOnClass(name = "org.springframework.web.reactive.function.client.WebClient")
 public class WebClientFactory {
 
   private final WebClient.Builder loadBalancedWebClientBuilder;

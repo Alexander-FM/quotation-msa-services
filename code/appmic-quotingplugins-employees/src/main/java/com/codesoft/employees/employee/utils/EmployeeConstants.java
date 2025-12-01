@@ -18,7 +18,7 @@ public class EmployeeConstants {
 
   public static final String MS_CATALOG_ITEM_SERVICE = "MS_CATALOG_ITEM_SERVICE";
 
-  public static final String PORT_API_CATALOG_ITEM_SERVICE = "http://127.0.0.1:8080/api/catalogs/catalog-item/searchByDocumentTypeCode";
+  public static final String PORT_API_CATALOG_ITEM_SERVICE = "http://127.0.0.1:8080/api/catalogs";
 
   public static final String CATALOG_ITEM_SERVICE_UNAVAILABLE_MESSAGE = "The catalog item service is not available (connection refused)";
 
