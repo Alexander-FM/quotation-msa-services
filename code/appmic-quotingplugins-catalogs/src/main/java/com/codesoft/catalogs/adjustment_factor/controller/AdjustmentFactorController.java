@@ -84,6 +84,13 @@ public class AdjustmentFactorController {
       .body(GenericResponseUtils.buildGenericResponseSuccess(AdjustmentFactorConstants.REMOVED_MESSAGE, null));
   }
 
+  /**
+   * Este endpoint sirve para simular el cierre del microservice (crash). Spring cierra todos los beans, desconecta la base de datos y apaga
+   * el servidor (Tomcat, Jetty, etc.). Como ya no hay nada ejecutándose el proceso de java finaliza y la aplicación se cierra por completo,
+   * kubernetes detecta que el proceso murió y levanta una nueva instancia del pod. Ya que por definición los pods tiene una política de
+   * reinicio Always. (restartPolicy: Always), Kubernetes dice: "¡Oye! El contenedor se apagó. Debo crear uno nuevo de inmediato".
+   * <p>Resultado: El pod se reinicia automáticamente.</p>
+   */
   @GetMapping("/crash")
   public void crash() {
     ((ConfigurableApplicationContext) context).close();

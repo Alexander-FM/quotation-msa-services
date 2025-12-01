@@ -66,6 +66,34 @@ spec:
                 secretKeyRef:
                   name: appmic-quotingplugins-catalogs
                   key: password
+          # 1. READINESS: ¿Ya terminó de arrancar Spring?
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 20  # Esperamos 20s antes de preguntar la 1ra vez (Java tarda en iniciar)
+            periodSeconds: 10        # Preguntamos cada 10s
+            timeoutSeconds: 3        # Si no responde en 3s, falla
+            failureThreshold: 3      # Si falla 3 veces seguidas, corta el tráfico
+          # 2. LIVENESS: ¿Se murió el proceso?
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080             # CORREGIDO: Puerto 8080
+              scheme: HTTP
+            initialDelaySeconds: 40  # Damos más margen al inicio para no matar la app si el arranque es lento
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
+          # 3. RESOURCES: Hardware (Ajustado para velocidad)
+          resources:
+            requests:
+              memory: "300Mi"
+              cpu: "250m"
+            limits:
+              memory: "800Mi" # Limite de RAM para proteger tu PC
+              # cpu: "1000m"  # <--- COMENTADO: En Minikube, mejor no limitar CPU para evitar lentitud
 ---
 apiVersion: v1
 kind: Service
