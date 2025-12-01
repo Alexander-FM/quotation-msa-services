@@ -71,6 +71,11 @@
       <artifactId>hibernate-validator</artifactId>
       <groupId>org.hibernate.validator</groupId>
     </dependency>
+    <!-- Spring Actuator -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
     <!-- JWT dependencies -->
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
