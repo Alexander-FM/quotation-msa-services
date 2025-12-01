@@ -15,6 +15,7 @@ spec:
       containers:
         - image: alexanderpe/appmic-quotingplugins-catalogs:latest
           name: appmic-quotingplugins-catalogs
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
@@ -80,7 +81,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 8080             # CORREGIDO: Puerto 8080
+              port: 8080
               scheme: HTTP
             initialDelaySeconds: 40  # Damos más margen al inicio para no matar la app si el arranque es lento
             periodSeconds: 15
