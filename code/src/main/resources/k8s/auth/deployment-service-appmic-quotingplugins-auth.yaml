@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appmic-quotingplugins-auth
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: appmic-quotingplugins-auth
+  template:
+    metadata:
+      labels:
+        app: appmic-quotingplugins-auth
+    spec:
+      containers:
+        - image: alexanderpe/appmic-quotingplugins-auth:latest
+          name: appmic-quotingplugins-auth
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9000
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MS_EMPLOYEE_SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-auth
+                  key: ms_employee_service
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-auth
+                  key: profile_active
+            - name: JWT_SIGNATURE_QUOTATIONS
+              valueFrom:
+                secretKeyRef:
+                  name: appmic-quotingplugins-auth
+                  key: jwt-signature-quotations
+          # 1. READINESS: ¿Ya terminó de arrancar Spring?
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 9000
+              scheme: HTTP
+            initialDelaySeconds: 20  # Esperamos 20s antes de preguntar la 1ra vez (Java tarda en iniciar)
+            periodSeconds: 10        # Preguntamos cada 10s
+            timeoutSeconds: 3        # Si no responde en 3s, falla
+            failureThreshold: 3      # Si falla 3 veces seguidas, corta el tráfico
+          # 2. LIVENESS: ¿Se murió el proceso?
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 9000
+              scheme: HTTP
+            initialDelaySeconds: 40  # Damos más margen al inicio para no matar la app si el arranque es lento
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
+          # 3. RESOURCES: Hardware (Ajustado para velocidad)
+          resources:
+            requests:
+              memory: "300Mi"
+              cpu: "250m"
+            limits:
+              memory: "800Mi" # Limite de RAM para proteger tu PC
+              # cpu: "1000m"  # <--- COMENTADO: En Minikube, mejor no limitar CPU para evitar lentitud
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appmic-quotingplugins-auth
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 9000
+      targetPort: 9000
+  selector:
+    app: appmic-quotingplugins-auth

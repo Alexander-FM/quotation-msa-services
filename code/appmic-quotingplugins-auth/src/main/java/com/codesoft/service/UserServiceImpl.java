@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
   // Inyectas tu clase
   public UserServiceImpl(final WebClientFactory webClientFactory, final WebClientErrorHandler errorHandler) {
     this.webClient = webClientFactory.retrieveWebClient(
-      AuthConstants.MS_AUTH_SERVICE,
+      AuthConstants.MS_EMPLOYEE_SERVICE,
       AuthConstants.PORT_API_EMPLOYEE_USER_SERVICE
     );
     this.errorHandler = errorHandler;

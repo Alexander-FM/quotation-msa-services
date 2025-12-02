@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthConstants {
 
-  public static final String MS_AUTH_SERVICE = "http://appmic-quotingplugins-auth:9000/api/employees";
+  public static final String MS_EMPLOYEE_SERVICE = "http://appmic-quotingplugins-auth:9000/api/employees";
 
   public static final String EMPLOYEE_SERVICE_UNAVAILABLE_MESSAGE = "Employee service unavailable (connection refused)";
 
