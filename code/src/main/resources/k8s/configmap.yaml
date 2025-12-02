@@ -10,3 +10,15 @@ data:
   db_name: "quoting_db"
   db_schema: "catalogs"
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: appmic-quotingplugins-employees
+data:
+  profile_active: "dev"
+  ms_catalog_item_service: "http://appmic-quotingplugins-catalogs:8080"
+  port: "8082"
+  db_host: "postgres"
+  db_port: "5432"
+  db_name: "quoting_db"
+  db_schema: "employees"

@@ -23,7 +23,7 @@ public class CatalogItemClienteImpl implements CatalogItemClient {
 
   private final WebClientErrorHandler errorHandler;
 
-  public CatalogItemClienteImpl(final WebClientFactory webClientFactory, WebClientErrorHandler errorHandler) {
+  public CatalogItemClienteImpl(final WebClientFactory webClientFactory, final WebClientErrorHandler errorHandler) {
     this.webClient = webClientFactory.retrieveWebClient(
       EmployeeConstants.MS_CATALOG_ITEM_SERVICE,
       EmployeeConstants.PORT_API_CATALOG_ITEM_SERVICE

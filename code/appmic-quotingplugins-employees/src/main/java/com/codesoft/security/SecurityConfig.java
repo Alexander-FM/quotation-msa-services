@@ -54,6 +54,8 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
     return http.authorizeHttpRequests(auth -> auth
+        // Permitimos que K8s (y cualquiera) vea el estado de salud sin loguearse
+        .requestMatchers("/actuator/**").permitAll()
         .requestMatchers("/api/employees/user/loginByUsernameAndPassword", "/api/employees/user/loginByUsername").permitAll()
         .requestMatchers(HttpMethod.GET, EMPLOYEE_ROOT_PATH, ROLE_ROOT_PATH).hasAnyRole(ROLE_ADMIN, ROLE_USER)
         .requestMatchers(HttpMethod.POST, EMPLOYEE_ROOT_PATH, ROLE_ROOT_PATH, USER_ROOT_PATH).hasAnyRole(ROLE_ADMIN, ROLE_USER)
