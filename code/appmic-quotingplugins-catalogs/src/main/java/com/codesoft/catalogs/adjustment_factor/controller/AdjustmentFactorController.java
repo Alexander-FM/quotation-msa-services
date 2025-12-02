@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/catalogs/adjustment-factor")
+@RequestMapping("${app.endpoints.adjustment-factor}")
 @RequiredArgsConstructor
 public class AdjustmentFactorController {
 

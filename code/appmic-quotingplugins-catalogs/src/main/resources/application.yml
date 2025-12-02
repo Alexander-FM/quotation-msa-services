@@ -22,11 +22,11 @@ spring:
         all-namespaces: true
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
-logging:
-  level:
-    org:
-      springframework:
-        security: DEBUG
+app:
+  endpoints:
+    adjustment-factor: "/api/catalogs/adjustment-factor"
+    catalog: "/api/catalogs/catalog-item"
+    unit-of-measurement: "/api/catalogs/unit-of-measurement"
 management:
   endpoint:
     health:
@@ -37,6 +37,9 @@ management:
       enabled: true
     readiness-state:
       enabled: true
+# Other configurations
+jwt:
+  secret: appmic-quotingplugins-secret-key
 # Configuración común a todos los perfiles
 ---
 spring:
@@ -62,6 +65,11 @@ spring:
         default_schema: ${DB_SCHEMA:catalogs}
 config:
   texto: Configurando ambiente de desarrollo
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
 # Configuración específica para el perfil 'prod'
 ---
 spring:
@@ -77,5 +85,10 @@ spring:
       hibernate:
         format_sql: true
         default_schema: ${DB_SCHEMA:catalogs}
+logging:
+  level:
+    org:
+      springframework:
+        security: INFO
 config:
   texto: Configurando ambiente de producción

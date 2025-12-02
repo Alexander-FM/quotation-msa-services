@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/catalogs/catalog-item")
+@RequestMapping("${app.endpoints.catalog}")
 @RequiredArgsConstructor
 public class CatalogItemController {
 

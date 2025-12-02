@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/catalogs/unit-of-measurement")
+@RequestMapping("${app.endpoints.unit-of-measurement}")
 @RequiredArgsConstructor
 public class UnitOfMeasurementController {
 

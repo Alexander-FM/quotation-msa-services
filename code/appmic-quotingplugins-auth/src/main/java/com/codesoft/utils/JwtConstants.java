@@ -8,7 +8,7 @@ public class JwtConstants {
 
   public static final long ACCESS_TOKEN_VALIDITY = 3600000L; // 1 Hora
 
-  public static final long REFRESH_TOKEN_VALIDITY = 86400000L; // 24 Horas
+  public static final long REFRESH_TOKEN_VALIDITY = 28800000L; // 8 Horas
 
   public static final String GENERATED_TOKEN = "Token Generated Correctly";
 
