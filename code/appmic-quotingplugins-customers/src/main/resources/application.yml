@@ -57,12 +57,17 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
       ddl-auto: update
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         default_schema: ${DB_SCHEMA:customers}
+    open-in-view: false
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
 config:
   texto: Configurando ambiente de desarrollo
 # Configuración específica para el perfil 'prod'
@@ -76,11 +81,16 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
       ddl-auto: validate
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
         default_schema: ${DB_SCHEMA:customers}
+    open-in-view: false
+logging:
+  level:
+    org:
+      springframework:
+        security: INFO
 config:
   texto: Configurando ambiente de producción

@@ -62,6 +62,8 @@ public class SecurityConfig {
         .authenticationEntryPoint(customAuthenticationEntryPoint))
       .addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
       .csrf(AbstractHttpConfigurer::disable)
+      .formLogin(AbstractHttpConfigurer::disable)
+      .httpBasic(AbstractHttpConfigurer::disable)
       .cors(cors -> cors.configurationSource(corsConfigurationSource()))
       .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .build();
