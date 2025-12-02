@@ -16,9 +16,22 @@ metadata:
   name: appmic-quotingplugins-employees
 data:
   profile_active: "dev"
-  ms_catalog_item_service: "http://appmic-quotingplugins-catalogs:8080"
+  ms_catalog_item_service: "http://appmic-quotingplugins-catalogs/api/catalogs"
   port: "8082"
   db_host: "postgres"
   db_port: "5432"
   db_name: "quoting_db"
   db_schema: "employees"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: appmic-quotingplugins-customers
+data:
+  profile_active: "dev"
+  ms_catalog_item_service: "http://appmic-quotingplugins-catalogs/api/catalogs"
+  port: "8084"
+  db_host: "postgres"
+  db_port: "5432"
+  db_name: "quoting_db"
+  db_schema: "customers"

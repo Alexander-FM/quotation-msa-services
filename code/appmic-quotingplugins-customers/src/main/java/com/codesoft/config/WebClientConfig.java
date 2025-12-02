@@ -1,4 +1,4 @@
-package com.codesoft.customers.customer.config;
+package com.codesoft.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;

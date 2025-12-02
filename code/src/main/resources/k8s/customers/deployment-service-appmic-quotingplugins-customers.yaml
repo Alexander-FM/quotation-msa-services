@@ -1,0 +1,115 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appmic-quotingplugins-customers
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appmic-quotingplugins-customers
+  template:
+    metadata:
+      labels:
+        app: appmic-quotingplugins-customers
+    spec:
+      containers:
+        - image: alexanderpe/appmic-quotingplugins-customers:latest
+          name: appmic-quotingplugins-customers
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8084
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-customers
+                  key: profile_active
+            - name: MS_CATALOG_ITEM_SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-customers
+                  key: ms_catalog_item_service
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-customers
+                  key: port
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-customers
+                  key: db_host
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-customers
+                  key: db_port
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-customers
+                  key: db_name
+            - name: DB_SCHEMA
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-customers
+                  key: db_schema
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: appmic-quotingplugins-customers
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: appmic-quotingplugins-customers
+                  key: password
+          # 1. READINESS: ¿Ya terminó de arrancar Spring?
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8084
+              scheme: HTTP
+            initialDelaySeconds: 20  # Esperamos 20s antes de preguntar la 1ra vez (Java tarda en iniciar)
+            periodSeconds: 10        # Preguntamos cada 10s
+            timeoutSeconds: 3        # Si no responde en 3s, falla
+            failureThreshold: 3      # Si falla 3 veces seguidas, corta el tráfico
+          # 2. LIVENESS: ¿Se murió el proceso?
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8084
+              scheme: HTTP
+            initialDelaySeconds: 40  # Damos más margen al inicio para no matar la app si el arranque es lento
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
+          # 3. RESOURCES: Hardware (Ajustado para velocidad)
+          resources:
+            requests:
+              memory: "300Mi"
+              cpu: "250m"
+            limits:
+              memory: "800Mi" # Limite de RAM para proteger tu PC
+              # cpu: "1000m"  # <--- COMENTADO: En Minikube, mejor no limitar CPU para evitar lentitud
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appmic-quotingplugins-customers
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8084
+      targetPort: 8084
+  selector:
+    app: appmic-quotingplugins-customers

@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/customers/customer")
+@RequestMapping("${app.endpoints.customer}")
 @RequiredArgsConstructor
 public class CustomerController {
 

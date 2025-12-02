@@ -28,16 +28,8 @@ public class SecurityConfig {
 
   private static final String ROLE_USER = "USER";
 
-  private static final String ID = "/{id}";
-
-  @Value("${app.endpoints.employee}")
-  private String retrieveEmployeeRootPath;
-
-  @Value("${app.endpoints.role}")
-  private String retrieveRoleRootPath;
-
-  @Value("${app.endpoints.user}")
-  private String retrieveUserRootPath;
+  @Value("${app.endpoints.customer}")
+  private String retrieveCustomerRootPath;
 
   private final CustomAuthorizationFilter customAuthorizationFilter;
 
@@ -45,8 +37,9 @@ public class SecurityConfig {
 
   private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-  public SecurityConfig(final CustomAuthorizationFilter customAuthorizationFilter, CustomAccessDeniedHandler customAccessDeniedHandler,
-    CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+  public SecurityConfig(final CustomAuthorizationFilter customAuthorizationFilter,
+    final CustomAccessDeniedHandler customAccessDeniedHandler,
+    final CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
     this.customAuthorizationFilter = customAuthorizationFilter;
     this.customAccessDeniedHandler = customAccessDeniedHandler;
     this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
@@ -54,18 +47,15 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
-    final String employeePathWithId = StringUtils.join(retrieveEmployeeRootPath, ID);
-    final String rolePathWithId = StringUtils.join(retrieveRoleRootPath, ID);
-    final String userPathWithId = StringUtils.join(retrieveUserRootPath, ID);
+    final String pathWithId = StringUtils.join(retrieveCustomerRootPath, "/{id}");
     return http.authorizeHttpRequests(auth -> auth
         // Permitimos que K8s (y cualquiera) vea el estado de salud sin loguearse
         .requestMatchers("/actuator/**").permitAll()
-        .requestMatchers("/api/employees/user/loginByUsernameAndPassword", "/api/employees/user/loginByUsername").permitAll()
-        .requestMatchers(HttpMethod.GET, retrieveEmployeeRootPath, retrieveRoleRootPath, retrieveUserRootPath).hasAnyRole(ROLE_ADMIN, ROLE_USER)
-        .requestMatchers(HttpMethod.POST, retrieveEmployeeRootPath, retrieveRoleRootPath, retrieveUserRootPath).hasAnyRole(ROLE_ADMIN, ROLE_USER)
-        .requestMatchers(HttpMethod.PUT, employeePathWithId, rolePathWithId, userPathWithId).hasRole(ROLE_ADMIN)
-        .requestMatchers(HttpMethod.DELETE, employeePathWithId, rolePathWithId, userPathWithId).hasRole(ROLE_ADMIN)
-        .requestMatchers(HttpMethod.PATCH, employeePathWithId, rolePathWithId, userPathWithId).hasRole(ROLE_ADMIN)
+        .requestMatchers(HttpMethod.GET, retrieveCustomerRootPath).hasAnyRole(ROLE_ADMIN, ROLE_USER)
+        .requestMatchers(HttpMethod.POST, retrieveCustomerRootPath).hasAnyRole(ROLE_ADMIN, ROLE_USER)
+        .requestMatchers(HttpMethod.PUT, pathWithId).hasRole(ROLE_ADMIN)
+        .requestMatchers(HttpMethod.DELETE, pathWithId).hasRole(ROLE_ADMIN)
+        .requestMatchers(HttpMethod.PATCH, pathWithId).hasRole(ROLE_ADMIN)
         .anyRequest().authenticated())
       .exceptionHandling(exception -> exception
         .accessDeniedHandler(customAccessDeniedHandler)

@@ -30,13 +30,13 @@ public class WebClientFactory {
     String serviceUrl = env.getProperty(serviceUrlKey);
     if (StringUtils.isBlank(serviceUrl)) {
       // --- ESCENARIO LOCAL ---
-      log.debug("Factory: Configurando cliente SIMPLE para (Local): {}", defaultUrl);
+      log.info("Factory: Configurando cliente SIMPLE para (Local): {}", defaultUrl);
       return simpleWebClient.mutate()
         .baseUrl(defaultUrl)
         .build();
     } else {
       // --- ESCENARIO KUBERNETES ---
-      log.debug("Factory: Configurando cliente LOAD BALANCED para (K8s): {}", serviceUrl);
+      log.info("Factory: Configurando cliente LOAD BALANCED para (K8s): {}", serviceUrl);
       return loadBalancedWebClientBuilder
         .baseUrl(serviceUrl)
         .build();

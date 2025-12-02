@@ -24,6 +24,11 @@ spring:
         all-namespaces: true
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
+app:
+  endpoints:
+    employee: "/api/employees/employee"
+    role: "/api/employees/role"
+    user: "/api/employees/user"
 logging:
   level:
     org:

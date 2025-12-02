@@ -16,7 +16,7 @@ public class CustomerConstants {
 
   public static final String REMOVED_MESSAGE = "Customer removed successfully";
 
-  public static final String MS_CATALOG_ITEM_SERVICE = "MS_CATALOG_ITEM_SERVICE";
+  public static final String MS_CATALOG_ITEM_SERVICE = "http://appmic-quotingplugins-catalogs/api/catalogs";
 
   public static final String PORT_API_CATALOG_ITEM_SERVICE = "http://127.0.0.1:8080/api/catalogs";
 

@@ -42,10 +42,10 @@ public class CustomerEntity {
   @Column(name = "email", nullable = false)
   private String email;
 
-  @Column(name = "phoneNumber", nullable = false, length = 20)
+  @Column(name = "phonenumber", nullable = false, length = 20)
   private String phoneNumber;
 
-  @Column(name = "phoneNumber2", length = 20)
+  @Column(name = "phonenumber2", length = 20)
   private String phoneNumber2;
 
   @Column(name = "is_active", nullable = false)
