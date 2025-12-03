@@ -45,6 +45,7 @@ public class UserServiceImpl implements UserService {
         })
         .block();
       if (Objects.nonNull(userResponseDto) && ObjectUtils.isNotEmpty(userResponseDto.getBody())) {
+        log.info("User found: {}", userResponseDto.getBody().getUsername());
         return userResponseDto.getBody();
       }
       return null;
