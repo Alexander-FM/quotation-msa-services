@@ -51,7 +51,7 @@ spring:
       hibernate:
         format_sql: true
         default_schema: ${DB_SCHEMA:catalogs}
-    open-in-view: false
+    open-in-view: true
 config:
   texto: Configurando ambiente de desarrollo
 jwt:
@@ -76,6 +76,7 @@ spring:
       hibernate:
         format_sql: true
         default_schema: ${DB_SCHEMA:catalogs}
+    open-in-view: true
 logging:
   level:
     org:
