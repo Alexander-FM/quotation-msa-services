@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-scripts
+  namespace: dev
+data:
+  init-schemas.sql: |
+    CREATE SCHEMA IF NOT EXISTS catalogs;
+    CREATE SCHEMA IF NOT EXISTS customers;
+    CREATE SCHEMA IF NOT EXISTS employees;
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-scripts
+  namespace: prod
+data:
+  init-schemas.sql: |
+    CREATE SCHEMA IF NOT EXISTS catalogs;
+    CREATE SCHEMA IF NOT EXISTS customers;
+    CREATE SCHEMA IF NOT EXISTS employees;

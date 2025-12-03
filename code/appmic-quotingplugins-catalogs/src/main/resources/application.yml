@@ -1,10 +1,11 @@
+server:
+  port: ${PORT:8080}
 spring:
   application:
     name: appmic-quotingplugins-catalogs
   web:
     resources:
       add-mappings: false
-
   datasource:
     # Usar variables de entorno para facilitar despliegues (dev/stage/prod)
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:quoting_db}?currentSchema=${DB_SCHEMA:catalogs}
@@ -13,13 +14,75 @@ spring:
     password: ${DB_PASSWORD:root_password}
     hikari:
       maximum-pool-size: 10
-
+  cloud:
+    kubernetes:
+      secrets:
+        enable-api: true
+      discovery:
+        all-namespaces: true
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+app:
+  endpoints:
+    adjustment-factor: "/api/catalogs/adjustment-factor"
+    catalog: "/api/catalogs/catalog-item"
+    unit-of-measurement: "/api/catalogs/unit-of-measurement"
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true # ¡Vital! Sin esto, devolverá 404 y K8s matará tu pod.
+  health:
+    liveness-state:
+      enabled: true
+    readiness-state:
+      enabled: true
+# Configuración específica para el perfil 'dev'
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
   jpa:
     hibernate:
-      ddl-auto: update # Ajustar en producción a 'valídate' o 'none'
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         default_schema: ${DB_SCHEMA:catalogs}
+    open-in-view: true
+config:
+  texto: Configurando ambiente de desarrollo
+jwt:
+  secret: ${JWT_SIGNATURE_QUOTATIONS:clave-secreta-para-desarrollo-12345}
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+# Configuración específica para el perfil 'prod'
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: ${DB_SCHEMA:catalogs}
+    open-in-view: true
+logging:
+  level:
+    org:
+      springframework:
+        security: INFO
+config:
+  texto: Configurando ambiente de producción
+jwt:
+  secret: ${JWT_SIGNATURE_QUOTATIONS}

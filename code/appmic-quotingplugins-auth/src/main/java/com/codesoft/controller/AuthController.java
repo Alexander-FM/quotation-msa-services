@@ -7,6 +7,8 @@ import com.codesoft.dto.RoleResponseDto;
 import com.codesoft.dto.UserResponseDto;
 import com.codesoft.dto.request.LoginRequest;
 import com.codesoft.dto.response.TokenResponse;
+import com.codesoft.exception.AuthException;
+import com.codesoft.exception.AuthMessageEnum;
 import com.codesoft.exception.BaseException;
 import com.codesoft.service.UserService;
 import com.codesoft.utils.BaseErrorMessage;
@@ -37,7 +39,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("${app.endpoints.auth}")
 @Component
 @Slf4j
 public class AuthController {
@@ -68,6 +70,9 @@ public class AuthController {
       throw new BaseException(BaseErrorMessage.BAD_REQUEST);
     }
     final UserResponseDto user = userService.validateUser(loginRequest.username(), loginRequest.password());
+    if (user == null) {
+      throw new AuthException(AuthMessageEnum.USER_NOT_FOUND);
+    }
     final TokenResponse tokenResponse = buildTokenResponse(user, null);
     httpServletResponse.addHeader(GenericResponseConstants.HEADER_AUTHORIZATION, tokenResponse.getAccessToken());
     return ResponseEntity.ok(

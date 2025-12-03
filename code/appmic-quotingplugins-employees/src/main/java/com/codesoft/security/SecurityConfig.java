@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.codesoft.security.filter.CustomAuthorizationFilter;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,17 +28,16 @@ public class SecurityConfig {
 
   private static final String ROLE_USER = "USER";
 
-  private static final String EMPLOYEE_ROOT_PATH = "/api/employees/employee";
+  private static final String ID = "/{id}";
 
-  private static final String EMPLOYEE_PATH = "/api/employees/employee/{id}";
+  @Value("${app.endpoints.employee}")
+  private String retrieveEmployeeRootPath;
 
-  private static final String ROLE_ROOT_PATH = "/api/employees/role";
+  @Value("${app.endpoints.role}")
+  private String retrieveRoleRootPath;
 
-  private static final String ROLE_PATH = "/api/employees/role/{id}";
-
-  private static final String USER_ROOT_PATH = "/api/employees/user";
-
-  private static final String USER_PATH = "/api/employees/user/{id}";
+  @Value("${app.endpoints.user}")
+  private String retrieveUserRootPath;
 
   private final CustomAuthorizationFilter customAuthorizationFilter;
 
@@ -53,19 +54,26 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
+    final String employeePathWithId = StringUtils.join(retrieveEmployeeRootPath, ID);
+    final String rolePathWithId = StringUtils.join(retrieveRoleRootPath, ID);
+    final String userPathWithId = StringUtils.join(retrieveUserRootPath, ID);
     return http.authorizeHttpRequests(auth -> auth
+        // Permitimos que K8s (y cualquiera) vea el estado de salud sin loguearse
+        .requestMatchers("/actuator/**").permitAll()
         .requestMatchers("/api/employees/user/loginByUsernameAndPassword", "/api/employees/user/loginByUsername").permitAll()
-        .requestMatchers(HttpMethod.GET, EMPLOYEE_ROOT_PATH, ROLE_ROOT_PATH).hasAnyRole(ROLE_ADMIN, ROLE_USER)
-        .requestMatchers(HttpMethod.POST, EMPLOYEE_ROOT_PATH, ROLE_ROOT_PATH, USER_ROOT_PATH).hasAnyRole(ROLE_ADMIN, ROLE_USER)
-        .requestMatchers(HttpMethod.PUT, EMPLOYEE_PATH, ROLE_PATH, USER_PATH).hasRole(ROLE_ADMIN)
-        .requestMatchers(HttpMethod.DELETE, EMPLOYEE_PATH, ROLE_PATH, USER_PATH).hasRole(ROLE_ADMIN)
-        .requestMatchers(HttpMethod.PATCH, EMPLOYEE_PATH, ROLE_PATH, USER_PATH).hasRole(ROLE_ADMIN)
+        .requestMatchers(HttpMethod.GET, retrieveEmployeeRootPath, retrieveRoleRootPath, retrieveUserRootPath).hasAnyRole(ROLE_ADMIN, ROLE_USER)
+        .requestMatchers(HttpMethod.POST, retrieveEmployeeRootPath, retrieveRoleRootPath, retrieveUserRootPath).hasAnyRole(ROLE_ADMIN, ROLE_USER)
+        .requestMatchers(HttpMethod.PUT, employeePathWithId, rolePathWithId, userPathWithId).hasRole(ROLE_ADMIN)
+        .requestMatchers(HttpMethod.DELETE, employeePathWithId, rolePathWithId, userPathWithId).hasRole(ROLE_ADMIN)
+        .requestMatchers(HttpMethod.PATCH, employeePathWithId, rolePathWithId, userPathWithId).hasRole(ROLE_ADMIN)
         .anyRequest().authenticated())
       .exceptionHandling(exception -> exception
         .accessDeniedHandler(customAccessDeniedHandler)
         .authenticationEntryPoint(customAuthenticationEntryPoint))
       .addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
       .csrf(AbstractHttpConfigurer::disable)
+      .formLogin(AbstractHttpConfigurer::disable)
+      .httpBasic(AbstractHttpConfigurer::disable)
       .cors(cors -> cors.configurationSource(corsConfigurationSource()))
       .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .build();

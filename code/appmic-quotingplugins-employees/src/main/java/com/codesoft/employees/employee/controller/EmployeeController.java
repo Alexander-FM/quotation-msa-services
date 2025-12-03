@@ -5,14 +5,13 @@ import java.util.List;
 import com.codesoft.employees.employee.dto.request.EmployeeRequestDto;
 import com.codesoft.employees.employee.dto.response.EmployeeResponseDto;
 import com.codesoft.employees.employee.service.EmployeeService;
+import com.codesoft.employees.employee.utils.EmployeeConstants;
 import com.codesoft.exception.BaseException;
 import com.codesoft.utils.BaseErrorMessage;
 import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.GenericResponseUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/employees/employee")
+@RequestMapping("${app.endpoints.employee}")
 @RequiredArgsConstructor
 public class EmployeeController {
 
@@ -35,20 +34,24 @@ public class EmployeeController {
   public ResponseEntity<GenericResponse<List<EmployeeResponseDto>>> retrieve() {
     final List<EmployeeResponseDto> employees = employeeService.findAll();
     return ResponseEntity.status(HttpStatus.OK)
-      .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, employees));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(EmployeeConstants.FOUND_MESSAGE, employees));
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<GenericResponse<EmployeeResponseDto>> retrieveById(@PathVariable(value = "id") final Integer id) {
     final EmployeeResponseDto employees = employeeService.findById(id);
     return ResponseEntity.status(HttpStatus.OK)
-      .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, employees));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(EmployeeConstants.FOUND_MESSAGE, employees));
   }
 
   @PostMapping
   public ResponseEntity<GenericResponse<EmployeeResponseDto>> create(@Valid @RequestBody final EmployeeRequestDto requestDto) {
+    if (requestDto.getId() != null) {
+      throw new BaseException(BaseErrorMessage.ID_PROVIDED_ON_CREATE);
+    }
     final EmployeeResponseDto responseDto = this.employeeService.create(requestDto);
-    return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, responseDto));
+    return ResponseEntity.status(HttpStatus.CREATED)
+      .body(GenericResponseUtils.buildGenericResponseSuccess(EmployeeConstants.SAVED_MESSAGE, responseDto));
   }
 
   @PutMapping("/{id}")
@@ -58,19 +61,15 @@ public class EmployeeController {
       throw new BaseException(BaseErrorMessage.BAD_REQUEST);
     }
     final EmployeeResponseDto existing = employeeService.findById(id);
-    if (ObjectUtils.isNotEmpty(existing)) {
-      requestDto.setId(existing.getId());
-      return ResponseEntity.status(HttpStatus.OK)
-        .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, this.employeeService.create(requestDto)));
-    } else {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(GenericResponseUtils.buildGenericResponseError(StringUtils.EMPTY, null));
-    }
+    requestDto.setId(existing.getId());
+    return ResponseEntity.status(HttpStatus.OK)
+      .body(GenericResponseUtils.buildGenericResponseSuccess(EmployeeConstants.UPDATED_MESSAGE, this.employeeService.create(requestDto)));
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<GenericResponse<Object>> delete(@PathVariable(value = "id") final Integer id) {
     this.employeeService.deleteById(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
-      .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, null));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(EmployeeConstants.REMOVED_MESSAGE, null));
   }
 }

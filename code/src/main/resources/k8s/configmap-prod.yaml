@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: appmic-quotingplugins-catalogs
+  namespace: prod
+data:
+  profile_active: "prod"
+  port: "8080"
+  db_host: "postgres"
+  db_port: "5432"
+  db_name: "quoting_db"
+  db_schema: "catalogs"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: appmic-quotingplugins-employees
+  namespace: prod
+data:
+  profile_active: "prod"
+  ms_catalog_item_service: "http://appmic-quotingplugins-catalogs/api/catalogs"
+  port: "8082"
+  db_host: "postgres"
+  db_port: "5432"
+  db_name: "quoting_db"
+  db_schema: "employees"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: appmic-quotingplugins-customers
+  namespace: prod
+data:
+  profile_active: "prod"
+  ms_catalog_item_service: "http://appmic-quotingplugins-catalogs/api/catalogs"
+  port: "8084"
+  db_host: "postgres"
+  db_port: "5432"
+  db_name: "quoting_db"
+  db_schema: "customers"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: appmic-quotingplugins-auth
+  namespace: prod
+data:
+  profile_active: "prod"
+  ms_employee_service: "http://appmic-quotingplugins-employees/api/employees"

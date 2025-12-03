@@ -9,9 +9,13 @@ import org.springframework.http.HttpStatus;
 public class GenericResponseUtils {
 
   /**
-   * Method use to build generic response success.
+   * Construye una respuesta genérica de éxito.
    *
-   * @return GenericResponse The generic response of any type.
+   * @param message texto adicional que se concatenará al mensaje por defecto. Si es nulo o vacío se usará
+   *   GenericResponseConstants.CORRECT_OPERATION.
+   * @param object objeto de payload asociado a la respuesta (puede ser null).
+   * @param <T> tipo del objeto de respuesta.
+   * @return instancia de GenericResponse<T> con el código de éxito, el mensaje resultante y el objeto.
    */
   public static <T> GenericResponse<T> buildGenericResponseSuccess(final String message, final T object) {
     final String msg = StringUtils.isNotEmpty(message)
@@ -21,9 +25,24 @@ public class GenericResponseUtils {
   }
 
   /**
-   * Method use to build generic response error.
+   * Construye una respuesta genérica de éxito.
    *
-   * @return GenericResponse The generic response of any type.
+   * @param object objeto de payload asociado a la respuesta (puede ser null).
+   * @param <T> tipo del objeto de respuesta.
+   * @return instancia de GenericResponse<T> con el código de éxito, el mensaje resultante y el objeto.
+   */
+  public static <T> GenericResponse<T> buildGenericResponseSuccess(final T object) {
+    return new GenericResponse<>(GenericResponseConstants.RESPONSE_OK, GenericResponseConstants.CORRECT_OPERATION, object);
+  }
+
+  /**
+   * Construye una respuesta genérica de error.
+   *
+   * @param message texto adicional que se concatenará al mensaje por defecto. Si es nulo o vacío se usará
+   *   GenericResponseConstants.INCORRECT_OPERATION.
+   * @param object objeto de payload asociado a la respuesta (puede ser null).
+   * @param <T> tipo del objeto de respuesta.
+   * @return instancia de GenericResponse<T> con el código de error, el mensaje resultante y el objeto.
    */
   public static <T> GenericResponse<T> buildGenericResponseError(final String message, final T object) {
     final String msg = StringUtils.isNotEmpty(message)
@@ -33,15 +52,41 @@ public class GenericResponseUtils {
   }
 
   /**
-   * Method use to build generic response warning.
+   * Construye una respuesta genérica de error.
    *
-   * @return GenericResponse The generic response of any type.
+   * @param object objeto de payload asociado a la respuesta (puede ser null).
+   * @param <T> tipo del objeto de respuesta.
+   * @return instancia de GenericResponse<T> con el código de error, el mensaje resultante y el objeto.
+   */
+  public static <T> GenericResponse<T> buildGenericResponseError(final T object) {
+    return new GenericResponse<>(GenericResponseConstants.RESPONSE_ERROR, GenericResponseConstants.INCORRECT_OPERATION, object);
+  }
+
+  /**
+   * Construye una respuesta genérica de advertencia.
+   *
+   * @param message texto adicional que se concatenará al mensaje por defecto. Si es nulo o vacío se usará
+   *   GenericResponseConstants.WRONG_OPERATION.
+   * @param object objeto de payload asociado a la respuesta (puede ser null).
+   * @param <T> tipo del objeto de respuesta.
+   * @return instancia de GenericResponse<T> con el código de advertencia, el mensaje resultante y el objeto.
    */
   public static <T> GenericResponse<T> buildGenericResponseWarning(final String message, final T object) {
     final String msg = StringUtils.isNotEmpty(message)
       ? StringUtils.joinWith(GenericResponseConstants.DASH, GenericResponseConstants.WRONG_OPERATION, message)
       : GenericResponseConstants.WRONG_OPERATION;
     return new GenericResponse<>(GenericResponseConstants.RESPONSE_WARNING, msg, object);
+  }
+
+  /**
+   * Construye una respuesta genérica de advertencia.
+   *
+   * @param object objeto de payload asociado a la respuesta (puede ser null).
+   * @param <T> tipo del objeto de respuesta.
+   * @return instancia de GenericResponse<T> con el código de advertencia, el mensaje resultante y el objeto.
+   */
+  public static <T> GenericResponse<T> buildGenericResponseWarning(final T object) {
+    return new GenericResponse<>(GenericResponseConstants.RESPONSE_WARNING, GenericResponseConstants.WRONG_OPERATION, object);
   }
 
   /**

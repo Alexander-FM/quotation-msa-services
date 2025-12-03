@@ -1,6 +1,8 @@
 package com.codesoft.catalogs.adjustment_factor.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.codesoft.catalogs.adjustment_factor.dto.request.AdjustmentFactorRequestDto;
 import com.codesoft.catalogs.adjustment_factor.dto.response.AdjustmentFactorResponseDto;
@@ -12,8 +14,9 @@ import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.GenericResponseUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,11 +29,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/catalogs/adjustment-factor")
+@RequestMapping("${app.endpoints.adjustment-factor}")
 @RequiredArgsConstructor
 public class AdjustmentFactorController {
 
   private final AdjustmentFactorService adjustmentFactorService;
+
+  private final ApplicationContext context;
+
+  private final Environment environment;
 
   @GetMapping
   public ResponseEntity<GenericResponse<List<AdjustmentFactorResponseDto>>> retrieve() {
@@ -60,18 +67,14 @@ public class AdjustmentFactorController {
   @PutMapping("/{id}")
   public ResponseEntity<GenericResponse<AdjustmentFactorResponseDto>> update(@PathVariable(value = "id") final Integer id,
     @Valid @RequestBody final AdjustmentFactorRequestDto requestDto) {
-    if (id == null || id <= 0) {
+    if (id <= 0) {
       throw new BaseException(BaseErrorMessage.BAD_REQUEST);
     }
     final AdjustmentFactorResponseDto existing = adjustmentFactorService.findById(id);
-    if (ObjectUtils.isNotEmpty(existing)) {
-      requestDto.setId(existing.getId());
-      return ResponseEntity.status(HttpStatus.OK)
-        .body(GenericResponseUtils.buildGenericResponseSuccess(AdjustmentFactorConstants.UPDATED_MESSAGE,
-          this.adjustmentFactorService.create(requestDto)));
-    } else {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(GenericResponseUtils.buildGenericResponseError(StringUtils.EMPTY, null));
-    }
+    requestDto.setId(existing.getId());
+    return ResponseEntity.status(HttpStatus.OK)
+      .body(GenericResponseUtils.buildGenericResponseSuccess(AdjustmentFactorConstants.UPDATED_MESSAGE,
+        this.adjustmentFactorService.create(requestDto)));
   }
 
   @DeleteMapping("/{id}")
@@ -79,5 +82,26 @@ public class AdjustmentFactorController {
     this.adjustmentFactorService.deleteById(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
       .body(GenericResponseUtils.buildGenericResponseSuccess(AdjustmentFactorConstants.REMOVED_MESSAGE, null));
+  }
+
+  /**
+   * Este endpoint sirve para simular el cierre del microservice (crash). Spring cierra todos los beans, desconecta la base de datos y apaga
+   * el servidor (Tomcat, Jetty, etc.). Como ya no hay nada ejecutándose el proceso de java finaliza y la aplicación se cierra por completo,
+   * kubernetes detecta que el proceso murió y levanta una nueva instancia del pod. Ya que por definición los pods tiene una política de
+   * reinicio Always. (restartPolicy: Always), Kubernetes dice: "¡Oye! El contenedor se apagó. Debo crear uno nuevo de inmediato".
+   * <p>Resultado: El pod se reinicia automáticamente.</p>
+   */
+  @GetMapping("/crash")
+  public void crash() {
+    ((ConfigurableApplicationContext) context).close();
+  }
+
+  @GetMapping("/testLoadBalancer")
+  public ResponseEntity<Object> testLoadBalancer() {
+    Map<String, Object> body = new HashMap<>();
+    body.put("body", this.adjustmentFactorService.findAll());
+    body.put("podInfo", environment.getProperty("MY_POD_NAME") + ": " + environment.getProperty("MY_POD_IP"));
+    body.put("texto", environment.getProperty("config.texto"));
+    return ResponseEntity.status(HttpStatus.OK).body(body);
   }
 }

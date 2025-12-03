@@ -16,11 +16,13 @@ public class EmployeeConstants {
 
   public static final String REMOVED_MESSAGE = "Employee removed successfully";
 
-  public static final String FIND_ERROR_MESSAGE = "An error occurred while finding the Employee";
+  public static final String MS_CATALOG_ITEM_SERVICE = "http://appmic-quotingplugins-catalogs/api/catalogs";
 
-  public static final String SAVE_ERROR_MESSAGE = "An error occurred while saving the Employee";
+  public static final String PORT_API_CATALOG_ITEM_SERVICE = "http://127.0.0.1:8080/api/catalogs";
 
-  public static final String UPDATE_ERROR_MESSAGE = "An error occurred while updating the Employee";
+  public static final String CATALOG_ITEM_SERVICE_UNAVAILABLE_MESSAGE = "The catalog item service is not available (connection refused)";
 
-  public static final String DELETE_ERROR_MESSAGE = "An error occurred while deleting the Employee";
+  public static final int EMPLOYEE_ERROR_CODE = 51;
+
+  public static final String ALREADY_EXISTS_MESSAGE = "Employee already exists in the database";
 }
