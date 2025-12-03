@@ -5,11 +5,11 @@ import java.util.Objects;
 import com.codesoft.config.WebClientFactory;
 import com.codesoft.dto.UserResponseDto;
 import com.codesoft.exception.AuthMessageEnum;
-import com.codesoft.utils.AuthConstants;
 import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.WebClientErrorHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -24,11 +24,10 @@ public class UserServiceImpl implements UserService {
   private final WebClientErrorHandler errorHandler;
 
   // Inyectas tu clase
-  public UserServiceImpl(final WebClientFactory webClientFactory, final WebClientErrorHandler errorHandler) {
-    this.webClient = webClientFactory.retrieveWebClient(
-      AuthConstants.MS_EMPLOYEE_SERVICE,
-      AuthConstants.PORT_API_EMPLOYEE_USER_SERVICE
-    );
+  public UserServiceImpl(final WebClientFactory webClientFactory, final WebClientErrorHandler errorHandler,
+    @Value("${app.external.employee-service-url}") final String employeeServiceUrl) {
+    log.info("Connecting to Employee Service at: {}", employeeServiceUrl);
+    this.webClient = webClientFactory.retrieveWebClient(employeeServiceUrl);
     this.errorHandler = errorHandler;
   }
 

@@ -37,6 +37,9 @@ config:
   texto: Configurando ambiente de desarrollo
 jwt:
   secret: ${JWT_SIGNATURE_QUOTATIONS:clave-secreta-para-desarrollo-12345}
+app:
+  external:
+    employee-service-url: ${MS_EMPLOYEE_SERVICE:http://127.0.0.1:8082/api/employees}
 # Configuración específica para el perfil 'prod'
 ---
 spring:
@@ -47,3 +50,6 @@ config:
   texto: Configurando ambiente de producción
 jwt:
   secret: ${JWT_SIGNATURE_QUOTATIONS}
+app:
+  external:
+    employee-service-url: ${MS_EMPLOYEE_SERVICE}

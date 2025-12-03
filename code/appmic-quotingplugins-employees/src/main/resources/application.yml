@@ -65,6 +65,9 @@ config:
   texto: Configurando ambiente de desarrollo
 jwt:
   secret: ${JWT_SIGNATURE_QUOTATIONS:clave-secreta-para-desarrollo-12345}
+app:
+  external:
+    catalog-service-url: ${MS_CATALOG_ITEM_SERVICE:http://127.0.0.1:8080/api/catalogs}
 # Configuración específica para el perfil 'prod'
 ---
 spring:
@@ -91,3 +94,6 @@ config:
   texto: Configurando ambiente de producción
 jwt:
   secret: ${JWT_SIGNATURE_QUOTATIONS}
+app:
+  external:
+    catalog-service-url: ${MS_CATALOG_ITEM_SERVICE}

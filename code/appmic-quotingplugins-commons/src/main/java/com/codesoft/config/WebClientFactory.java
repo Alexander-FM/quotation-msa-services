@@ -2,9 +2,7 @@ package com.codesoft.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -18,28 +16,27 @@ public class WebClientFactory {
 
   private final WebClient simpleWebClient;
 
-  private final Environment env;
-
   /**
-   * Devuelve un WebClient configurado automáticamente para Local o K8s basado en la clave de la propiedad del servicio.
-   *
-   * @param serviceUrlKey La clave en application.yml (ej. "MS_CATALOG_ITEM_SERVICE")
-   * @param defaultUrl La URL por defecto para local (ej. EmployeeConstants.PORT_API...)
+   * Devuelve el WebClient correcto basándose en sí la URL apunta a un entorno local o de cluster. <p> @param serviceUrl La URL final ya
+   * resuelta (ej.: "<a href="http://localhost:8082"> Url local </a>" o "<a href="http://appmic-employees"> Url kubernetes </a>)</p>
    */
-  public WebClient retrieveWebClient(final String serviceUrlKey, final String defaultUrl) {
-    String serviceUrl = env.getProperty(serviceUrlKey);
-    if (StringUtils.isBlank(serviceUrl)) {
+  public WebClient retrieveWebClient(final String serviceUrl) {
+    if (isLocalUrl(serviceUrl)) {
       // --- ESCENARIO LOCAL ---
-      log.info("Factory: Configurando cliente SIMPLE para (Local): {}", defaultUrl);
+      log.info("Web Client Factory: Detectado Localhost. Usando cliente SIMPLE: {}", serviceUrl);
       return simpleWebClient.mutate()
-        .baseUrl(defaultUrl)
+        .baseUrl(serviceUrl)
         .build();
     } else {
       // --- ESCENARIO KUBERNETES ---
-      log.info("Factory: Configurando cliente LOAD BALANCED para (K8s): {}", serviceUrl);
+      log.info("Web Client Factory: Detectado Servicio K8s. Usando cliente LOAD BALANCED: {}", serviceUrl);
       return loadBalancedWebClientBuilder
         .baseUrl(serviceUrl)
         .build();
     }
+  }
+
+  private boolean isLocalUrl(String url) {
+    return url.contains("localhost") || url.contains("127.0.0.1");
   }
 }
