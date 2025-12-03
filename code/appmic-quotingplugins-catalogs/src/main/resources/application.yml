@@ -37,17 +37,6 @@ management:
       enabled: true
     readiness-state:
       enabled: true
-# Other configurations
-jwt:
-  secret: appmic-quotingplugins-secret-key
-# Configuración común a todos los perfiles
----
-spring:
-  config:
-    activate:
-      on-profile: default
-config:
-  texto: Configurando ambiente por defecto
 # Configuración específica para el perfil 'dev'
 ---
 spring:
@@ -65,6 +54,8 @@ spring:
     open-in-view: false
 config:
   texto: Configurando ambiente de desarrollo
+jwt:
+  secret: ${JWT_SIGNATURE_QUOTATIONS:clave-secreta-para-desarrollo-12345}
 logging:
   level:
     org:
@@ -92,3 +83,5 @@ logging:
         security: INFO
 config:
   texto: Configurando ambiente de producción
+jwt:
+  secret: ${JWT_SIGNATURE_QUOTATIONS}
