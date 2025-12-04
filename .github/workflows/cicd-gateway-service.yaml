@@ -1,4 +1,4 @@
-name: CI/CD Auth Service
+name: CI/CD Gateway Service
 
 # ¿Cuándo se ejecuta esto?
 on:
