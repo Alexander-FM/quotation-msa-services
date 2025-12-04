@@ -1,5 +1,7 @@
 package com.codesoft.exception;
 
+import java.net.ConnectException;
+import java.nio.channels.UnresolvedAddressException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 @RestControllerAdvice
@@ -95,6 +98,18 @@ public class GlobalExceptionHandler {
     }
     return new ResponseEntity<>(
       GenericResponseUtils.buildGenericResponseWarning(GenericResponseConstants.BAD_REQUEST_MESSAGE), HttpStatus.BAD_REQUEST);
+  }
+
+  /**
+   * Captura errores de conexión cuando un microservicio está caído o no existe.
+   * ResourceAccessException suele envolver a ConnectException o UnresolvedAddressException.
+   */
+  @ExceptionHandler({ResourceAccessException.class, UnresolvedAddressException.class, ConnectException.class})
+  @ResponseStatus(code = HttpStatus.SERVICE_UNAVAILABLE)
+  public GenericResponse<Object> handleConnectionError(final Exception ex) {
+    log.warn("ResourceAccessException, UnresolvedAddressException, ConnectException: {}", ex.getMessage());
+    final String message = "Gateway Error: El micro servicio destino no está disponible o no responde.";
+    return GenericResponseUtils.buildGenericResponseError("Target service unavailable or connection refused via Gateway.", message);
   }
 
   @ExceptionHandler(BaseException.class)

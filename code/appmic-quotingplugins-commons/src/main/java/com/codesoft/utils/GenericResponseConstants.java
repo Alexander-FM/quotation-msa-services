@@ -68,4 +68,6 @@ public class GenericResponseConstants {
   public static final int APPMIC_QUOTING_ERROR_CODE = 80;
 
   public static final int APPMIC_REPORTS_ERROR_CODE = 90;
+
+  public static final int APPMIC_GATEWAY_ERROR_CODE = 100;
 }
