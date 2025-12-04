@@ -15,8 +15,14 @@ spring:
             uri: ${MS_CATALOGS_SERVICE_LB:http://127.0.0.1:8080}
             predicates:
               - Path=/api/catalogs/**
-            filters:
-              - StripPrefix=2
+          - id: customers-service
+            uri: ${MS_CUSTOMERS_SERVICE_LB:http://127.0.0.1:8084}
+            predicates:
+              - Path=/api/customers/**
+          - id: employees-service
+            uri: ${MS_EMPLOYEES_SERVICE_LB:http://127.0.0.1:8082}
+            predicates:
+              - Path=/api/employees/**
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
 management:
@@ -36,7 +42,7 @@ spring:
     activate:
       on-profile: dev
 config:
-  texto: Configurando ambiente de desarrollo
+  texto: Configurando ambiente de desarrollo gateway
 # Configuración específica para el perfil 'prod'
 ---
 spring:
@@ -44,4 +50,4 @@ spring:
     activate:
       on-profile: prod
 config:
-  texto: Configurando ambiente de producción
+  texto: Configurando ambiente de producción gateway

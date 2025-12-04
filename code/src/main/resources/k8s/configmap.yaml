@@ -47,3 +47,16 @@ metadata:
 data:
   profile_active: "dev"
   ms_employee_service: "http://appmic-quotingplugins-employees:8082/api/employees"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: appmic-quotingplugins-gateway
+  namespace: dev
+data:
+  profile_active: "dev"
+  port: "8081"
+  ms_auth_service_lb: "http://appmic-quotingplugins-auth:9000"
+  ms_customers_service_lb: "http://appmic-quotingplugins-customers:8084"
+  ms_catalogs_service_lb: "http://appmic-quotingplugins-catalogs:8080"
+  ms_employees_service_lb: "http://appmic-quotingplugins-employees:8082"

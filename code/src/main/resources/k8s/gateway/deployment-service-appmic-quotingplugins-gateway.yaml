@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appmic-quotingplugins-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appmic-quotingplugins-gateway
+  template:
+    metadata:
+      labels:
+        app: appmic-quotingplugins-gateway
+    spec:
+      containers:
+        - image: alexanderpe/appmic-quotingplugins-gateway:latest
+          name: appmic-quotingplugins-gateway
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-gateway
+                  key: profile_active
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-gateway
+                  key: port
+            - name: MS_AUTH_SERVICE_LB
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-gateway
+                  key: ms_auth_service_lb
+            - name: MS_CUSTOMERS_SERVICE_LB
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-gateway
+                  key: ms_customers_service_lb
+            - name: MS_CATALOGS_SERVICE_LB
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-gateway
+                  key: ms_catalogs_service_lb
+            - name: MS_EMPLOYEES_SERVICE_LB
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-gateway
+                  key: ms_employees_service_lb
+          # 1. READINESS: ¿Ya terminó de arrancar Spring?
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8081
+              scheme: HTTP
+            initialDelaySeconds: 90  # Esperamos 90s antes de preguntar la 1ra vez (Java tarda en iniciar)
+            periodSeconds: 10        # Preguntamos cada 10s
+            timeoutSeconds: 5        # Si no responde en 5s, falla
+            failureThreshold: 3      # Si falla 3 veces seguidas, corta el tráfico
+          # 2. LIVENESS: ¿Se murió el proceso?
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8081
+              scheme: HTTP
+            initialDelaySeconds: 120  # Damos más margen al inicio para no matar la app si el arranque es lento
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          # 3. RESOURCES: Hardware (Ajustado para velocidad)
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "400m"
+            limits:
+              memory: "800Mi" # Limite de RAM para proteger tu PC
+              # cpu: "1000m"  # <--- COMENTADO: En Minikube, mejor no limitar CPU para evitar lentitud
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appmic-quotingplugins-gateway
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+  selector:
+    app: appmic-quotingplugins-gateway
