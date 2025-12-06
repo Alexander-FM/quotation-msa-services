@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: appmic-quotingplugins-catalogs
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: appmic-quotingplugins-catalogs
