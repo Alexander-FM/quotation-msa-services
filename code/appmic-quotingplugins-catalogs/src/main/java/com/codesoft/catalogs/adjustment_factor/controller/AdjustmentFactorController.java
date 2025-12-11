@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -82,6 +83,14 @@ public class AdjustmentFactorController {
     this.adjustmentFactorService.deleteById(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
       .body(GenericResponseUtils.buildGenericResponseSuccess(AdjustmentFactorConstants.REMOVED_MESSAGE, null));
+  }
+
+  @GetMapping("/searchByName")
+  public ResponseEntity<GenericResponse<AdjustmentFactorResponseDto>> retrieveByName(
+    @RequestParam(name = "name") final String name) {
+    final AdjustmentFactorResponseDto responseDto = adjustmentFactorService.findByName(name);
+    return ResponseEntity.status(HttpStatus.OK)
+      .body(GenericResponseUtils.buildGenericResponseSuccess(responseDto));
   }
 
   /**

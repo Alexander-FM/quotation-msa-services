@@ -32,7 +32,7 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
   public UnitOfMeasurementResponseDto findById(final Integer id) {
     final Optional<UnitOfMeasurementEntity> entityOptional = this.unitOfMeasurementRepository.findById(id);
     return entityOptional.map(this.unitOfMeasurementFieldsMapper::toDto)
-      .orElseThrow(() -> new UnitOfMeasurementException(UnitOfMeasurementMessage.CATALOG_ITEM_NOT_FOUND));
+      .orElseThrow(() -> new UnitOfMeasurementException(UnitOfMeasurementMessage.UNIT_OF_MEASUREMENT_MESSAGE_NOT_FOUND));
   }
 
   @Override
@@ -40,7 +40,7 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
     final Optional<UnitOfMeasurementEntity> entityOptional =
       this.unitOfMeasurementRepository.findByNameContainingIgnoreCase(name);
     return entityOptional.map(this.unitOfMeasurementFieldsMapper::toDto)
-      .orElseThrow(() -> new UnitOfMeasurementException(UnitOfMeasurementMessage.CATALOG_ITEM_NOT_FOUND));
+      .orElseThrow(() -> new UnitOfMeasurementException(UnitOfMeasurementMessage.UNIT_OF_MEASUREMENT_MESSAGE_NOT_FOUND));
   }
 
   @Override
@@ -49,14 +49,14 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
       final UnitOfMeasurementEntity entity = this.unitOfMeasurementRepository.save(this.unitOfMeasurementFieldsMapper.toEntity(requestDto));
       return this.unitOfMeasurementFieldsMapper.toDto(entity);
     } catch (final DataIntegrityViolationException ex) {
-      throw new UnitOfMeasurementException(UnitOfMeasurementMessage.CATALOG_ITEM_ALREADY_EXISTS);
+      throw new UnitOfMeasurementException(UnitOfMeasurementMessage.UNIT_OF_MEASUREMENT_MESSAGE_ALREADY_EXISTS);
     }
   }
 
   @Override
   public void deleteById(final Integer id) {
     final UnitOfMeasurementEntity existingEntity = this.unitOfMeasurementRepository.findById(id)
-      .orElseThrow(() -> new UnitOfMeasurementException(UnitOfMeasurementMessage.CATALOG_ITEM_NOT_FOUND));
+      .orElseThrow(() -> new UnitOfMeasurementException(UnitOfMeasurementMessage.UNIT_OF_MEASUREMENT_MESSAGE_NOT_FOUND));
     this.unitOfMeasurementRepository.deleteById(existingEntity.getId());
   }
 }

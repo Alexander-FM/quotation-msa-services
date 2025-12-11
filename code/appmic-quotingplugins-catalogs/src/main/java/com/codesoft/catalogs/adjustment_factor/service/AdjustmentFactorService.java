@@ -15,4 +15,5 @@ public interface AdjustmentFactorService {
 
   void deleteById(final Integer id);
 
+  AdjustmentFactorResponseDto findByName(final String name);
 }

@@ -6,12 +6,12 @@ import com.codesoft.exception.BaseException;
 import com.codesoft.materials.material.dto.request.MaterialRequestDto;
 import com.codesoft.materials.material.dto.response.MaterialResponseDto;
 import com.codesoft.materials.material.service.MaterialService;
+import com.codesoft.materials.material.utils.MaterialConstants;
 import com.codesoft.utils.BaseErrorMessage;
 import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.GenericResponseUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/materials/material")
+@RequestMapping("${app.endpoints.material}")
 @RequiredArgsConstructor
 public class MaterialController {
 
@@ -34,14 +34,14 @@ public class MaterialController {
   public ResponseEntity<GenericResponse<List<MaterialResponseDto>>> retrieve() {
     final List<MaterialResponseDto> responseDtoList = materialService.findAll();
     return ResponseEntity.status(HttpStatus.OK)
-      .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, responseDtoList));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(MaterialConstants.FOUND_MESSAGE, responseDtoList));
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<GenericResponse<MaterialResponseDto>> retrieveById(@PathVariable(value = "id") final Integer id) {
     final MaterialResponseDto responseDto = materialService.findById(id);
     return ResponseEntity.status(HttpStatus.OK)
-      .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, responseDto));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(MaterialConstants.FOUND_MESSAGE, responseDto));
   }
 
   @PostMapping
@@ -50,7 +50,8 @@ public class MaterialController {
       throw new BaseException(BaseErrorMessage.ID_PROVIDED_ON_CREATE);
     }
     final MaterialResponseDto responseDto = this.materialService.create(requestDto);
-    return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, responseDto));
+    return ResponseEntity.status(HttpStatus.CREATED)
+      .body(GenericResponseUtils.buildGenericResponseSuccess(MaterialConstants.SAVED_MESSAGE, responseDto));
   }
 
   @PutMapping("/{id}")
@@ -62,13 +63,13 @@ public class MaterialController {
     final MaterialResponseDto existing = materialService.findById(id);
     requestDto.setId(existing.getId());
     return ResponseEntity.status(HttpStatus.OK)
-      .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, this.materialService.create(requestDto)));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(MaterialConstants.UPDATED_MESSAGE, this.materialService.create(requestDto)));
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<GenericResponse<Object>> delete(@PathVariable(value = "id") final Integer id) {
     this.materialService.deleteById(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
-      .body(GenericResponseUtils.buildGenericResponseSuccess(StringUtils.EMPTY, null));
+      .body(GenericResponseUtils.buildGenericResponseSuccess(MaterialConstants.REMOVED_MESSAGE, null));
   }
 }

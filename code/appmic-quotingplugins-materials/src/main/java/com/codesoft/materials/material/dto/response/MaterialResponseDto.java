@@ -2,6 +2,7 @@ package com.codesoft.materials.material.dto.response;
 
 import java.math.BigDecimal;
 
+import com.codesoft.materials.material.utils.MaterialCalculationTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,17 +22,15 @@ public class MaterialResponseDto {
 
   private BigDecimal unitCost;
 
-  private BigDecimal width;
+  private String unidadOfMeasurementName;
 
-  private BigDecimal length;
-
-  private BigDecimal height;
-
-  private Boolean usedFormula;
-
-  private Boolean isActive;
-
-  private String unidadName;
+  private MaterialCalculationTypeEnum calculationType;
 
   private String adjustmentFactorName;
+
+  private BigDecimal adjustmentFactorValue;
+
+  private Integer thicknessMicrons;
+
+  private Boolean isActive;
 }
