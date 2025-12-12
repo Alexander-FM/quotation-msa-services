@@ -1,97 +1,57 @@
--- =============== MODULE TYPE
--- Create Sequence
-CREATE SEQUENCE module_id_seq
-    START WITH 1
-    INCREMENT BY 1;
--- Table
-CREATE TABLE module
-(
-    id         INTEGER PRIMARY KEY   DEFAULT NEXTVAL('module_id_seq'),
-    name       VARCHAR(100) NOT NULL,
-    dimensions VARCHAR(500) NULL,
-    is_active  BOOLEAN      NOT NULL DEFAULT TRUE
-);
--- Unique Values
-ALTER TABLE module
-    ADD CONSTRAINT module_name UNIQUE (name);
--- Comments
-COMMENT
-ON TABLE module IS 'Esta tabla contiene información de los módulos por ejemplo, Basico 8N100';
-COMMENT
-ON COLUMN module.name IS 'Nombre del módulo';
-COMMENT
-ON COLUMN module.dimensions IS 'Descripción del módulo';
-COMMENT
-ON COLUMN module.is_active IS 'Verificar si está disponible el módulo';
--- Insert
-INSERT INTO module (name, dimensions, is_active)
-VALUES ('Basico 8N100', 'Tamaño 230 cm * 110.2 cm * 49.3 cm', true),
-       ('Basico 8N80', 'Tamaño 230 cm * 85.8 cm * 49.3 cm', true),
-       ('Basico 8N60', 'Tamaño 230 cm * 59.8 cm * 49.3 cm', true);
--- Query
-SELECT *
-FROM module;
+-- ==========================================
+-- 1. TABLA MÓDULOS (La Cabecera de la Receta)
+-- ==========================================
+DROP TABLE IF EXISTS module_materials;
+DROP TABLE IF EXISTS module_concepts;
+DROP TABLE IF EXISTS modules;
 
--- =============== MODULE CONCEPTS
--- Create Sequence
-CREATE SEQUENCE module_concepts_id_seq
-    START WITH 1
-    INCREMENT BY 1;
--- Table
+CREATE TABLE modules
+(
+    id          INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Identificador único del módulo',
+    name        VARCHAR(100) NOT NULL UNIQUE COMMENT 'Nombre comercial del módulo (ej: Basico 8N100)',
+    description VARCHAR(255) COMMENT 'Descripción técnica o comercial para mostrar en cotizaciones',
+    dimensions  VARCHAR(100) COMMENT 'Dimensiones generales del mueble completo (Alto x Ancho x Fondo)',
+    is_active   TINYINT(1) DEFAULT 1 COMMENT '1 = Activo/Visible para cotizar, 0 = Obsoleto',
+    created_at  TIMESTAMP  DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha de creación del registro'
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='Catálogo principal de módulos fabricables';
+
+-- ==========================================
+-- 2. TABLA CONCEPTOS (Configuración Financiera 1:1)
+-- ==========================================
 CREATE TABLE module_concepts
 (
-    id             INTEGER PRIMARY KEY DEFAULT NEXTVAL('module_concepts_id_seq'),
-    overheads_cost DECIMAL(5, 2) NOT NULL,
-    fee            DECIMAL(5, 2) NULL,
-    rebate         DECIMAL(5, 2) NULL,
-    profit_margin  DECIMAL(5, 2) NULL,
-    module_id      INTEGER NOT NULL,
-    CONSTRAINT fk_module_concepts_module FOREIGN KEY (module_id) REFERENCES module (id)
-);
--- Comments
-COMMENT
-ON TABLE module_concepts IS 'Esta tabla contiene información general del módulo';
-COMMENT
-ON COLUMN module_concepts.overheads_cost IS 'Gastos generales';
-COMMENT
-ON COLUMN module_concepts.fee IS 'FEE';
-COMMENT
-ON COLUMN module_concepts.rebate IS 'Rebate';
-COMMENT
-ON COLUMN module_concepts.profit_margin IS 'Margen de utilidad';
-COMMENT
-ON COLUMN module_concepts.module_id IS 'Referencia al módulo';
--- Query
-SELECT *
-FROM module_concepts;
+    id                        INT AUTO_INCREMENT PRIMARY KEY,
+    -- Relación 1 a 1: Un concepto pertenece a UN solo módulo
+    module_id                 INT NOT NULL UNIQUE COMMENT 'FK hacia modules. Debe ser única para garantizar relación 1:1',
+    -- Valores Porcentuales (Guardamos 10.00 para representar 10%)
+    overheads_cost_percentage DECIMAL(5, 2) DEFAULT 0.00 COMMENT 'Porcentaje de Gastos Generales (ej: 3.00)',
+    fee_percentage            DECIMAL(5, 2) DEFAULT 0.00 COMMENT 'Porcentaje de FEE administrativo',
+    rebate_percentage         DECIMAL(5, 2) DEFAULT 0.00 COMMENT 'Porcentaje de Rebate/Devolución',
+    profit_margin_percentage  DECIMAL(5, 2) DEFAULT 0.00 COMMENT 'Margen de utilidad esperado (ej: 10.00 o 12.00)',
+    CONSTRAINT fk_concepts_module FOREIGN KEY (module_id) REFERENCES modules (id) ON DELETE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='Configuración financiera específica por módulo';
 
-
--- ==================== TABLA MATERIALS MODULE
--- Create Sequence
-CREATE SEQUENCE material_module_id_seq
-    START WITH 1
-    INCREMENT BY 1;
--- Table
-CREATE TABLE material_module
+-- ==========================================
+-- 3. TABLA MATERIALES DEL MÓDULO (La Receta)
+-- ==========================================
+CREATE TABLE module_materials
 (
-    id            INTEGER PRIMARY KEY DEFAULT NEXTVAL('material_module_id_seq'),
-    -- Referencia al otro micro servicio (Solo guardamos el ID)
-    module_id     INTEGER NOT NULL,
-    material_id   INTEGER NULL,
-    -- CANTIDAD BASE
-    quantity         DECIMAL(10, 2) NOT NULL, -- Ej.: 8.00 (cenefas) o 20.63 (kg)
-    -- PARÁMETROS DE CONFIGURACIÓN POR DEFECTO (La "Receta")
-    -- Estos valores se copiarán a la cotización cuando se elija este módulo
-    description_ref  VARCHAR(150),      -- Ej.: "105.0 x 5.0 - cenefas"
-    -- Opcionales (Dependen del tipo de material)
-    default_yield    INTEGER NULL,      -- Ej.: 35 (Para Planchas)
-    default_width    DECIMAL(10, 2) NULL, -- Ej: 75.0 (Para Poliestireno)
-    default_length   DECIMAL(10, 2) NULL  -- Ej: 30.0 (Para Poliestireno)
-    CONSTRAINT fk_material_module_module FOREIGN KEY (module_id) REFERENCES module (id)
-);
--- Query
-SELECT *
-FROM material_module;
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    module_id       INT            NOT NULL COMMENT 'Módulo al que pertenece este ingrediente',
+    material_id     INT            NOT NULL COMMENT 'ID del material (Referencia al microservicio de Materiales)',
+    -- Cantidad base
+    quantity        DECIMAL(10, 2) NOT NULL COMMENT 'Cantidad necesaria para fabricar 1 módulo',
+    -- Datos para clonar a la cotización (Snapshot de configuración)
+    description_ref VARCHAR(150) COMMENT 'Descripción del corte (ej: 105x5 cenefas)',
+    -- Parámetros específicos según el tipo de material
+    default_yield   INT            NULL COMMENT 'Solo para Planchas: Cuántas piezas salen (Divisor)',
+    default_width   DECIMAL(10, 2) NULL COMMENT 'Solo Poliestireno/Impresión: Ancho en cm',
+    default_length  DECIMAL(10, 2) NULL COMMENT 'Solo Poliestireno/Impresión: Largo en cm',
+    CONSTRAINT fk_materials_module FOREIGN KEY (module_id) REFERENCES modules (id) ON DELETE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='Listado de materiales (ingredientes) necesarios para un módulo';
 
 -- ==================== TABLE QUOTATION
 CREATE TABLE quotation
@@ -99,8 +59,8 @@ CREATE TABLE quotation
     id                       INTEGER PRIMARY KEY AUTO_INCREMENT,
     customer_document_number VARCHAR(20)    NOT NULL,
     employee_document_number VARCHAR(20)    NOT NULL,
-    date                     DATE NULL,
-    registration_date        DATE NULL,
+    date                     DATE           NULL,
+    registration_date        DATE           NULL,
     state                    SMALLINT       NOT NULL,
     overheads_cost           DECIMAL(10, 2) NOT NULL,
     fee                      DECIMAL(10, 2) NOT NULL,
