@@ -2,7 +2,6 @@
 -- 1. TABLA MÓDULOS (La Cabecera de la Receta)
 -- ==========================================
 DROP TABLE IF EXISTS module_materials;
-DROP TABLE IF EXISTS module_concepts;
 DROP TABLE IF EXISTS modules;
 
 CREATE TABLE modules
@@ -12,29 +11,16 @@ CREATE TABLE modules
     description VARCHAR(255) COMMENT 'Descripción técnica o comercial para mostrar en cotizaciones',
     dimensions  VARCHAR(100) COMMENT 'Dimensiones generales del mueble completo (Alto x Ancho x Fondo)',
     is_active   TINYINT(1) DEFAULT 1 COMMENT '1 = Activo/Visible para cotizar, 0 = Obsoleto',
+    overheads_cost_percentage DECIMAL(5, 2) DEFAULT 0.00 COMMENT 'Porcentaje de Gastos Generales (ej: 3.00)',
+    fee_percentage            DECIMAL(5, 2) DEFAULT 0.00 COMMENT 'Porcentaje de FEE administrativo',
+    rebate_percentage         DECIMAL(5, 2) DEFAULT 0.00 COMMENT 'Porcentaje de Rebate/Devolución',
+    profit_margin_percentage  DECIMAL(5, 2) DEFAULT 0.00 COMMENT 'Margen de utilidad esperado (ej: 10.00 o 12.00)',
     created_at  TIMESTAMP  DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha de creación del registro'
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='Catálogo principal de módulos fabricables';
 
 -- ==========================================
--- 2. TABLA CONCEPTOS (Configuración Financiera 1:1)
--- ==========================================
-CREATE TABLE module_concepts
-(
-    id                        INT AUTO_INCREMENT PRIMARY KEY,
-    -- Relación 1 a 1: Un concepto pertenece a UN solo módulo
-    module_id                 INT NOT NULL UNIQUE COMMENT 'FK hacia modules. Debe ser única para garantizar relación 1:1',
-    -- Valores Porcentuales (Guardamos 10.00 para representar 10%)
-    overheads_cost_percentage DECIMAL(5, 2) DEFAULT 0.00 COMMENT 'Porcentaje de Gastos Generales (ej: 3.00)',
-    fee_percentage            DECIMAL(5, 2) DEFAULT 0.00 COMMENT 'Porcentaje de FEE administrativo',
-    rebate_percentage         DECIMAL(5, 2) DEFAULT 0.00 COMMENT 'Porcentaje de Rebate/Devolución',
-    profit_margin_percentage  DECIMAL(5, 2) DEFAULT 0.00 COMMENT 'Margen de utilidad esperado (ej: 10.00 o 12.00)',
-    CONSTRAINT fk_concepts_module FOREIGN KEY (module_id) REFERENCES modules (id) ON DELETE CASCADE
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4 COMMENT ='Configuración financiera específica por módulo';
-
--- ==========================================
--- 3. TABLA MATERIALES DEL MÓDULO (La Receta)
+-- 2. TABLA MATERIALES DEL MÓDULO (La Receta)
 -- ==========================================
 CREATE TABLE module_materials
 (
