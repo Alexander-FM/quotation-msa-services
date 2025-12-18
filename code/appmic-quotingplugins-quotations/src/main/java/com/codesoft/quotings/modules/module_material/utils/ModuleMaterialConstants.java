@@ -20,5 +20,5 @@ public class ModuleMaterialConstants {
 
   public static final String MODULE_SERVICE_UNAVAILABLE_MESSAGE = "The module service is not available (connection refused)";
 
-  public static final String ALREADY_EXISTS_MESSAGE = "Module Material already exists in the database";
+  public static final String ALREADY_EXISTS_MESSAGE = "The materials already exists for that module in the database";
 }

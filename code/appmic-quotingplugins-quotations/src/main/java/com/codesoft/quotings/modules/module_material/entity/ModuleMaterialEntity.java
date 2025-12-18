@@ -9,7 +9,6 @@ import lombok.*;
 @Entity
 @Table(name = "module_materials")
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ModuleMaterialEntity {

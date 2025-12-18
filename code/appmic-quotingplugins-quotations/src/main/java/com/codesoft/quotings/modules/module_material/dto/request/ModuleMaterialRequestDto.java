@@ -21,7 +21,7 @@ public class ModuleMaterialRequestDto {
   private Integer id;
 
   @NotNull(message = "El moduleId es obligatorio.")
-  private ModuleRequestDto moduleId;
+  private ModuleRequestDto module;
 
   @NotNull(message = "El materialId es obligatorio.")
   private Integer materialId;

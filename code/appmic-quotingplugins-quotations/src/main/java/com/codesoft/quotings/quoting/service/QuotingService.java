@@ -2,13 +2,16 @@ package com.codesoft.quotings.quoting.service;
 
 import java.util.List;
 
+import com.codesoft.quotings.quoting.dto.request.QuotingRequestDto;
+import com.codesoft.quotings.quoting.dto.response.QuotingResponseDto;
+
 public interface QuotingService {
 
-  List<ModuleMaterialResponseDto> findAll();
+  List<QuotingResponseDto> findAll();
 
-  ModuleMaterialResponseDto findById(final Integer id);
+  QuotingResponseDto findById(final Integer id);
 
-  ModuleMaterialResponseDto create(final ModuleMaterialRequestDto requestDto);
+  QuotingResponseDto create(final QuotingRequestDto requestDto);
 
   void deleteById(final Integer id);
 

@@ -8,11 +8,11 @@ import org.springframework.http.HttpStatus;
 
 @RequiredArgsConstructor
 public enum ModuleMessage implements IErrorCode {
-  MATERIAL_NOT_FOUND(
+  MODULE_NOT_FOUND(
     GenericResponseUtils.makeCode(ModuleConstants.MODULE_ERROR_CODE, HttpStatus.NOT_FOUND, 1),
     HttpStatus.NOT_FOUND,
     ModuleConstants.NOT_FOUND_IN_DB_MESSAGE),
-  MATERIAL_ALREADY_EXISTS(
+  MODULE_ALREADY_EXISTS(
     GenericResponseUtils.makeCode(ModuleConstants.MODULE_ERROR_CODE, HttpStatus.CONFLICT, 2),
     HttpStatus.CONFLICT,
     ModuleConstants.ALREADY_EXISTS_MESSAGE);

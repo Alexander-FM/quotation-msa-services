@@ -1,8 +1,6 @@
 package com.codesoft.quotings.modules.module.dto.request;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -55,7 +53,5 @@ public class ModuleRequestDto {
   @DecimalMin(value = "0.00")
   @DecimalMax(value = "100.00")
   private BigDecimal profitMarginPercentage;
-
-  private Set<ModuleMaterialRequestDto> materials = new HashSet<>();
 }
 

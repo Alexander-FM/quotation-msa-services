@@ -25,7 +25,7 @@ spring:
 app:
   endpoints:
     module: "/api/quotations/module"
-    module_concept: "/api/quotations/module_concept"
+    module_material: "/api/quotations/module_material"
     quotation: "/api/quotations/quotation"
 management:
   tracing:

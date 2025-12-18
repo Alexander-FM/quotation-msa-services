@@ -2,6 +2,9 @@ package com.codesoft.quotings.modules.module_material.service;
 
 import java.util.List;
 
+import com.codesoft.quotings.modules.module_material.dto.request.ModuleMaterialRequestDto;
+import com.codesoft.quotings.modules.module_material.dto.response.ModuleMaterialResponseDto;
+
 public interface ModuleMaterialService {
 
   List<ModuleMaterialResponseDto> findAll();

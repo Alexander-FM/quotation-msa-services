@@ -8,17 +8,15 @@ import org.springframework.http.HttpStatus;
 
 @RequiredArgsConstructor
 public enum QuotingMessage implements IErrorCode {
-  MODULE_MATERIAL_NOT_FOUND(
-    GenericResponseUtils.makeCode(QuotingConstants.MODULE_MATERIAL_ERROR_CODE, HttpStatus.NOT_FOUND, 1),
+  QUOTING_NOT_FOUND(
+    GenericResponseUtils.makeCode(QuotingConstants.QUOTING_ERROR_CODE, HttpStatus.NOT_FOUND, 1),
     HttpStatus.NOT_FOUND, QuotingConstants.NOT_FOUND_IN_DB_MESSAGE),
-  MODULE_MATERIAL_ALREADY_EXISTS(
-    GenericResponseUtils.makeCode(QuotingConstants.MODULE_MATERIAL_ERROR_CODE, HttpStatus.CONFLICT, 2),
+  QUOTING_MATERIAL_ALREADY_EXISTS(
+    GenericResponseUtils.makeCode(QuotingConstants.QUOTING_ERROR_CODE, HttpStatus.CONFLICT, 2),
     HttpStatus.CONFLICT, QuotingConstants.ALREADY_EXISTS_MESSAGE),
-  MODULE_MATERIAL_SERVICE_UNAVAILABLE(
-    GenericResponseUtils.makeCode(QuotingConstants.MODULE_MATERIAL_ERROR_CODE, HttpStatus.SERVICE_UNAVAILABLE, 3),
-    HttpStatus.SERVICE_UNAVAILABLE, QuotingConstants.MODULE_SERVICE_UNAVAILABLE_MESSAGE),
-  MODULE_MATERIAL_CALCULATION_TYPE_NOT_FOUND(GenericResponseUtils.makeCode(71, HttpStatus.NOT_FOUND, 1),
-  HttpStatus.NOT_FOUND, "The calculation type has not been found");
+  MATERIAL_SERVICE_UNAVAILABLE(
+    GenericResponseUtils.makeCode(QuotingConstants.QUOTING_ERROR_CODE, HttpStatus.SERVICE_UNAVAILABLE, 3),
+    HttpStatus.SERVICE_UNAVAILABLE, QuotingConstants.MATERIAL_SERVICE_UNAVAILABLE_MESSAGE);
 
   private final int code;
 

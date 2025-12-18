@@ -2,28 +2,30 @@ package com.codesoft.quotings.quoting.service;
 
 import java.util.List;
 
+import com.codesoft.quotings.quoting.dto.request.QuotingRequestDto;
+import com.codesoft.quotings.quoting.dto.response.QuotingResponseDto;
 import org.springframework.stereotype.Service;
 
 @Service
 public class QuotingServiceImpl implements QuotingService {
 
   @Override
-  public List<ModuleMaterialResponseDto> findAll() {
+  public List<QuotingResponseDto> findAll() {
     return List.of();
   }
 
   @Override
-  public ModuleMaterialResponseDto findById(Integer id) {
+  public QuotingResponseDto findById(Integer id) {
     return null;
   }
 
   @Override
-  public ModuleMaterialResponseDto create(ModuleMaterialRequestDto requestDto) {
+  public QuotingResponseDto create(final QuotingRequestDto requestDto) {
     return null;
   }
 
   @Override
-  public void deleteById(Integer id) {
+  public void deleteById(final Integer id) {
 
   }
 }

@@ -2,7 +2,6 @@ package com.codesoft.quotings.modules.module.dto.response;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +33,5 @@ public class ModuleResponseDto {
   private BigDecimal profitMarginPercentage;
 
   private LocalDateTime createdAt;
-
-  private Set<ModuleMaterialResponseDto> materials;
 }
 
