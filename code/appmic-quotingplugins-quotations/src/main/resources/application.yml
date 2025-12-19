@@ -27,6 +27,9 @@ app:
     module: "/api/quotations/module"
     module_material: "/api/quotations/module_material"
     quotation: "/api/quotations/quotation"
+  feign:
+    material_client: ${MATERIAL_CLIENT:127.0.0.1:8083}
+    material_path: "/api/materials/material"
 management:
   tracing:
     sampling:
