@@ -4,8 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.codesoft.quotations.modules.module.entity.ModuleEntity;
-import com.codesoft.quotations.quotation.entity.QuotationEntity;
+import com.codesoft.quotations.modules.module.dto.request.ModuleRequestDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
@@ -18,10 +17,10 @@ public class QuotationDetailRequestDto {
 
   private Integer id;
 
-  private QuotationEntity quotation;
+  private QuotationRequestDto quotation;
 
   @NotNull(message = "El módulo es obligatorio.")
-  private ModuleEntity module;
+  private ModuleRequestDto module;
 
   @NotNull(message = "La cantidad es obligatoria.")
   @Min(value = 1, message = "La cantidad mínima es 1.")

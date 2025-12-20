@@ -53,6 +53,15 @@ management:
       enabled: true
     readiness-state:
       enabled: true
+resilience4j:
+  circuitbreaker:
+    instances:
+      ms_material:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
 # Configuración específica para el perfil 'dev'
 ---
 spring:

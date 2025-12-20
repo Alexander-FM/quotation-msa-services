@@ -55,8 +55,8 @@ CREATE TABLE quotation
     date                     DATETIME                DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha en la que se registro la cotización',
     state                    VARCHAR(20)    NOT NULL COMMENT 'BORRADOR, EN REVISIÓN, APROBADO, RECHAZADO',
     -- TOTALES DE LA VENTA (Suma de todos los módulos)
-    total_production_cost    DECIMAL(10, 2) NOT NULL DEFAULT 0.00 COMMENT 'Costo real para la empresa',
-    total_final_price        DECIMAL(10, 2) NOT NULL DEFAULT 0.00 COMMENT 'Precio final al cliente (con IGV/Impuestos si aplica)'
+    total_production_cost    DECIMAL(10, 2) NULL DEFAULT 0.00 COMMENT 'Costo real para la empresa',
+    total_final_price        DECIMAL(10, 2) NULL DEFAULT 0.00 COMMENT 'Precio final al cliente (con IGV/Impuestos si aplica)'
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
@@ -86,9 +86,9 @@ CREATE TABLE quotation_detail
     profit_margin_percentage DECIMAL(5, 2)  NOT NULL DEFAULT 0.00 COMMENT 'Ej: 12.00%',
     profit_margin_amount     DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     -- 6. TOTALES DE LÍNEA
-    unit_production_cost     DECIMAL(10, 2) NOT NULL COMMENT 'Costo real base',
-    unit_final_price         DECIMAL(10, 2) NOT NULL COMMENT 'Precio venta unitario',
-    total_line_price         DECIMAL(10, 2) NOT NULL COMMENT 'Precio total (Unit * Cantidad)',
+    unit_production_cost     DECIMAL(10, 2) NULL COMMENT 'Costo real base',
+    unit_final_price         DECIMAL(10, 2) NULL COMMENT 'Precio venta unitario',
+    total_line_price         DECIMAL(10, 2) NULL COMMENT 'Precio total (Unit * Cantidad)',
 
     CONSTRAINT fk_quotation_details FOREIGN KEY (quotation_id) REFERENCES quotation (id) ON DELETE CASCADE,
     CONSTRAINT fk_quotation_details_module FOREIGN KEY (module_id) REFERENCES moduleS (id) ON DELETE CASCADE
@@ -111,7 +111,7 @@ CREATE TABLE quotation_detail_subitem
     -- Aquí guardas los S/. 89.00 de la Plancha o los S/. 5.00 del Alambre
     raw_material_cost   DECIMAL(10, 4) NOT NULL COMMENT 'Costo de materia prima',
     -- DATOS DE RENDIMIENTO (Para calcular el precio)
-    pieces              INT            NOT NULL DEFAULT 1 COMMENT 'Divisor. Para Plancha es 35, para Alambre es 1',
+    pieces              INT            NULL DEFAULT 1 COMMENT 'Divisor. Para Plancha es 35, para Alambre es 1',
     -- PRECIOS CALCULADOS
     -- unit_price = raw_material_cost / pieces
     unit_price          DECIMAL(10, 4) NOT NULL COMMENT 'El costo real por pieza (Ej: 2.54). Para hacer el cálculo unit_price = raw_material_cost / pieces',

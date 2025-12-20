@@ -45,10 +45,10 @@ public class QuotationEntity {
   private String state; // BORRADOR, EN REVISIÓN, APROBADO, RECHAZADO
 
   // Totales Globales
-  @Column(name = "total_production_cost", nullable = false, precision = 10, scale = 2)
+  @Column(name = "total_production_cost", precision = 10, scale = 2)
   private BigDecimal totalProductionCost;
 
-  @Column(name = "total_final_price", nullable = false, precision = 10, scale = 2)
+  @Column(name = "total_final_price", precision = 10, scale = 2)
   private BigDecimal totalFinalPrice;
 
   // Relación OneToMany (LAZY para evitar N+1 al listar cabeceras)

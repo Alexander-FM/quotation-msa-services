@@ -82,10 +82,10 @@ public class QuotationDetailEntity {
   @Column(name = "profit_margin_amount", precision = 10, scale = 2)
   private BigDecimal profitMarginAmount;
 
-  @Column(name = "unit_final_price", nullable = false, precision = 10, scale = 2)
+  @Column(name = "unit_final_price", precision = 10, scale = 2)
   private BigDecimal unitFinalPrice;
 
-  @Column(name = "total_line_price", nullable = false, precision = 10, scale = 2)
+  @Column(name = "total_line_price", precision = 10, scale = 2)
   private BigDecimal totalLinePrice;
 
   // Relación con Sub-Items (Materiales)

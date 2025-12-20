@@ -4,9 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.codesoft.quotations.modules.module.entity.ModuleEntity;
-import com.codesoft.quotations.quotation.dto.request.QuotationDetailSubItemRequestDto;
-import com.codesoft.quotations.quotation.entity.QuotationEntity;
+import com.codesoft.quotations.modules.module.dto.response.ModuleResponseDto;
 import lombok.Data;
 
 @Data
@@ -14,9 +12,9 @@ public class QuotationDetailResponseDto {
 
   private Integer id;
 
-  private QuotationEntity quotation;
+  private QuotationResponseDto quotation;
 
-  private ModuleEntity module;
+  private ModuleResponseDto module;
 
   private Integer quantity;
 
@@ -46,5 +44,5 @@ public class QuotationDetailResponseDto {
 
   private BigDecimal totalLinePrice;
 
-  private Set<QuotationDetailSubItemRequestDto> subItems = new HashSet<>();
+  private Set<QuotationDetailSubItemResponseDto> subItems = new HashSet<>();
 }

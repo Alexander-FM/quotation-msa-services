@@ -16,7 +16,13 @@ public enum QuotationMessage implements IErrorCode {
     HttpStatus.CONFLICT, QuotationConstants.ALREADY_EXISTS_MESSAGE),
   MATERIAL_SERVICE_UNAVAILABLE(
     GenericResponseUtils.makeCode(QuotationConstants.QUOTING_ERROR_CODE, HttpStatus.SERVICE_UNAVAILABLE, 3),
-    HttpStatus.SERVICE_UNAVAILABLE, QuotationConstants.MATERIAL_SERVICE_UNAVAILABLE_MESSAGE);
+    HttpStatus.SERVICE_UNAVAILABLE, QuotationConstants.MATERIAL_SERVICE_UNAVAILABLE_MESSAGE),
+  MATERIAL_NOT_FOUND(
+    GenericResponseUtils.makeCode(QuotationConstants.QUOTING_ERROR_CODE, HttpStatus.NOT_FOUND, 4),
+    HttpStatus.NOT_FOUND, QuotationConstants.MATERIAL_NOT_FOUND_MESSAGE),
+  MODULE_NOT_FOUND(
+    GenericResponseUtils.makeCode(QuotationConstants.QUOTING_ERROR_CODE, HttpStatus.NOT_FOUND, 4),
+  HttpStatus.NOT_FOUND, QuotationConstants.MODULE_NOT_FOUND_MESSAGE);
 
   private final int code;
 

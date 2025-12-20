@@ -42,8 +42,8 @@ public class QuotationDetailSubItemEntity {
   @Column(name = "raw_material_cost", nullable = false, precision = 10, scale = 4)
   private BigDecimal rawMaterialCost;
 
-  @Column(name = "pieces", nullable = false)
-  private Integer pieces; // Default 1
+  @Column(name = "pieces")
+  private Integer pieces;
 
   @Column(name = "unit_price", nullable = false, precision = 10, scale = 4)
   private BigDecimal unitPrice;

@@ -21,4 +21,8 @@ public class QuotationConstants {
   public static final String ALREADY_EXISTS_MESSAGE = "Quoting Material already exists in the database or conflicts with an existing entry";
 
   public static final String MATERIAL_SERVICE_UNAVAILABLE_MESSAGE = "The material service is not available (connection refused)";
+
+  public static final String MATERIAL_NOT_FOUND_MESSAGE = "The material requested in the materials microservice has not been found";
+
+  public static final String MODULE_NOT_FOUND_MESSAGE = "The module was not found in the database";
 }
