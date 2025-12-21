@@ -104,7 +104,7 @@ class AdjustmentFactorControllerTests {
 
     mockMvc.perform(MockMvcRequestBuilders.post("/api/catalogs/adjustment-factor").with(jwt())
         .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(adjustmentFactorRequestDto)))
+        .content(objectMapper.writeValueAsString(this.adjustmentFactorRequestDto)))
       .andExpect(status().isCreated())
       .andExpect(jsonPath("$.body.id").value(createResponseDto.getId()))
       .andExpect(jsonPath("$.body.name").value(createResponseDto.getName()))
@@ -130,7 +130,7 @@ class AdjustmentFactorControllerTests {
 
     mockMvc.perform(MockMvcRequestBuilders.put("/api/catalogs/adjustment-factor/2").with(jwt())
         .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(adjustmentFactorRequestDto)))
+        .content(objectMapper.writeValueAsString(this.adjustmentFactorRequestDto)))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.body.id").value(createResponseDto.getId()))
       .andExpect(jsonPath("$.body.name").value(createResponseDto.getName()))
