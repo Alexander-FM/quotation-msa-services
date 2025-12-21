@@ -10,8 +10,6 @@ public class QuotationDetailSubItemResponseDto {
 
   private Integer id;
 
-  private QuotationDetailResponseDto quotationDetail;
-
   private MaterialResponseDto material;
 
   private BigDecimal quantity;

@@ -17,8 +17,6 @@ public class QuotationDetailRequestDto {
 
   private Integer id;
 
-  private QuotationRequestDto quotation;
-
   @NotNull(message = "El módulo es obligatorio.")
   private ModuleRequestDto module;
 

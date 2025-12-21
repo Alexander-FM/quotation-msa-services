@@ -11,6 +11,8 @@ public interface CustomerService {
 
   CustomerResponseDto findById(final Integer id);
 
+  CustomerResponseDto searchByDocumentNumber(final String documentNumber);
+
   CustomerResponseDto create(final CustomerRequestDto requestDto);
 
   void deleteById(final Integer id);

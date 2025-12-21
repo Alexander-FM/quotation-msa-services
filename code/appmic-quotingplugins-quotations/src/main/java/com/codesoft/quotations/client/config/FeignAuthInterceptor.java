@@ -1,4 +1,4 @@
-package com.codesoft.quotations.client.material.utils;
+package com.codesoft.quotations.client.config;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;

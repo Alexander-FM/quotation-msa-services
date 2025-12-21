@@ -11,8 +11,6 @@ public class QuotationDetailSubItemRequestDto {
 
   private Integer id;
 
-  private QuotationDetailRequestDto quotationDetail;
-
   @NotNull(message = "El ID del material es obligatorio.")
   private Integer materialId;
 

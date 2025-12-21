@@ -14,15 +14,30 @@ public enum QuotationMessage implements IErrorCode {
   QUOTATION_ALREADY_EXISTS(
     GenericResponseUtils.makeCode(QuotationConstants.QUOTING_ERROR_CODE, HttpStatus.CONFLICT, 2),
     HttpStatus.CONFLICT, QuotationConstants.ALREADY_EXISTS_MESSAGE),
-  MATERIAL_SERVICE_UNAVAILABLE(
-    GenericResponseUtils.makeCode(QuotationConstants.QUOTING_ERROR_CODE, HttpStatus.SERVICE_UNAVAILABLE, 3),
-    HttpStatus.SERVICE_UNAVAILABLE, QuotationConstants.MATERIAL_SERVICE_UNAVAILABLE_MESSAGE),
-  MATERIAL_NOT_FOUND(
-    GenericResponseUtils.makeCode(QuotationConstants.QUOTING_ERROR_CODE, HttpStatus.NOT_FOUND, 4),
-    HttpStatus.NOT_FOUND, QuotationConstants.MATERIAL_NOT_FOUND_MESSAGE),
+  QUOTATION_INTERNAL_ERROR(
+    GenericResponseUtils.makeCode(QuotationConstants.QUOTING_ERROR_CODE, HttpStatus.INTERNAL_SERVER_ERROR, 3),
+    HttpStatus.INTERNAL_SERVER_ERROR, QuotationConstants.INTERNAL_SERVICE_ERROR),
   MODULE_NOT_FOUND(
     GenericResponseUtils.makeCode(QuotationConstants.QUOTING_ERROR_CODE, HttpStatus.NOT_FOUND, 4),
-  HttpStatus.NOT_FOUND, QuotationConstants.MODULE_NOT_FOUND_MESSAGE);
+    HttpStatus.NOT_FOUND, QuotationConstants.MODULE_NOT_FOUND_MESSAGE),
+  MATERIAL_SERVICE_UNAVAILABLE(
+    GenericResponseUtils.makeCode(QuotationConstants.QUOTING_ERROR_CODE, HttpStatus.SERVICE_UNAVAILABLE, 5),
+    HttpStatus.SERVICE_UNAVAILABLE, QuotationConstants.MATERIAL_SERVICE_UNAVAILABLE_MESSAGE),
+  MATERIAL_NOT_FOUND(
+    GenericResponseUtils.makeCode(QuotationConstants.QUOTING_ERROR_CODE, HttpStatus.NOT_FOUND, 6),
+    HttpStatus.NOT_FOUND, QuotationConstants.MATERIAL_NOT_FOUND_MESSAGE),
+  EMPLOYEE_SERVICE_UNAVAILABLE(
+    GenericResponseUtils.makeCode(QuotationConstants.QUOTING_ERROR_CODE, HttpStatus.SERVICE_UNAVAILABLE, 7),
+    HttpStatus.SERVICE_UNAVAILABLE, QuotationConstants.EMPLOYEE_SERVICE_UNAVAILABLE_MESSAGE),
+  EMPLOYEE_NOT_FOUND(
+    GenericResponseUtils.makeCode(QuotationConstants.QUOTING_ERROR_CODE, HttpStatus.NOT_FOUND, 6),
+    HttpStatus.NOT_FOUND, QuotationConstants.EMPLOYEE_NOT_FOUND_MESSAGE),
+  CUSTOMER_SERVICE_UNAVAILABLE(
+    GenericResponseUtils.makeCode(QuotationConstants.QUOTING_ERROR_CODE, HttpStatus.SERVICE_UNAVAILABLE, 8),
+    HttpStatus.SERVICE_UNAVAILABLE, QuotationConstants.CUSTOMER_SERVICE_UNAVAILABLE_MESSAGE),
+  CUSTOMER_NOT_FOUND(
+    GenericResponseUtils.makeCode(QuotationConstants.QUOTING_ERROR_CODE, HttpStatus.NOT_FOUND, 6),
+    HttpStatus.NOT_FOUND, QuotationConstants.CUSTOMER_NOT_FOUND_MESSAGE);
 
   private final int code;
 

@@ -10,12 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "appmic-quotingplugins-materials", url = "${app.feign.material_client}")
+@FeignClient(name = "${app.external.material-service-url}", url = "${app.external.material-service-url}")
 public interface MaterialClient {
 
-  @GetMapping("${app.feign.material_path}/{id}")
+  @GetMapping("${app.external.material-service-path}/material/{id}")
   @CircuitBreaker(name = "ms_material", fallbackMethod = "fallbackSearchMaterialById")
-  ResponseEntity<GenericResponse<MaterialResponseDto>> searchMaterialById(@PathVariable final Integer id);
+  ResponseEntity<GenericResponse<MaterialResponseDto>> searchMaterialById(@PathVariable("id") final Integer id);
 
   default ResponseEntity<GenericResponse<MaterialResponseDto>> fallbackSearchMaterialById(final Integer id, Throwable t) {
     return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)

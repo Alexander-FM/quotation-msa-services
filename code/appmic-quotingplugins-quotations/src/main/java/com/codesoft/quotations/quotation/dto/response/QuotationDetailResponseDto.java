@@ -12,8 +12,6 @@ public class QuotationDetailResponseDto {
 
   private Integer id;
 
-  private QuotationResponseDto quotation;
-
   private ModuleResponseDto module;
 
   private Integer quantity;

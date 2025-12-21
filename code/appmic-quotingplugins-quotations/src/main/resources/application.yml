@@ -27,9 +27,6 @@ app:
     module: "/api/quotations/module"
     module_material: "/api/quotations/module_material"
     quotation: "/api/quotations/quotation"
-  feign:
-    material_client: ${MATERIAL_CLIENT:127.0.0.1:8083}
-    material_path: "/api/materials/material"
 management:
   tracing:
     sampling:
@@ -62,6 +59,24 @@ resilience4j:
         minimumNumberOfCalls: 5
         failureRateThreshold: 50
         waitDurationInOpenState: 10000
+        ignoreExceptions:
+          - feign.FeignException$NotFound # Indica que el 404 no es un fallo del sistema
+      ms_employee:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        ignoreExceptions:
+          - feign.FeignException$NotFound # Indica que el 404 no es un fallo del sistema
+      ms_customer:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        ignoreExceptions:
+          - feign.FeignException$NotFound # Indica que el 404 no es un fallo del sistema
 # Configuración específica para el perfil 'dev'
 ---
 spring:
@@ -87,7 +102,12 @@ jwt:
   secret: ${JWT_SIGNATURE_QUOTATIONS:clave-secreta-para-desarrollo-12345}
 app:
   external:
-    material-service-url: ${MS_MATERIAL_SERVICE:http://127.0.0.1:8083/api/materials}
+    employee-service-url: ${MS_EMPLOYEE_SERVICE_PORT:http://localhost:8082}
+    material-service-url: ${MS_MATERIAL_SERVICE_PORT:http://localhost:8083}
+    customer-service-url: ${MS_CUSTOMER_SERVICE_PORT:http://localhost:8084}
+    employee-service-path: "/api/employees"
+    material-service-path: "/api/materials"
+    customer-service-path: "/api/customers"
 # Configuración específica para el perfil 'prod'
 ---
 spring:
@@ -113,4 +133,9 @@ jwt:
   secret: ${JWT_SIGNATURE_QUOTATIONS}
 app:
   external:
-    material-service-url: ${MS_MATERIAL_SERVICE}
+    employee-service-url: ${MS_EMPLOYEE_SERVICE_PORT}
+    material-service-url: ${MS_MATERIAL_SERVICE_PORT}
+    customer-service-url: ${MS_CUSTOMER_SERVICE_PORT}
+    employee-service-path: "/api/employees"
+    material-service-path: "/api/materials"
+    customer-service-path: "/api/customers"
