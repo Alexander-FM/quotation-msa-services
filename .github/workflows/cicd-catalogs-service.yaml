@@ -18,7 +18,38 @@ env:
   SERVICE_PATH: code/appmic-quotingplugins-catalogs
 
 jobs:
+  # ------------------------------------------------------------------
+  # JOB 1: QUALITY GATE (Pruebas Unitarias)
+  # Este trabajo se asegura de que el código cumpla la calidad antes de construir nada.
+  # ------------------------------------------------------------------
+  unit-tests:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      # EJECUCIÓN DE PRUEBAS
+      # Quitamos el -DskipTests y usamos la fase 'test'
+      - name: Execute JUnit Tests
+        working-directory: ./code
+        # -pl indica el proyecto específico
+        # -am (also make) compila las dependencias necesarias si las hubiera
+        run: mvn test -pl appmic-quotingplugins-catalogs -am
+  # ------------------------------------------------------------------
+  # JOB 2: DELIVERY (Construcción y Despliegue)
+  # Este trabajo depende del anterior (needs: unit-tests)
+  # ------------------------------------------------------------------
   build-and-push:
+    name: Build and Push Docker Image
+    needs: unit-tests # Depende del job de pruebas unitarias
     runs-on: ubuntu-latest # Usamos una máquina virtual Linux de GitHub
 
     steps:
