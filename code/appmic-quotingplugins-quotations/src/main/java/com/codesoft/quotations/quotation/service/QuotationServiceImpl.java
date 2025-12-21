@@ -3,6 +3,7 @@ package com.codesoft.quotations.quotation.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.codesoft.exception.BaseException;
 import com.codesoft.quotations.client.customer.dto.CustomerResponseDto;
 import com.codesoft.quotations.client.customer.service.CustomerClient;
 import com.codesoft.quotations.client.employee.dto.EmployeeResponseDto;
@@ -101,11 +102,20 @@ public class QuotationServiceImpl implements QuotationService {
       //final QuotationEntity entity = this.quotationRepository.save(entityMapped);
       //return this.quotationFieldsMapper.toDto(entity);
       return null;
+    } catch (final QuotationException ex) {
+      // Si ya es una QuotationException (lanzada por tus fetchMaterial, etc.), solo la relanzamos
+      log.error("Error de negocio detectado: {}", ex.getMessage());
+      throw ex;
+    } catch (final BaseException ex) {
+      // Si viene una BaseException (del micro servicio de materiales vía Feign), la transformamos
+      log.error("Error desde micro servicio externo (BaseException): {}", ex.getMessage());
+      // Suponiendo que QuotationException puede recibir el mensaje de otra excepción
+      throw ex;
     } catch (final DataIntegrityViolationException ex) {
-      log.warn("Data integrity violation when creating quotation: {}", ex.getMessage());
+      log.warn("Violación de integridad: {}", ex.getMessage());
       throw new QuotationException(QuotationMessage.QUOTATION_ALREADY_EXISTS);
     } catch (final Exception ex) {
-      log.error("Error calling Material microservice: {}", ex.getMessage());
+      log.error("Error inesperado en la orquestación: {}", ex.getMessage());
       throw new QuotationException(QuotationMessage.QUOTATION_INTERNAL_ERROR);
     }
   }

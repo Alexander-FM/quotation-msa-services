@@ -59,7 +59,7 @@ resilience4j:
         minimumNumberOfCalls: 5
         failureRateThreshold: 50
         waitDurationInOpenState: 10000
-        ignoreExceptions:
+        ignore-exceptions:
           - feign.FeignException$NotFound # Indica que el 404 no es un fallo del sistema
       ms_employee:
         registerHealthIndicator: true
@@ -67,7 +67,7 @@ resilience4j:
         minimumNumberOfCalls: 5
         failureRateThreshold: 50
         waitDurationInOpenState: 10000
-        ignoreExceptions:
+        ignore-exceptions:
           - feign.FeignException$NotFound # Indica que el 404 no es un fallo del sistema
       ms_customer:
         registerHealthIndicator: true
@@ -75,7 +75,7 @@ resilience4j:
         minimumNumberOfCalls: 5
         failureRateThreshold: 50
         waitDurationInOpenState: 10000
-        ignoreExceptions:
+        ignore-exceptions:
           - feign.FeignException$NotFound # Indica que el 404 no es un fallo del sistema
 # Configuración específica para el perfil 'dev'
 ---

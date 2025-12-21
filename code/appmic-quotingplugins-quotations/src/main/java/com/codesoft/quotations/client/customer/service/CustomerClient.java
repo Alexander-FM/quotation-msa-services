@@ -19,6 +19,6 @@ public interface CustomerClient {
 
   default ResponseEntity<GenericResponse<CustomerResponseDto>> fallbackRetrieveByDocumentNumber(final String documentNumber, Throwable t) {
     return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-      .body(GenericResponseUtils.buildGenericResponseError(null));
+      .body(GenericResponseUtils.buildGenericResponseError(t.getMessage(), null));
   }
 }

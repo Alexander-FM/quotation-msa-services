@@ -18,7 +18,12 @@ public interface MaterialClient {
   ResponseEntity<GenericResponse<MaterialResponseDto>> searchMaterialById(@PathVariable("id") final Integer id);
 
   default ResponseEntity<GenericResponse<MaterialResponseDto>> fallbackSearchMaterialById(final Integer id, Throwable t) {
+    // Si la excepción es un 404, la relanzamos para que llegue al catch del Service
+    if (t instanceof feign.FeignException.NotFound notFound) {
+      throw notFound;
+    }
+    // Para cualquier otro error (500, Timeout, etc.), sí devolvemos el 503
     return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-      .body(GenericResponseUtils.buildGenericResponseError(null));
+      .body(GenericResponseUtils.buildGenericResponseError("Servicio de materiales no disponible temporalmente", null));
   }
 }

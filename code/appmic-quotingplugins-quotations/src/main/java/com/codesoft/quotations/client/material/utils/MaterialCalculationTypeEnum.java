@@ -12,15 +12,4 @@ public enum MaterialCalculationTypeEnum {
   AREA("Area");
 
   private final String description;
-
-  //  @JsonCreator
-  //  public static MaterialCalculationTypeEnum fromValue(final String description) {
-  //    if (description == null) {
-  //      return null;
-  //    }
-  //    return Arrays.stream(values())
-  //      .filter(c -> c.description.equalsIgnoreCase(description) || c.name().equalsIgnoreCase(description))
-  //      .findFirst()
-  //      .orElseThrow(() -> new QuotingException(QuotingMessage.QUOTING_NOT_FOUND));
-  //  }
 }
