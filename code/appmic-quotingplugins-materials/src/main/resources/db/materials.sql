@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS materials;
+DROP SEQUENCE IF EXISTS materials_id_seq;
 -- ==================== TABLA MATERIALS
 -- Create Sequence
 CREATE SEQUENCE materials_id_seq
@@ -16,9 +18,9 @@ CREATE TABLE materials
     -- Valores: 'SIMPLE', 'YIELD_BASED' (Plancha), 'VOLUME_DM' (Poliestireno), 'ÁREA' (Impresión)
     calculation_type         VARCHAR(30)    NOT NULL,
     -- PARAMETROS FÍSICOS DEL MATERIAL
-    adjustment_factor_name   VARCHAR(100)   DEFAULT 1.00,      -- Ej.: 'Factor Poliestireno'
-    adjustment_factor_value  DECIMAL(10, 2),                    -- Ej.: 1.05 (Factor Poliestireno)
-    thickness_microns        INTEGER        NULL,              -- Ej.: 1000, 1500 (Solo para Poliestireno)
+    adjustment_factor_name   VARCHAR(100)   NULL,               -- Ej.: 'Factor Poliestireno'
+    adjustment_factor_value  DECIMAL(10, 2) NULL,               -- Ej.: 1.05 (Factor Poliestireno)
+    thickness_microns        INTEGER        NULL,               -- Ej.: 1000, 1500 (Solo para Poliestireno)
     is_active                BOOLEAN        DEFAULT TRUE
 );
 -- Unique Values

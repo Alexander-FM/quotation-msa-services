@@ -23,7 +23,5 @@ public class QuotationResponseDto {
 
   private BigDecimal totalProductionCost;
 
-  private BigDecimal totalFinalPrice;
-
   private Set<QuotationDetailResponseDto> details = new HashSet<>();
 }

@@ -36,9 +36,9 @@ public class QuotationDetailResponseDto {
 
   private BigDecimal profitMarginPercentage;
 
-  private BigDecimal profitMarginAmount;
+  private BigDecimal unitProductionCost;
 
-  private BigDecimal unitFinalPrice;
+  private BigDecimal suggestedPrice;
 
   private BigDecimal totalLinePrice;
 

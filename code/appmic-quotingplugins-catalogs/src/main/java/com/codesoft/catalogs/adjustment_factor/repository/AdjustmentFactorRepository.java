@@ -15,5 +15,5 @@ public interface AdjustmentFactorRepository extends JpaRepository<AdjustmentFact
    * @param name the name.
    * @return the optional catalog item entity.
    */
-  Optional<AdjustmentFactorEntity> findByNameContainingIgnoreCase(final String name);
+  Optional<AdjustmentFactorEntity> findByName(final String name);
 }

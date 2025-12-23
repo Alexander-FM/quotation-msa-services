@@ -16,6 +16,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
@@ -48,13 +49,11 @@ public class QuotationEntity {
   @Column(name = "total_production_cost", precision = 10, scale = 2)
   private BigDecimal totalProductionCost;
 
-  @Column(name = "total_final_price", precision = 10, scale = 2)
-  private BigDecimal totalFinalPrice;
-
   // Relación OneToMany (LAZY para evitar N+1 al listar cabeceras)
   // Cascade ALL permite guardar la cotización completa de un solo golpe
   @OneToMany(mappedBy = "quotation", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   @ToString.Exclude // Evita bucles infinitos en logs
+  @EqualsAndHashCode.Exclude
   private Set<QuotationDetailEntity> details = new HashSet<>();
 
   /**

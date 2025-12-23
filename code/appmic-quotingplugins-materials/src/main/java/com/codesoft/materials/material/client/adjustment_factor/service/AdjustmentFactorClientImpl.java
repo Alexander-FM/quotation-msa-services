@@ -39,7 +39,7 @@ public class AdjustmentFactorClientImpl implements AdjustmentFactorClient {
       String token = getCurrentToken();
       final GenericResponse<AdjustmentFactorResponseDto> response = webClient.get()
         .uri("/adjustment-factor/searchByName", uriBuilder -> uriBuilder
-          .queryParam("name", name) // Solo enviamos username
+          .queryParam("name", name)
           .build())
         .header(HttpHeaders.AUTHORIZATION, token)
         .accept(MediaType.APPLICATION_JSON)

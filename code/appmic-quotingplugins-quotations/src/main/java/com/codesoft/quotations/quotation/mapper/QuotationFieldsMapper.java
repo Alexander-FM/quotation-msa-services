@@ -16,7 +16,6 @@ public interface QuotationFieldsMapper {
   @Mapping(target = "date", ignore = true)
   @Mapping(target = "state", ignore = true)
   @Mapping(target = "totalProductionCost", ignore = true)
-  @Mapping(target = "totalFinalPrice", ignore = true)
   QuotationEntity toEntity(final QuotationRequestDto source);
   // En el DTO de respuesta, ignoramos 'material' porque lo llenaremos en el Service
   @Mapping(target = "customerName", ignore = true)

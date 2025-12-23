@@ -37,6 +37,9 @@ public class MaterialRequestDto {
     message = "The unit cost must not exceed 99,999,999.99 (maximum 8 digits before and 2 digits after the decimal point).")
   private BigDecimal unitCost;
 
+  @NotNull(message = "The unit of measurement name must not be null.")
+  @NotEmpty(message = "The unit of measurement name must not be empty.")
+  @Size(max = 20, message = "The material name must not exceed 50 characters.")
   private String unidadOfMeasurementName;
 
   private MaterialCalculationTypeEnum calculationType;

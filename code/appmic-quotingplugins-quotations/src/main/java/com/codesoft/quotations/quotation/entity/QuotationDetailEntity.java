@@ -18,6 +18,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -35,6 +36,7 @@ public class QuotationDetailEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "quotation_id", nullable = false)
   @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private QuotationEntity quotation;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -79,11 +81,11 @@ public class QuotationDetailEntity {
   @Column(name = "profit_margin_percentage", precision = 5, scale = 2)
   private BigDecimal profitMarginPercentage;
 
-  @Column(name = "profit_margin_amount", precision = 10, scale = 2)
-  private BigDecimal profitMarginAmount;
+  @Column(name = "unit_production_cost", precision = 10, scale = 2)
+  private BigDecimal unitProductionCost;
 
-  @Column(name = "unit_final_price", precision = 10, scale = 2)
-  private BigDecimal unitFinalPrice;
+  @Column(name = "suggested_price", precision = 10, scale = 2)
+  private BigDecimal suggestedPrice;
 
   @Column(name = "total_line_price", precision = 10, scale = 2)
   private BigDecimal totalLinePrice;
@@ -91,13 +93,7 @@ public class QuotationDetailEntity {
   // Relación con Sub-Items (Materiales)
   @OneToMany(mappedBy = "quotationDetail", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private Set<QuotationDetailSubItemEntity> subItems = new HashSet<>();
 
-  /**
-   * Añade un sub-item (material) al detalle de la cotización y establece la relación bidireccional.
-   */
-  public void addSubItem(final QuotationDetailSubItemEntity subItem) {
-    subItems.add(subItem);
-    subItem.setQuotationDetail(this);
-  }
 }

@@ -1,9 +1,10 @@
 package com.codesoft.quotations.quotation.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 
-import com.codesoft.exception.BaseException;
 import com.codesoft.quotations.client.customer.dto.CustomerResponseDto;
 import com.codesoft.quotations.client.customer.service.CustomerClient;
 import com.codesoft.quotations.client.employee.dto.EmployeeResponseDto;
@@ -25,9 +26,9 @@ import com.codesoft.utils.GenericResponse;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -64,6 +65,7 @@ public class QuotationServiceImpl implements QuotationService {
   }
 
   @Override
+  @Transactional
   public QuotationResponseDto create(final QuotationRequestDto requestDto) {
     try {
       log.info("Creating quotation with data: {}", requestDto);
@@ -74,6 +76,9 @@ public class QuotationServiceImpl implements QuotationService {
       entityMapped.setState("BORRADOR");
       entityMapped.setCustomerDocumentNumber(customerResponseDto.getDocumentNumber());
       entityMapped.setEmployeeDocumentNumber(employeeResponseDto.getDocumentNumber());
+
+      BigDecimal totalQuotationPrice = BigDecimal.ZERO;
+
       log.info("Iniciando llamada al micro servicio de materiales para validar datos relacionados.");
       for (var detail : entityMapped.getDetails()) {
         log.info("Consultando conceptos del modulo con ID: {}", detail.getModule().getId());
@@ -81,39 +86,64 @@ public class QuotationServiceImpl implements QuotationService {
           .orElseThrow(() -> new QuotationException(QuotationMessage.MODULE_NOT_FOUND));
         log.info("Módulo encontrado: {}", moduleEntity);
         detail.setModule(moduleEntity);
-        detail.setOverheadsPercentage(moduleEntity.getOverheadsCostPercentage());
-        detail.setOverheadsAmount(moduleEntity.getOverheadsCostPercentage());
-        detail.setFeePercentage(moduleEntity.getFeePercentage());
-        detail.setFeeAmount(moduleEntity.getFeePercentage());
-        detail.setRebatePercentage(moduleEntity.getRebatePercentage());
-        detail.setRebateAmount(moduleEntity.getRebatePercentage());
-        detail.setRebatePercentage(moduleEntity.getRebatePercentage());
-        detail.setRebateAmount(moduleEntity.getRebatePercentage());
-        log.info("Validando materiales para los subítems del detalle del módulo con ID: {}", detail.getId());
+
+        // 3. PROCESAR MATERIALES (Primero sumamos todos).
+        BigDecimal subItemsTotalPrice = BigDecimal.ZERO;
         for (var subItem : detail.getSubItems()) {
           final MaterialResponseDto materialResponse = fetchMaterial(subItem.getMaterialId());
           log.info("Material encontrado: {}", materialResponse);
           subItem.setMaterialId(materialResponse.getId());
-          subItem.calculateTotalPrice();
-          subItem.calculateUnitPrice();
+          subItem.calculateUnitPrice(); // rawMaterialCost / pieces
+          subItem.calculateTotalPrice(); // unitPrice * quantity
+          subItemsTotalPrice = subItemsTotalPrice.add(subItem.getTotalPrice());
         }
+
+        // 4. PROCESAR MATERIALES (Primero sumamos todos).
+        BigDecimal baseCost = subItemsTotalPrice
+          .add(Optional.ofNullable(detail.getTransportationCost()).orElse(BigDecimal.ZERO))
+          .add(Optional.ofNullable(detail.getLaborCost()).orElse(BigDecimal.ZERO))
+          .add(Optional.ofNullable(detail.getPackingCost()).orElse(BigDecimal.ZERO));
+
+        // 5. CASCADA FINANCIERA (Multiplicación Acumulativa).
+        // Guardamos los porcentajes para el snapshot.
+        detail.setOverheadsPercentage(moduleEntity.getOverheadsCostPercentage());
+        detail.setFeePercentage(moduleEntity.getFeePercentage());
+        detail.setRebatePercentage(moduleEntity.getRebatePercentage());
+        detail.setProfitMarginPercentage(moduleEntity.getProfitMarginPercentage());
+
+        // GASTOS GENERALES: Base * (1 + GG%)
+        BigDecimal withOverheads = calculateCascadingStep(baseCost, detail.getOverheadsPercentage());
+        detail.setOverheadsAmount(withOverheads.subtract(baseCost));
+
+        // FEE: (Base + GG) * (1 + FEE%)
+        BigDecimal withFee = calculateCascadingStep(withOverheads, detail.getFeePercentage());
+        detail.setFeeAmount(withFee.subtract(withOverheads));
+
+        // REBATE: (Base + GG + FEE) * (1 + Rebate%)
+        BigDecimal withRebate = calculateCascadingStep(withFee, detail.getRebatePercentage());
+        detail.setRebateAmount(withRebate.subtract(withFee));
+
+        // UTILIDAD: (Base + GG + FEE + Rebate) * (1 + Margen%)
+        BigDecimal finalPriceUnit = calculateCascadingStep(withRebate, detail.getProfitMarginPercentage());
+
+        // 6. ASIGNACIÓN FINAL DE LÍNEA
+        detail.setUnitProductionCost(finalPriceUnit.setScale(2, RoundingMode.HALF_UP));
+        detail.setSuggestedPrice(detail.getUnitProductionCost());
+        detail.setTotalLinePrice(detail.getSuggestedPrice().multiply(BigDecimal.valueOf(detail.getQuantity())));
+
+        totalQuotationPrice = totalQuotationPrice.add(detail.getTotalLinePrice());
+
       }
-      log.info("Mapped quotation entity: {}", entityMapped);
-      //final QuotationEntity entity = this.quotationRepository.save(entityMapped);
-      //return this.quotationFieldsMapper.toDto(entity);
-      return null;
-    } catch (final QuotationException ex) {
-      // Si ya es una QuotationException (lanzada por tus fetchMaterial, etc.), solo la relanzamos
-      log.error("Error de negocio detectado: {}", ex.getMessage());
-      throw ex;
-    } catch (final BaseException ex) {
-      // Si viene una BaseException (del micro servicio de materiales vía Feign), la transformamos
-      log.error("Error desde micro servicio externo (BaseException): {}", ex.getMessage());
-      // Suponiendo que QuotationException puede recibir el mensaje de otra excepción
-      throw ex;
-    } catch (final DataIntegrityViolationException ex) {
-      log.warn("Violación de integridad: {}", ex.getMessage());
-      throw new QuotationException(QuotationMessage.QUOTATION_ALREADY_EXISTS);
+      entityMapped.setTotalProductionCost(totalQuotationPrice);
+
+      log.info("Mapped final quotation entity: {}", entityMapped);
+      final QuotationEntity saved = this.quotationRepository.save(entityMapped);
+
+      QuotationResponseDto response = this.quotationFieldsMapper.toDto(saved);
+      response.setCustomerName(customerResponseDto.getCompanyName());
+      response.setEmployeeName(employeeResponseDto.getFullName());
+
+      return response;
     } catch (final Exception ex) {
       log.error("Error inesperado en la orquestación: {}", ex.getMessage());
       throw new QuotationException(QuotationMessage.QUOTATION_INTERNAL_ERROR);
@@ -125,6 +155,18 @@ public class QuotationServiceImpl implements QuotationService {
     this.quotationRepository.findById(id)
       .orElseThrow(() -> new QuotationException(QuotationMessage.QUOTATION_NOT_FOUND));
     this.quotationRepository.deleteById(id);
+  }
+
+  /**
+   * Aplica la fórmula: Base * (1 + (Porcentaje / 100))
+   */
+  private BigDecimal calculateCascadingStep(final BigDecimal base, final BigDecimal percentage) {
+    if (percentage == null || percentage.compareTo(BigDecimal.ZERO) == 0) {
+      return base;
+    }
+    // factor = 1 + (3 / 100) = 1.03
+    BigDecimal factor = BigDecimal.ONE.add(percentage.divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP));
+    return base.multiply(factor);
   }
 
   private MaterialResponseDto fetchMaterial(final Integer id) {

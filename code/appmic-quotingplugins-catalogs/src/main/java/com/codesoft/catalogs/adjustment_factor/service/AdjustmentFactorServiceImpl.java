@@ -58,7 +58,7 @@ public class AdjustmentFactorServiceImpl implements AdjustmentFactorService {
   @Override
   public AdjustmentFactorResponseDto findByName(final String name) {
     final Optional<AdjustmentFactorEntity> entityOptional =
-      this.adjustmentFactorRepository.findByNameContainingIgnoreCase(name);
+      this.adjustmentFactorRepository.findByName(name);
     return entityOptional.map(this.adjustmentFactorFieldsMapper::toDto)
       .orElseThrow(() -> new AdjustmentFactorException(AdjustmentFactorMessageEnum.ADJUSTMENT_FACTOR_NOT_FOUND));
   }

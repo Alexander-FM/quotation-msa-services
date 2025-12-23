@@ -30,7 +30,7 @@ CREATE TABLE module_materials
     -- Cantidad base
     quantity        DECIMAL(10, 2) NOT NULL COMMENT 'Cantidad necesaria para fabricar 1 módulo',
     -- Datos para clonar a la cotización (Snapshot de configuración)
-    description_ref VARCHAR(150) COMMENT 'Descripción del corte (ej: 105x5 cenefas)',
+    description_ref VARCHAR(150)   NULL COMMENT 'Descripción del corte (ej: 105x5 cenefas)',
     -- Parámetros específicos según el tipo de material
     default_yield   INT            NULL COMMENT 'Solo para Planchas: Cuántas piezas salen (Divisor)',
     default_width   DECIMAL(10, 2) NULL COMMENT 'Solo Poliestireno/Impresión: Ancho en cm',
@@ -55,8 +55,7 @@ CREATE TABLE quotation
     date                     DATETIME                DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha en la que se registro la cotización',
     state                    VARCHAR(20)    NOT NULL COMMENT 'BORRADOR, EN REVISIÓN, APROBADO, RECHAZADO',
     -- TOTALES DE LA VENTA (Suma de todos los módulos)
-    total_production_cost    DECIMAL(10, 2) NULL DEFAULT 0.00 COMMENT 'Costo real para la empresa',
-    total_final_price        DECIMAL(10, 2) NULL DEFAULT 0.00 COMMENT 'Precio final al cliente (con IGV/Impuestos si aplica)'
+    total_production_cost    DECIMAL(10, 2) NULL DEFAULT 0.00 COMMENT 'Costo real para la empresa'
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
@@ -84,12 +83,10 @@ CREATE TABLE quotation_detail
     rebate_amount            DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     -- 5. SNAPSHOT FINANCIERO - UTILIDAD
     profit_margin_percentage DECIMAL(5, 2)  NOT NULL DEFAULT 0.00 COMMENT 'Ej: 12.00%',
-    profit_margin_amount     DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     -- 6. TOTALES DE LÍNEA
-    unit_production_cost     DECIMAL(10, 2) NULL COMMENT 'Costo real base',
-    unit_final_price         DECIMAL(10, 2) NULL COMMENT 'Precio venta unitario',
-    total_line_price         DECIMAL(10, 2) NULL COMMENT 'Precio total (Unit * Cantidad)',
-
+    unit_production_cost     DECIMAL(10, 2) NULL COMMENT 'Valor del rebate_amount * (1 + profit_margin_percentage (10%))',
+    suggested_price         DECIMAL(10, 2) NULL COMMENT 'Lo mismo que unit_production_cost',
+    total_line_price         DECIMAL(10, 2) NULL COMMENT 'suggested_price * quantity (Cantidad de módulos)',
     CONSTRAINT fk_quotation_details FOREIGN KEY (quotation_id) REFERENCES quotation (id) ON DELETE CASCADE,
     CONSTRAINT fk_quotation_details_module FOREIGN KEY (module_id) REFERENCES moduleS (id) ON DELETE CASCADE
 ) ENGINE = InnoDB

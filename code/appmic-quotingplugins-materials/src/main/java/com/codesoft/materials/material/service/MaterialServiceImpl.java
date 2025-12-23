@@ -48,10 +48,12 @@ public class MaterialServiceImpl implements MaterialService {
   @Override
   public MaterialResponseDto create(final MaterialRequestDto requestDto) {
     try {
-      final AdjustmentFactorResponseDto adjustmentFactor = adjustmentFactorClient.searchByName(requestDto.getAdjustmentFactorName());
+      if(requestDto.getAdjustmentFactorName() != null) {
+        final AdjustmentFactorResponseDto adjustmentFactor = this.adjustmentFactorClient.searchByName(requestDto.getAdjustmentFactorName());
+        requestDto.setAdjustmentFactorName(adjustmentFactor.getName());
+        requestDto.setAdjustmentFactorValue(adjustmentFactor.getValue());
+      }
       final UnitOfMeasurementResponseDto unitOfMeasurement = unitOfMeasurementClient.searchByName(requestDto.getUnidadOfMeasurementName());
-      requestDto.setAdjustmentFactorName(adjustmentFactor.getName());
-      requestDto.setAdjustmentFactorValue(adjustmentFactor.getValue());
       requestDto.setUnidadOfMeasurementName(unitOfMeasurement.getName());
       final MaterialEntity entity = this.materialRepository.save(this.materialFieldsMapper.toEntity(requestDto));
       return this.materialFieldsMapper.toDto(entity);

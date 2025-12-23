@@ -38,7 +38,7 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
   @Override
   public UnitOfMeasurementResponseDto findByName(final String name) {
     final Optional<UnitOfMeasurementEntity> entityOptional =
-      this.unitOfMeasurementRepository.findByNameContainingIgnoreCase(name);
+      this.unitOfMeasurementRepository.findByName(name);
     return entityOptional.map(this.unitOfMeasurementFieldsMapper::toDto)
       .orElseThrow(() -> new UnitOfMeasurementException(UnitOfMeasurementMessage.UNIT_OF_MEASUREMENT_MESSAGE_NOT_FOUND));
   }

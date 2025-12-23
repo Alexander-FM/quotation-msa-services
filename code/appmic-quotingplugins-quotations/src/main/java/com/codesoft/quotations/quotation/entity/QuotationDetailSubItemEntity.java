@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -31,6 +32,7 @@ public class QuotationDetailSubItemEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "quotation_detail_id", nullable = false)
   @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private QuotationDetailEntity quotationDetail;
 
   @Column(name = "material_id", nullable = false)
@@ -51,19 +53,25 @@ public class QuotationDetailSubItemEntity {
   @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
   private BigDecimal totalPrice;
 
+  public void calculateUnitPrice() {
+    // Si hay piezas > 0 (ej. Plancha), dividimos.
+    // Si es 0 o null (ej. Alambre/Kg), el unitPrice es el rawMaterialCost.
+    if (this.rawMaterialCost != null) {
+      if (this.pieces != null && this.pieces > 0) {
+        this.unitPrice = this.rawMaterialCost.divide(BigDecimal.valueOf(this.pieces), 4, RoundingMode.HALF_UP);
+      } else {
+        this.unitPrice = this.rawMaterialCost;
+      }
+    } else {
+      this.unitPrice = BigDecimal.ZERO;
+    }
+  }
+
   public void calculateTotalPrice() {
     if (this.unitPrice == null || this.quantity == null) {
       this.totalPrice = BigDecimal.ZERO;
       return;
     }
     this.totalPrice = this.unitPrice.multiply(this.quantity).setScale(2, RoundingMode.HALF_UP);
-  }
-
-  public void calculateUnitPrice() {
-    if (this.rawMaterialCost != null && this.pieces != null && this.pieces > 0) {
-      this.unitPrice = this.rawMaterialCost.divide(BigDecimal.valueOf(this.pieces), 4, RoundingMode.HALF_UP);
-    } else {
-      this.unitPrice = BigDecimal.ZERO;
-    }
   }
 }

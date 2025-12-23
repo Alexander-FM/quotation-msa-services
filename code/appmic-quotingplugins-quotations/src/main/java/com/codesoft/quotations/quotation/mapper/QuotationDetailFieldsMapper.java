@@ -12,13 +12,13 @@ import org.mapstruct.Mapping;
 public interface QuotationDetailFieldsMapper {
 
   @Mapping(target = "quotation", ignore = true)
-  @Mapping(target = "unitFinalPrice", ignore = true)
+  @Mapping(target = "suggestedPrice", ignore = true)
   @Mapping(target = "totalLinePrice", ignore = true)
+  @Mapping(target = "unitProductionCost", ignore = true)
   //Campos calculados se ignoran en el mapeo
   @Mapping(target = "overheadsAmount", ignore = true)
   @Mapping(target = "feeAmount", ignore = true)
   @Mapping(target = "rebateAmount", ignore = true)
-  @Mapping(target = "profitMarginAmount", ignore = true)
   @Mapping(target = "overheadsPercentage", ignore = true)
   @Mapping(target = "feePercentage", ignore = true)
   @Mapping(target = "rebatePercentage", ignore = true)
