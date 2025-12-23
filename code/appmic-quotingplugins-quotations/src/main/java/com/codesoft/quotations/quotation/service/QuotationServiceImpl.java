@@ -68,85 +68,97 @@ public class QuotationServiceImpl implements QuotationService {
   @Transactional
   public QuotationResponseDto create(final QuotationRequestDto requestDto) {
     try {
-      log.info("Creating quotation with data: {}", requestDto);
       final QuotationEntity entityMapped = this.quotationFieldsMapper.toEntity(requestDto);
-      log.info("Orquestación: Obtener datos de otros micro servicios para completar la creación de la cotización.");
-      final CustomerResponseDto customerResponseDto = fetchCustomer(requestDto.getCustomerDocumentNumber());
-      final EmployeeResponseDto employeeResponseDto = fetchEmployee(requestDto.getEmployeeDocumentNumber());
+
+      // Orquestación de nombres
+      final CustomerResponseDto customer = fetchCustomer(requestDto.getCustomerDocumentNumber());
+      final EmployeeResponseDto employee = fetchEmployee(requestDto.getEmployeeDocumentNumber());
+
       entityMapped.setState("BORRADOR");
-      entityMapped.setCustomerDocumentNumber(customerResponseDto.getDocumentNumber());
-      entityMapped.setEmployeeDocumentNumber(employeeResponseDto.getDocumentNumber());
+      entityMapped.setCustomerDocumentNumber(customer.getDocumentNumber());
+      entityMapped.setEmployeeDocumentNumber(employee.getDocumentNumber());
 
       BigDecimal totalQuotationPrice = BigDecimal.ZERO;
 
-      log.info("Iniciando llamada al micro servicio de materiales para validar datos relacionados.");
       for (var detail : entityMapped.getDetails()) {
-        log.info("Consultando conceptos del modulo con ID: {}", detail.getModule().getId());
-        ModuleEntity moduleEntity = this.moduleRepository.findById(detail.getModule().getId())
+        ModuleEntity module = this.moduleRepository.findById(detail.getModule().getId())
           .orElseThrow(() -> new QuotationException(QuotationMessage.MODULE_NOT_FOUND));
-        log.info("Módulo encontrado: {}", moduleEntity);
-        detail.setModule(moduleEntity);
 
-        // 3. PROCESAR MATERIALES (Primero sumamos todos).
-        BigDecimal subItemsTotalPrice = BigDecimal.ZERO;
+        detail.setModule(module);
+
+        // 1. SUMA DE MATERIALES
+        BigDecimal materialsBase = BigDecimal.ZERO;
         for (var subItem : detail.getSubItems()) {
-          final MaterialResponseDto materialResponse = fetchMaterial(subItem.getMaterialId());
-          log.info("Material encontrado: {}", materialResponse);
-          subItem.setMaterialId(materialResponse.getId());
-          subItem.calculateUnitPrice(); // rawMaterialCost / pieces
-          subItem.calculateTotalPrice(); // unitPrice * quantity
-          subItemsTotalPrice = subItemsTotalPrice.add(subItem.getTotalPrice());
+          final MaterialResponseDto matRes = fetchMaterial(subItem.getMaterialId());
+          subItem.setMaterialId(matRes.getId());
+          subItem.calculateUnitPrice();
+          subItem.calculateTotalPrice();
+          materialsBase = materialsBase.add(subItem.getTotalPrice());
         }
 
-        // 4. PROCESAR MATERIALES (Primero sumamos todos).
-        BigDecimal baseCost = subItemsTotalPrice
+        // 2. COSTO BASE (Materiales + Fijos)
+        BigDecimal currentSubtotal = materialsBase
           .add(Optional.ofNullable(detail.getTransportationCost()).orElse(BigDecimal.ZERO))
           .add(Optional.ofNullable(detail.getLaborCost()).orElse(BigDecimal.ZERO))
           .add(Optional.ofNullable(detail.getPackingCost()).orElse(BigDecimal.ZERO));
 
-        // 5. CASCADA FINANCIERA (Multiplicación Acumulativa).
-        // Guardamos los porcentajes para el snapshot.
-        detail.setOverheadsPercentage(moduleEntity.getOverheadsCostPercentage());
-        detail.setFeePercentage(moduleEntity.getFeePercentage());
-        detail.setRebatePercentage(moduleEntity.getRebatePercentage());
-        detail.setProfitMarginPercentage(moduleEntity.getProfitMarginPercentage());
+        // SNAPSHOT DE PORCENTAJES
+        detail.setOverheadsPercentage(module.getOverheadsCostPercentage());
+        detail.setFeePercentage(module.getFeePercentage());
+        detail.setRebatePercentage(module.getRebatePercentage());
+        detail.setProfitMarginPercentage(module.getProfitMarginPercentage());
 
-        // GASTOS GENERALES: Base * (1 + GG%)
-        BigDecimal withOverheads = calculateCascadingStep(baseCost, detail.getOverheadsPercentage());
-        detail.setOverheadsAmount(withOverheads.subtract(baseCost));
+        // 3. CASCADA FINANCIERA (Redondeo a 2 decimales en cada paso)
+        BigDecimal cien = new BigDecimal("100");
 
-        // FEE: (Base + GG) * (1 + FEE%)
-        BigDecimal withFee = calculateCascadingStep(withOverheads, detail.getFeePercentage());
-        detail.setFeeAmount(withFee.subtract(withOverheads));
+        // GASTOS GENERALES (GG)
+        BigDecimal gg = currentSubtotal.multiply(detail.getOverheadsPercentage().divide(cien, 4, RoundingMode.HALF_UP))
+          .setScale(2, RoundingMode.HALF_UP);
+        detail.setOverheadsAmount(gg);
+        currentSubtotal = currentSubtotal.add(gg);
 
-        // REBATE: (Base + GG + FEE) * (1 + Rebate%)
-        BigDecimal withRebate = calculateCascadingStep(withFee, detail.getRebatePercentage());
-        detail.setRebateAmount(withRebate.subtract(withFee));
+        // FEE: Sobre (Base + GG)
+        BigDecimal fee = currentSubtotal.multiply(detail.getFeePercentage().divide(cien, 4, RoundingMode.HALF_UP))
+          .setScale(2, RoundingMode.HALF_UP);
+        detail.setFeeAmount(fee);
+        currentSubtotal = currentSubtotal.add(fee);
 
-        // UTILIDAD: (Base + GG + FEE + Rebate) * (1 + Margen%)
-        BigDecimal finalPriceUnit = calculateCascadingStep(withRebate, detail.getProfitMarginPercentage());
+        // REBATE: Sobre (Base + GG + FEE)
+        BigDecimal rebate = currentSubtotal.multiply(detail.getRebatePercentage().divide(cien, 4, RoundingMode.HALF_UP))
+          .setScale(2, RoundingMode.HALF_UP);
+        detail.setRebateAmount(rebate);
+        currentSubtotal = currentSubtotal.add(rebate);
 
-        // 6. ASIGNACIÓN FINAL DE LÍNEA
-        detail.setUnitProductionCost(finalPriceUnit.setScale(2, RoundingMode.HALF_UP));
-        detail.setSuggestedPrice(detail.getUnitProductionCost());
-        detail.setTotalLinePrice(detail.getSuggestedPrice().multiply(BigDecimal.valueOf(detail.getQuantity())));
+        // 4. PRECIO SUGERIDO (Subtotal Acumulado * (1 + Margen%))
+        BigDecimal marginFactor = BigDecimal.ONE.add(detail.getProfitMarginPercentage().divide(cien, 4, RoundingMode.HALF_UP));
+        BigDecimal unitSugerido = currentSubtotal.multiply(marginFactor).setScale(2, RoundingMode.HALF_UP);
+
+        detail.setUnitProductionCost(unitSugerido);
+        detail.setSuggestedPrice(unitSugerido);
+        detail.setTotalLinePrice(unitSugerido.multiply(BigDecimal.valueOf(detail.getQuantity())).setScale(2, RoundingMode.HALF_UP));
 
         totalQuotationPrice = totalQuotationPrice.add(detail.getTotalLinePrice());
-
       }
-      entityMapped.setTotalProductionCost(totalQuotationPrice);
 
-      log.info("Mapped final quotation entity: {}", entityMapped);
+      entityMapped.setTotalProductionCost(totalQuotationPrice.setScale(2, RoundingMode.HALF_UP));
+
+      // GUARDAR
       final QuotationEntity saved = this.quotationRepository.save(entityMapped);
 
+      // 5. HIDRATACIÓN DE RESPUESTA (Rich Response)
       QuotationResponseDto response = this.quotationFieldsMapper.toDto(saved);
-      response.setCustomerName(customerResponseDto.getCompanyName());
-      response.setEmployeeName(employeeResponseDto.getFullName());
+      response.setCustomerName(customer.getCompanyName());
+      response.setEmployeeName(employee.getFullName());
 
+      // Aquí usamos el materialId que ya está en el DTO de respuesta
+      response.getDetails().forEach(d -> d.getSubItems().forEach(si -> {
+        MaterialResponseDto m = fetchMaterial(si.getMaterialId());
+        si.setMaterial(m);
+      }));
       return response;
-    } catch (final Exception ex) {
-      log.error("Error inesperado en la orquestación: {}", ex.getMessage());
-      throw new QuotationException(QuotationMessage.QUOTATION_INTERNAL_ERROR);
+    } catch (Exception ex) {
+      log.error("Error crítico: {}", ex.getMessage());
+      throw ex;
     }
   }
 
@@ -155,18 +167,6 @@ public class QuotationServiceImpl implements QuotationService {
     this.quotationRepository.findById(id)
       .orElseThrow(() -> new QuotationException(QuotationMessage.QUOTATION_NOT_FOUND));
     this.quotationRepository.deleteById(id);
-  }
-
-  /**
-   * Aplica la fórmula: Base * (1 + (Porcentaje / 100))
-   */
-  private BigDecimal calculateCascadingStep(final BigDecimal base, final BigDecimal percentage) {
-    if (percentage == null || percentage.compareTo(BigDecimal.ZERO) == 0) {
-      return base;
-    }
-    // factor = 1 + (3 / 100) = 1.03
-    BigDecimal factor = BigDecimal.ONE.add(percentage.divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP));
-    return base.multiply(factor);
   }
 
   private MaterialResponseDto fetchMaterial(final Integer id) {
