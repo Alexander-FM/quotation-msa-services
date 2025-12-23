@@ -111,23 +111,25 @@ public class QuotationServiceImpl implements QuotationService {
         // 3. CASCADA FINANCIERA (Redondeo a 2 decimales en cada paso)
         BigDecimal cien = new BigDecimal("100");
 
-        // GASTOS GENERALES (GG)
-        BigDecimal gg = currentSubtotal.multiply(detail.getOverheadsPercentage().divide(cien, 4, RoundingMode.HALF_UP))
-          .setScale(2, RoundingMode.HALF_UP);
-        detail.setOverheadsAmount(gg);
-        currentSubtotal = currentSubtotal.add(gg);
+        // factorGG = 1 + (3 / 100) = 1.03
+        BigDecimal factorGG = BigDecimal.ONE.add(detail.getOverheadsPercentage().divide(cien, 4, RoundingMode.HALF_UP));
+        // withGG = 164.88 * 1.03 = 169.83
+        BigDecimal withGG = currentSubtotal.multiply(factorGG).setScale(2, RoundingMode.HALF_UP);
+        // Guardamos el subtotal acumulado para que coincida con el Excel
+        detail.setOverheadsAmount(withGG);
+        currentSubtotal = withGG;
 
-        // FEE: Sobre (Base + GG)
-        BigDecimal fee = currentSubtotal.multiply(detail.getFeePercentage().divide(cien, 4, RoundingMode.HALF_UP))
-          .setScale(2, RoundingMode.HALF_UP);
-        detail.setFeeAmount(fee);
-        currentSubtotal = currentSubtotal.add(fee);
+        // FEE: SubtotalGG * (1 + FEE%)
+        BigDecimal factorFee = BigDecimal.ONE.add(detail.getFeePercentage().divide(cien, 4, RoundingMode.HALF_UP));
+        BigDecimal withFee = currentSubtotal.multiply(factorFee).setScale(2, RoundingMode.HALF_UP);
+        detail.setFeeAmount(withFee);
+        currentSubtotal = withFee;
 
-        // REBATE: Sobre (Base + GG + FEE)
-        BigDecimal rebate = currentSubtotal.multiply(detail.getRebatePercentage().divide(cien, 4, RoundingMode.HALF_UP))
-          .setScale(2, RoundingMode.HALF_UP);
-        detail.setRebateAmount(rebate);
-        currentSubtotal = currentSubtotal.add(rebate);
+        // REBATE: SubtotalFee * (1 + Rebate%)
+        BigDecimal factorRebate = BigDecimal.ONE.add(detail.getRebatePercentage().divide(cien, 4, RoundingMode.HALF_UP));
+        BigDecimal withRebate = currentSubtotal.multiply(factorRebate).setScale(2, RoundingMode.HALF_UP);
+        detail.setRebateAmount(withRebate);
+        currentSubtotal = withRebate;
 
         // 4. PRECIO SUGERIDO (Subtotal Acumulado * (1 + Margen%))
         BigDecimal marginFactor = BigDecimal.ONE.add(detail.getProfitMarginPercentage().divide(cien, 4, RoundingMode.HALF_UP));
