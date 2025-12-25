@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-init-scripts
+  namespace: dev
+data:
+  init-schemas.sql: |
+    CREATE DATABASE IF NOT EXISTS quotations_service;
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-init-scripts
+  namespace: prod
+data:
+  init-schemas.sql: |
+    CREATE DATABASE IF NOT EXISTS quotations_service;

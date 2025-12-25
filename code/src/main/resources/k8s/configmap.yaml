@@ -60,6 +60,8 @@ data:
   ms_customers_service_lb: "http://appmic-quotingplugins-customers:8084"
   ms_catalogs_service_lb: "http://appmic-quotingplugins-catalogs:8080"
   ms_employees_service_lb: "http://appmic-quotingplugins-employees:8082"
+  ms_materials_service_lb: "http://appmic-quotingplugins-materials:8083"
+  ms_quotations_service_lb: "http://appmic-quotingplugins-quotations:8085"
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -83,9 +85,9 @@ metadata:
 data:
   profile_active: "dev"
   port: "8085"
-  ms_employee_item_service: "http://appmic-quotingplugins-employees"
-  ms_material_item_service: "http://appmic-quotingplugins-catalogs"
-  ms_customer_item_service: "http://appmic-quotingplugins-customers"
+  ms_employee_item_service: "http://appmic-quotingplugins-employees:8082"
+  ms_material_item_service: "http://appmic-quotingplugins-materials:8083"
+  ms_customer_item_service: "http://appmic-quotingplugins-customers:8084"
   db_host: "mysql"
   db_port: "3306"
   db_name: "quotations_service"

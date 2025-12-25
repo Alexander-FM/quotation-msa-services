@@ -57,6 +57,16 @@ spec:
                 configMapKeyRef:
                   name: appmic-quotingplugins-gateway
                   key: ms_employees_service_lb
+            - name: MS_MATERIALS_SERVICE_LB
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-gateway
+                  key: ms_materials_service_lb
+            - name: MS_QUOTATIONS_SERVICE_LB
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-gateway
+                  key: ms_quotations_service_lb
           # 1. READINESS: ¿Ya terminó de arrancar Spring?
           readinessProbe:
             httpGet:

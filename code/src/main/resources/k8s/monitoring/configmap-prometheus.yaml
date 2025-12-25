@@ -5,8 +5,8 @@ metadata:
 data:
   prometheus.yml: |
     global:
-      scrape_interval: 5s # Leer métricas cada 5 segundos (Rápido para Dev)
-      evaluation_interval: 5s
+      scrape_interval: 15s # Leer métricas cada 5 segundos (Rápido para Dev)
+      evaluation_interval: 15s
 
     scrape_configs:
       # 1. Prometheus se monitorea a sí mismo
@@ -14,7 +14,7 @@ data:
         static_configs:
           - targets: ['localhost:9090']
 
-      # 2. Los Microservicios (Usando los nombres DNS de Kubernetes)
+      # 2. Los micro servicios (Usando los nombres DNS de Kubernetes)
       - job_name: 'spring-boot-apps'
         metrics_path: '/actuator/prometheus'
         static_configs:
@@ -24,3 +24,5 @@ data:
               - 'appmic-quotingplugins-employees:8082'
               - 'appmic-quotingplugins-catalogs:8080'
               - 'appmic-quotingplugins-customers:8084'
+              - 'appmic-quotingplugins-materials:8083'
+              - 'appmic-quotingplugins-quotations:8085'
