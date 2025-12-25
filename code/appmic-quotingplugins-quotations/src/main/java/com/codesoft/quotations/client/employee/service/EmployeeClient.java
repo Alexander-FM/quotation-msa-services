@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "${app.external.employee-service-url}", url = "${app.external.employee-service-url}")
+@FeignClient(name = "${app.external.employee-service-url}")
 public interface EmployeeClient {
 
   @GetMapping("${app.external.employee-service-path}/employee/searchByDocumentNumber/{documentNumber}")

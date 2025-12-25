@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "${app.external.material-service-url}", url = "${app.external.material-service-url}")
+@FeignClient(name = "${app.external.material-service-url}")
 public interface MaterialClient {
 
   @GetMapping("${app.external.material-service-path}/material/{id}")
