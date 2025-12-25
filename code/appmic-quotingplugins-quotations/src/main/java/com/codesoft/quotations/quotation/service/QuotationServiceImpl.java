@@ -158,9 +158,9 @@ public class QuotationServiceImpl implements QuotationService {
         si.setMaterial(m);
       }));
       return response;
-    } catch (Exception ex) {
-      log.error("Error crítico: {}", ex.getMessage());
-      throw ex;
+    } catch (final Exception ex) {
+      log.error("Oh dear! There was an error in the quote. Don't worry, we're working to resolve the issue.: {}", ex.getMessage());
+      throw new QuotationException(QuotationMessage.QUOTATION_INTERNAL_ERROR);
     }
   }
 

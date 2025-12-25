@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: appmic-quotingplugins-gateway
+  name: appmic-quotingplugins-quotations
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: appmic-quotingplugins-gateway
+      app: appmic-quotingplugins-quotations
   template:
     metadata:
       labels:
-        app: appmic-quotingplugins-gateway
+        app: appmic-quotingplugins-quotations
     spec:
       containers:
-        - image: alexanderpe/appmic-quotingplugins-gateway:latest
-          name: appmic-quotingplugins-gateway
+        - image: alexanderpe/appmic-quotingplugins-quotations:latest
+          name: appmic-quotingplugins-quotations
           imagePullPolicy: Always
           ports:
-            - containerPort: 8081
+            - containerPort: 8085
           env:
             - name: MY_POD_NAME
               valueFrom:
@@ -30,38 +30,63 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               valueFrom:
                 configMapKeyRef:
-                  name: appmic-quotingplugins-gateway
+                  name: appmic-quotingplugins-quotations
                   key: profile_active
+            - name: JWT_SIGNATURE_QUOTATIONS
+              valueFrom:
+                secretKeyRef:
+                  name: appmic-quotingplugins-auth
+                  key: jwt-signature-quotations
+            - name: MS_EMPLOYEE_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-quotations
+                  key: ms_employee_item_service
+            - name: MS_MATERIAL_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-quotations
+                  key: ms_material_item_service
+            - name: MS_CUSTOMER_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-quotations
+                  key: ms_customer_item_service
             - name: PORT
               valueFrom:
                 configMapKeyRef:
-                  name: appmic-quotingplugins-gateway
+                  name: appmic-quotingplugins-quotations
                   key: port
-            - name: MS_AUTH_SERVICE_LB
+            - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: appmic-quotingplugins-gateway
-                  key: ms_auth_service_lb
-            - name: MS_CUSTOMERS_SERVICE_LB
+                  name: appmic-quotingplugins-quotations
+                  key: db_host
+            - name: DB_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: appmic-quotingplugins-gateway
-                  key: ms_customers_service_lb
-            - name: MS_CATALOGS_SERVICE_LB
+                  name: appmic-quotingplugins-quotations
+                  key: db_port
+            - name: DB_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: appmic-quotingplugins-gateway
-                  key: ms_catalogs_service_lb
-            - name: MS_EMPLOYEES_SERVICE_LB
+                  name: appmic-quotingplugins-quotations
+                  key: db_name
+            - name: DB_USERNAME
               valueFrom:
-                configMapKeyRef:
-                  name: appmic-quotingplugins-gateway
-                  key: ms_employees_service_lb
+                secretKeyRef:
+                  name: appmic-quotingplugins-quotations
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: appmic-quotingplugins-quotations
+                  key: password
           # 1. READINESS: ¿Ya terminó de arrancar Spring?
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
-              port: 8081
+              port: 8085
               scheme: HTTP
             initialDelaySeconds: 270  # Esperamos 270s antes de preguntar la 1ra vez (Java tarda en iniciar)
             periodSeconds: 30        # Preguntamos cada 30s
@@ -71,7 +96,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 8081
+              port: 8085
               scheme: HTTP
             initialDelaySeconds: 360  # Damos más margen al inicio para no matar la app si el arranque es lento
             periodSeconds: 45
@@ -89,12 +114,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: appmic-quotingplugins-gateway
+  name: appmic-quotingplugins-quotations
 spec:
   type: LoadBalancer
   ports:
     - protocol: TCP
-      port: 8081
-      targetPort: 8081
+      port: 8085
+      targetPort: 8085
   selector:
-    app: appmic-quotingplugins-gateway
+    app: appmic-quotingplugins-quotations

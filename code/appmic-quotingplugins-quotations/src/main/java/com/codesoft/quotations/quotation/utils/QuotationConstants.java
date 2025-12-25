@@ -20,7 +20,7 @@ public class QuotationConstants {
 
   public static final String ALREADY_EXISTS_MESSAGE = "Quoting Material already exists in the database or conflicts with an existing entry";
 
-  public static final String INTERNAL_SERVICE_ERROR = "Internal service error occurred";
+  public static final String INTERNAL_SERVICE_ERROR = "An unexpected error occurred while creating the quote.";
 
   public static final String MATERIAL_SERVICE_UNAVAILABLE_MESSAGE = "The material service is not available (connection refused)";
 
