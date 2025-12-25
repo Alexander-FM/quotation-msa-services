@@ -1,9 +1,9 @@
 package com.codesoft.exception;
 
-import java.util.Collections;
-import java.util.List;
+import java.net.ConnectException;
+import java.nio.channels.UnresolvedAddressException;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import com.codesoft.utils.ErrorResponse;
 import com.codesoft.utils.GenericResponse;
@@ -11,10 +11,8 @@ import com.codesoft.utils.GenericResponseConstants;
 import com.codesoft.utils.GenericResponseUtils;
 import com.codesoft.utils.IErrorCode;
 import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -23,6 +21,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 @RestControllerAdvice
@@ -37,29 +36,38 @@ public class GlobalExceptionHandler {
     return GenericResponseUtils.buildGenericResponseError("Internal Server Error", message);
   }
 
-  @ExceptionHandler(ConstraintViolationException.class)
-  @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-  public GenericResponse<Object> constraintValidations(final ConstraintViolationException ex) {
-    final Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
-    final List<String> errorMessages = violations.stream()
-      .map(ConstraintViolation::getMessage)
-      .toList();
-    final Map<String, List<String>> listHashMap = Collections.singletonMap("violations", errorMessages);
-    return GenericResponseUtils.buildGenericResponseError("Bad Request", listHashMap);
-  }
-
+  /**
+   * Manejo de errores de validación de datos de entrada. @RequestBody (JSON del Postman).
+   *
+   * @param ex MethodArgumentNotValidException
+   * @return GenericResponse<Object>
+   */
   @ExceptionHandler(MethodArgumentNotValidException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public GenericResponse<Object> handleMethodArgumentNotValidException(final MethodArgumentNotValidException ex) {
-    // Extraemos la lista de errores
-    List<String> errorMessages = ex.getBindingResult()
-      .getAllErrors()
-      .stream()
-      .map(DefaultMessageSourceResolvable::getDefaultMessage) // "The adjustment factor name must not be empty."
-      .toList();
-    Map<String, List<String>> listHashMap = Collections.singletonMap("violations", errorMessages);
-    log.warn("MethodArgumentNotValidException: {}", ex.getMessage());
-    return GenericResponseUtils.buildGenericResponseError("Bad Request", listHashMap);
+  public GenericResponse<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+    Map<String, String> errors = new HashMap<>();
+    ex.getBindingResult().getFieldErrors().forEach(error ->
+      errors.put(error.getField(), error.getDefaultMessage())
+    );
+    return GenericResponseUtils.buildGenericResponseError("Error de validación en el cuerpo", errors);
+  }
+
+  /**
+   * Manejo de errores de validación de datos de entrada. @PathVariable, @RequestParam, Hibernate etc.
+   *
+   * @param ex ConstraintViolationException
+   * @return GenericResponse<Object>
+   */
+  @ExceptionHandler(ConstraintViolationException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public GenericResponse<Object> handleConstraintViolation(ConstraintViolationException ex) {
+    Map<String, String> errors = new HashMap<>();
+    ex.getConstraintViolations().forEach(violation -> {
+      // Extrae el nombre del campo del path (ej. "create.requestDto.customerDocumentNumber")
+      String fieldName = violation.getPropertyPath().toString();
+      errors.put(fieldName, violation.getMessage());
+    });
+    return GenericResponseUtils.buildGenericResponseError("Violación de restricciones de datos", errors);
   }
 
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
@@ -95,6 +103,18 @@ public class GlobalExceptionHandler {
     }
     return new ResponseEntity<>(
       GenericResponseUtils.buildGenericResponseWarning(GenericResponseConstants.BAD_REQUEST_MESSAGE), HttpStatus.BAD_REQUEST);
+  }
+
+  /**
+   * Captura errores de conexión cuando un microservicio está caído o no existe. ResourceAccessException suele envolver a ConnectException o
+   * UnresolvedAddressException.
+   */
+  @ExceptionHandler({ResourceAccessException.class, UnresolvedAddressException.class, ConnectException.class})
+  @ResponseStatus(code = HttpStatus.SERVICE_UNAVAILABLE)
+  public GenericResponse<Object> handleConnectionError(final Exception ex) {
+    log.warn("ResourceAccessException, UnresolvedAddressException, ConnectException: {}", ex.getMessage());
+    final String message = "Gateway Error: El micro servicio destino no está disponible o no responde.";
+    return GenericResponseUtils.buildGenericResponseError("Target service unavailable or connection refused via Gateway.", message);
   }
 
   @ExceptionHandler(BaseException.class)

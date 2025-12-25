@@ -44,6 +44,14 @@ public class EmployeeController {
       .body(GenericResponseUtils.buildGenericResponseSuccess(EmployeeConstants.FOUND_MESSAGE, employees));
   }
 
+  @GetMapping("/searchByDocumentNumber/{documentNumber}")
+  public ResponseEntity<GenericResponse<EmployeeResponseDto>> retrieveByDocumentNumber(
+    @PathVariable(value = "documentNumber") final String documentNumber) {
+    final EmployeeResponseDto employees = employeeService.searchByDocumentNumber(documentNumber);
+    return ResponseEntity.status(HttpStatus.OK)
+      .body(GenericResponseUtils.buildGenericResponseSuccess(EmployeeConstants.FOUND_MESSAGE, employees));
+  }
+
   @PostMapping
   public ResponseEntity<GenericResponse<EmployeeResponseDto>> create(@Valid @RequestBody final EmployeeRequestDto requestDto) {
     if (requestDto.getId() != null) {

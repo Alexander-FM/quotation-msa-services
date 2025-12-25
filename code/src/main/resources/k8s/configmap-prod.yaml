@@ -47,3 +47,45 @@ metadata:
 data:
   profile_active: "prod"
   ms_employee_service: "http://appmic-quotingplugins-employees/api/employees"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: appmic-quotingplugins-gateway
+  namespace: prod
+data:
+  profile_active: "prod"
+  port: "8081"
+  ms_auth_service_lb: "http://appmic-quotingplugins-auth:9000"
+  ms_customers_service_lb: "http://appmic-quotingplugins-customers:8084"
+  ms_catalogs_service_lb: "http://appmic-quotingplugins-catalogs:8080"
+  ms_employees_service_lb: "http://appmic-quotingplugins-employees:8082"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: appmic-quotingplugins-materials
+  namespace: prod
+data:
+  profile_active: "prod"
+  port: "8083"
+  ms_catalog_item_service: "http://appmic-quotingplugins-catalogs:8080/api/catalogs"
+  db_host: "postgres"
+  db_port: "5432"
+  db_name: "quoting_db"
+  db_schema: "materials"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: appmic-quotingplugins-quotations
+  namespace: prod
+data:
+  profile_active: "prod"
+  port: "8085"
+  ms_employee_item_service: "http://appmic-quotingplugins-employees"
+  ms_material_item_service: "http://appmic-quotingplugins-catalogs"
+  ms_customer_item_service: "http://appmic-quotingplugins-customers"
+  db_host: "mysql"
+  db_port: "3306"
+  db_name: "quotations_service"

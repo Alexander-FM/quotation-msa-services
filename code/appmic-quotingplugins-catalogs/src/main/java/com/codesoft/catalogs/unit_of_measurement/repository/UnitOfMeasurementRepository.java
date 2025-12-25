@@ -15,5 +15,5 @@ public interface UnitOfMeasurementRepository extends JpaRepository<UnitOfMeasure
    * @param name the name.
    * @return the optional catalog item entity.
    */
-  Optional<UnitOfMeasurementEntity> findByNameContainingIgnoreCase(final String name);
+  Optional<UnitOfMeasurementEntity> findByName(final String name);
 }

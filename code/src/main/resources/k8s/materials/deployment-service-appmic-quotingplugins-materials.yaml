@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appmic-quotingplugins-materials
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appmic-quotingplugins-materials
+  template:
+    metadata:
+      labels:
+        app: appmic-quotingplugins-materials
+    spec:
+      containers:
+        - image: alexanderpe/appmic-quotingplugins-materials:latest
+          name: appmic-quotingplugins-materials
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8083
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-materials
+                  key: profile_active
+            - name: JWT_SIGNATURE_QUOTATIONS
+              valueFrom:
+                secretKeyRef:
+                  name: appmic-quotingplugins-auth
+                  key: jwt-signature-quotations
+            - name: MS_CATALOG_ITEM_SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-materials
+                  key: ms_catalog_item_service
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-materials
+                  key: port
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-materials
+                  key: db_host
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-materials
+                  key: db_port
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-materials
+                  key: db_name
+            - name: DB_SCHEMA
+              valueFrom:
+                configMapKeyRef:
+                  name: appmic-quotingplugins-materials
+                  key: db_schema
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: appmic-quotingplugins-materials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: appmic-quotingplugins-materials
+                  key: password
+          # 1. READINESS: ¿Ya terminó de arrancar Spring?
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8083
+              scheme: HTTP
+            initialDelaySeconds: 270  # Esperamos 270s antes de preguntar la 1ra vez (Java tarda en iniciar)
+            periodSeconds: 30        # Preguntamos cada 30s
+            timeoutSeconds: 15        # Si no responde en 15s, falla
+            failureThreshold: 6      # Si falla 6 veces seguidas, corta el tráfico
+          # 2. LIVENESS: ¿Se murió el proceso?
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8083
+              scheme: HTTP
+            initialDelaySeconds: 360  # Damos más margen al inicio para no matar la app si el arranque es lento
+            periodSeconds: 45
+            timeoutSeconds: 15
+            failureThreshold: 6
+          # 3. RESOURCES: Hardware (Ajustado para velocidad)
+#          resources:
+#            requests:
+#              memory: "300Mi"
+#              cpu: "250m"
+#            limits:
+#              memory: "800Mi" # Limite de RAM para proteger tu PC
+#              # cpu: "1000m"  # <--- COMENTADO: En Minikube, mejor no limitar CPU para evitar lentitud
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appmic-quotingplugins-materials
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8083
+      targetPort: 8083
+  selector:
+    app: appmic-quotingplugins-materials

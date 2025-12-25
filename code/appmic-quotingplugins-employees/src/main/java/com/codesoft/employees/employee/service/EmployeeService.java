@@ -11,6 +11,8 @@ public interface EmployeeService {
 
   EmployeeResponseDto findById(final Integer id);
 
+  EmployeeResponseDto searchByDocumentNumber(final String documentNumber);
+
   EmployeeResponseDto create(final EmployeeRequestDto requestDto);
 
   void deleteById(final Integer id);

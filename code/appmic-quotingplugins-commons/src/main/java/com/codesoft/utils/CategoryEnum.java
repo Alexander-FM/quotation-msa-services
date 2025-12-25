@@ -8,12 +8,12 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @RequiredArgsConstructor
 public enum CategoryEnum {
   DOCUMENT_TYPE("document_type"),
   IDENTIFICATION_TYPE("identification_type");
 
-  @Getter
   @JsonValue
   private final String value;
 

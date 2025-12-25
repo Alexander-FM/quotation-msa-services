@@ -39,6 +39,13 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
+  public CustomerResponseDto searchByDocumentNumber(final String documentNumber) {
+    final Optional<CustomerEntity> customerEntity = this.customerRepository.findByDocumentNumber(documentNumber);
+    return customerEntity.map(this.customerFieldsMapper::toDto)
+      .orElseThrow(() -> new CustomerException(CustomerMessage.CUSTOMER_NOT_FOUND));
+  }
+
+  @Override
   public CustomerResponseDto create(final CustomerRequestDto requestDto) {
     try {
       final String documentTypeCode = catalogItemClient.searchByDocumentTypeCode(requestDto.getDocumentTypeCode()).getCode();

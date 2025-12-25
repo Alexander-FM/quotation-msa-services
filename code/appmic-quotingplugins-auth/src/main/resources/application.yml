@@ -18,6 +18,19 @@ app:
   endpoints:
     auth: "/api/auth"
 management:
+  tracing:
+    sampling:
+      probability: 1.0 # 1.0 significa guardar el 100% de las peticiones (para dev está bien)
+  zipkin:
+    tracing:
+      endpoint: "http://zipkin:9411/api/v2/spans" # URL del servidor Zipkin en K8s
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
   endpoint:
     health:
       probes:

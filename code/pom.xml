@@ -35,13 +35,11 @@
   </scm>
 
   <modules>
-    <module>appmic-quotingplugins-reports</module>
     <module>appmic-quotingplugins-commons</module>
     <module>appmic-quotingplugins-gateway</module>
     <module>appmic-quotingplugins-quotations</module>
     <module>appmic-quotingplugins-materials</module>
     <module>appmic-quotingplugins-catalogs</module>
-    <module>appmic-quotingplugins-modules</module>
     <module>appmic-quotingplugins-employees</module>
     <module>appmic-quotingplugins-customers</module>
     <module>appmic-quotingplugins-auth</module>

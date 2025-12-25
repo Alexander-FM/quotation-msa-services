@@ -83,28 +83,28 @@ spec:
               path: /actuator/health/readiness
               port: 8084
               scheme: HTTP
-            initialDelaySeconds: 90  # Esperamos 90s antes de preguntar la 1ra vez (Java tarda en iniciar)
-            periodSeconds: 10        # Preguntamos cada 10s
-            timeoutSeconds: 5        # Si no responde en 5s, falla
-            failureThreshold: 3      # Si falla 3 veces seguidas, corta el tráfico
+            initialDelaySeconds: 270  # Esperamos 270s antes de preguntar la 1ra vez (Java tarda en iniciar)
+            periodSeconds: 30        # Preguntamos cada 30s
+            timeoutSeconds: 15        # Si no responde en 15s, falla
+            failureThreshold: 6      # Si falla 6 veces seguidas, corta el tráfico
           # 2. LIVENESS: ¿Se murió el proceso?
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
               port: 8084
               scheme: HTTP
-            initialDelaySeconds: 120  # Damos más margen al inicio para no matar la app si el arranque es lento
-            periodSeconds: 15
-            timeoutSeconds: 5
-            failureThreshold: 3
+            initialDelaySeconds: 360  # Damos más margen al inicio para no matar la app si el arranque es lento
+            periodSeconds: 45
+            timeoutSeconds: 15
+            failureThreshold: 6
           # 3. RESOURCES: Hardware (Ajustado para velocidad)
-          resources:
-            requests:
-              memory: "300Mi"
-              cpu: "250m"
-            limits:
-              memory: "800Mi" # Limite de RAM para proteger tu PC
-              # cpu: "1000m"  # <--- COMENTADO: En Minikube, mejor no limitar CPU para evitar lentitud
+#          resources:
+#            requests:
+#              memory: "300Mi"
+#              cpu: "250m"
+#            limits:
+#              memory: "800Mi" # Limite de RAM para proteger tu PC
+#              # cpu: "1000m"  # <--- COMENTADO: En Minikube, mejor no limitar CPU para evitar lentitud
 ---
 apiVersion: v1
 kind: Service

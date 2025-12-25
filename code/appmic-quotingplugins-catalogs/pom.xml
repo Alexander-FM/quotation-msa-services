@@ -105,6 +105,19 @@
       <version>0.12.6</version>
       <scope>runtime</scope>
     </dependency>
+    <!-- Monitoring with Micrometer and Prometheus -->
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-tracing-bridge-brave</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.zipkin.reporter2</groupId>
+      <artifactId>zipkin-reporter-brave</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <finalName>${project.artifactId}-${project.version}</finalName>

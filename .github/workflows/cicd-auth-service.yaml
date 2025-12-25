@@ -5,8 +5,8 @@ on:
   push:
     branches: [ "develop", "master" ] # Se ejecuta al hacer push a estas ramas
     paths:
-      - 'appmic-quotingplugins-auth/**' # ¡CLAVE! Solo si cambia algo DENTRO de la carpeta de auth
-      - 'pom.xml' # O si cambia el pom padre
+      - 'code/appmic-quotingplugins-auth/**' # ¡CLAVE! Solo si cambia algo DENTRO de la carpeta de auth
+      - 'code/pom.xml' # O si cambia el pom padre
   # Permite ejecutarlo manualmente desde la web de GitHub si quieres
   workflow_dispatch:
 
@@ -15,7 +15,7 @@ env:
   # Nombre de la imagen en DockerHub
   IMAGE_NAME: alexanderpe/appmic-quotingplugins-auth
   # Carpeta del servicio
-  SERVICE_PATH: appmic-quotingplugins-auth
+  SERVICE_PATH: code/appmic-quotingplugins-auth
 
 jobs:
   build-and-push:
@@ -37,7 +37,9 @@ jobs:
       # 3. Compilar con Maven (CI)
       # Usamos -pl para indicar el proyecto específico y -am para incluir dependencias necesarias
       - name: Build with Maven
-        run: mvn clean package -DskipTests -pl ${{ env.SERVICE_PATH }} -am
+        # Entramos a la carpeta 'code' antes de ejecutar nada
+        working-directory: ./code
+        run: mvn clean package -DskipTests -pl appmic-quotingplugins-auth -am
 
       # 4. Iniciar sesión en Docker Hub (usando los secretos que creaste)
       - name: Login to Docker Hub
@@ -55,7 +57,7 @@ jobs:
           images: ${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
-            type=sha
+            type=sha,format=long
 
       # 6. Construir y Subir la imagen Docker (CD)
       - name: Build and push Docker image

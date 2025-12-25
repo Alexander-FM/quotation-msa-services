@@ -1,0 +1,99 @@
+name: CI/CD Catalogs Service
+
+# ¿Cuándo se ejecuta esto?
+on:
+  push:
+    branches: [ "develop", "master" ] # Se ejecuta al hacer push a estas ramas
+    paths:
+      - 'code/appmic-quotingplugins-catalogs/**' # ¡CLAVE! Solo si cambia algo DENTRO de la carpeta de catalogs
+      - 'code/pom.xml' # O si cambia el pom padre
+  # Permite ejecutarlo manualmente desde la web de GitHub si quieres
+  workflow_dispatch:
+
+# Definimos las variables globales
+env:
+  # Nombre de la imagen en DockerHub
+  IMAGE_NAME: alexanderpe/appmic-quotingplugins-catalogs
+  # Carpeta del servicio
+  SERVICE_PATH: code/appmic-quotingplugins-catalogs
+
+jobs:
+  # ------------------------------------------------------------------
+  # JOB 1: QUALITY GATE (Pruebas Unitarias)
+  # Este trabajo se asegura de que el código cumpla la calidad antes de construir nada.
+  # ------------------------------------------------------------------
+  unit-tests:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      # EJECUCIÓN DE PRUEBAS
+      # Quitamos el -DskipTests y usamos la fase 'test'
+      - name: Execute JUnit Tests
+        working-directory: ./code
+        # -pl indica el proyecto específico
+        # -am (also make) compila las dependencias necesarias si las hubiera
+        run: mvn test -pl appmic-quotingplugins-catalogs -am
+  # ------------------------------------------------------------------
+  # JOB 2: DELIVERY (Construcción y Despliegue)
+  # Este trabajo depende del anterior (needs: unit-tests)
+  # ------------------------------------------------------------------
+  build-and-push:
+    name: Build and Push Docker Image
+    needs: unit-tests # Depende del job de pruebas unitarias
+    runs-on: ubuntu-latest # Usamos una máquina virtual Linux de GitHub
+
+    steps:
+      # 1. Descargar tu código del repositorio
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Instalar Java (JDK 21 como usas tú)
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven # Esto hace que las siguientes veces sea más rápido
+
+      # 3. Compilar con Maven (CI)
+      # Usamos -pl para indicar el proyecto específico y -am para incluir dependencias necesarias
+      - name: Build with Maven
+        # Entramos a la carpeta 'code' antes de ejecutar nada
+        working-directory: ./code
+        run: mvn clean package -DskipTests -pl appmic-quotingplugins-catalogs -am
+
+      # 4. Iniciar sesión en Docker Hub (usando los secretos que creaste)
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 5. Extraer metadatos para Docker (tags y etiquetas)
+      # Esto genera tags como:latest y también un tag con el hash del commit (ej.:sha-a1b2c3d)
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      # 6. Construir y Subir la imagen Docker (CD)
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./${{ env.SERVICE_PATH }} # Dónde está el Dockerfile
+          push: true # Subir a Docker Hub
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

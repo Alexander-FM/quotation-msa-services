@@ -41,6 +41,13 @@ public class EmployeeServiceImpl implements EmployeeService {
   }
 
   @Override
+  public EmployeeResponseDto searchByDocumentNumber(final String documentNumber) {
+    final Optional<EmployeeEntity> employeeEntity = this.employeeRepository.findByDocumentNumber(documentNumber);
+    return employeeEntity.map(this.employeeFieldsMapper::toDto)
+      .orElseThrow(() -> new EmployeeException(EmployeeMessage.EMPLOYEE_NOT_FOUND));
+  }
+
+  @Override
   public EmployeeResponseDto create(final EmployeeRequestDto requestDto) {
     try {
       final String documentTypeCode = catalogItemClient.searchByDocumentTypeCode(requestDto.getDocumentTypeCode()).getCode();

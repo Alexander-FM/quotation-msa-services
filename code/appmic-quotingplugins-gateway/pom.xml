@@ -1,7 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>appmic-quotingplugins</artifactId>
+    <groupId>com.codesoft</groupId>
+    <relativePath>../pom.xml</relativePath>
+    <version>1.0.0-SNAPSHOT</version> <!-- lookup parent from repository -->
+  </parent>
+
   <artifactId>appmic-quotingplugins-gateway</artifactId>
+  <name>appmic-quotingplugins-gateway</name>
+  <description>Microservices for routing API requests</description>
+  <packaging>jar</packaging>
+
+  <dependencies>
+    <dependency>
+      <artifactId>appmic-quotingplugins-commons</artifactId>
+      <groupId>${project.groupId}</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+    <!-- Spring Cloud Kubernetes -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-gateway-server-webmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-kubernetes-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-kubernetes-client-loadbalancer</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-kubernetes-client-config</artifactId>
+    </dependency>
+    <!-- Spring Actuator -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <!-- Monitoring with Micrometer and Prometheus -->
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-tracing-bridge-brave</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.zipkin.reporter2</groupId>
+      <artifactId>zipkin-reporter-brave</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+    </dependency>
+  </dependencies>
+
   <build>
     <finalName>${project.artifactId}-${project.version}</finalName>
     <plugins>
@@ -15,34 +74,9 @@
         <version>3.13.0</version>
       </plugin>
       <plugin>
-        <artifactId>spring-boot-maven-plugin</artifactId>
         <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
-
-  <dependencies>
-    <dependency>
-      <artifactId>spring-boot-starter</artifactId>
-      <groupId>org.springframework.boot</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <groupId>org.springframework.boot</groupId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <description>Microservices for routing API requests</description>
-  <modelVersion>4.0.0</modelVersion>
-  <name>appmic-quotingplugins-gateway</name>
-
-  <packaging>jar</packaging>
-
-  <parent>
-    <artifactId>appmic-quotingplugins</artifactId>
-    <groupId>com.codesoft</groupId>
-    <relativePath>../pom.xml</relativePath>
-    <version>1.0.0-SNAPSHOT</version> <!-- lookup parent from repository -->
-  </parent>
-
 </project>

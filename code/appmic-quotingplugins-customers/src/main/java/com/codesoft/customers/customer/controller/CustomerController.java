@@ -44,6 +44,14 @@ public class CustomerController {
       .body(GenericResponseUtils.buildGenericResponseSuccess(CustomerConstants.FOUND_MESSAGE, customer));
   }
 
+  @GetMapping("/searchByDocumentNumber/{documentNumber}")
+  public ResponseEntity<GenericResponse<CustomerResponseDto>> retrieveByDocumentNumber(
+    @PathVariable(value = "documentNumber") final String documentNumber) {
+    final CustomerResponseDto customer = customerService.searchByDocumentNumber(documentNumber);
+    return ResponseEntity.status(HttpStatus.OK)
+      .body(GenericResponseUtils.buildGenericResponseSuccess(CustomerConstants.FOUND_MESSAGE, customer));
+  }
+
   @PostMapping
   public ResponseEntity<GenericResponse<CustomerResponseDto>> create(@Valid @RequestBody final CustomerRequestDto requestDto) {
     if (requestDto.getId() != null) {
