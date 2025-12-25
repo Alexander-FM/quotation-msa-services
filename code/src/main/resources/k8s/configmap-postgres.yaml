@@ -8,6 +8,7 @@ data:
     CREATE SCHEMA IF NOT EXISTS catalogs;
     CREATE SCHEMA IF NOT EXISTS customers;
     CREATE SCHEMA IF NOT EXISTS employees;
+    CREATE SCHEMA IF NOT EXISTS materials;
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -19,3 +20,4 @@ data:
     CREATE SCHEMA IF NOT EXISTS catalogs;
     CREATE SCHEMA IF NOT EXISTS customers;
     CREATE SCHEMA IF NOT EXISTS employees;
+    CREATE SCHEMA IF NOT EXISTS materials;

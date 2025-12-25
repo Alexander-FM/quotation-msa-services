@@ -23,11 +23,6 @@ spec:
                 configMapKeyRef:
                   name: appmic-quotingplugins-quotations
                   key: db_name
-            - name: MYSQL_USER
-              valueFrom:
-                secretKeyRef:
-                  name: appmic-quotingplugins-quotations
-                  key: username
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -35,9 +30,9 @@ spec:
                   key: password
           volumeMounts:
             # Almacenamiento de datos
-            - mountPath: /var/lib/mysql/data
+            - mountPath: /var/lib/mysql
               name: mysql-storage
-              subPath: data
+              subPath: mysql-data
             # Script de inicialización (opcional)
             - mountPath: /docker-entrypoint-initdb.d
               name: mysql-init-scripts
