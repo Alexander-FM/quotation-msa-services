@@ -88,7 +88,7 @@ spec:
               path: /actuator/health/readiness
               port: 8085
               scheme: HTTP
-            initialDelaySeconds: 180  # Esperamos 270s antes de preguntar la 1ra vez (Java tarda en iniciar)
+            initialDelaySeconds: 120  # Esperamos 120s antes de preguntar la 1ra vez (Java tarda en iniciar)
             periodSeconds: 30        # Preguntamos cada 30s
             timeoutSeconds: 15        # Si no responde en 15s, falla
             failureThreshold: 6      # Si falla 6 veces seguidas, corta el tráfico
@@ -98,7 +98,7 @@ spec:
               path: /actuator/health/liveness
               port: 8085
               scheme: HTTP
-            initialDelaySeconds: 270  # Damos más margen al inicio para no matar la app si el arranque es lento
+            initialDelaySeconds: 180  # Damos más margen al inicio para no matar la app si el arranque es lento
             periodSeconds: 45
             timeoutSeconds: 15
             failureThreshold: 6
