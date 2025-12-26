@@ -14,8 +14,13 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(
-    name = "employees",
-    uniqueConstraints = @UniqueConstraint(name = "employees_document_number", columnNames = "document_number")
+  name = "employees",
+  uniqueConstraints = {
+    @UniqueConstraint(name = "employees_document_number", columnNames = "document_number"),
+    @UniqueConstraint(name = "employees_user_id", columnNames = "user_id"),
+    @UniqueConstraint(name = "employees_phone_number", columnNames = "phone_number"),
+    @UniqueConstraint(name = "employees_phone_number2", columnNames = "phone_number2")
+  }
 )
 @Data
 @AllArgsConstructor

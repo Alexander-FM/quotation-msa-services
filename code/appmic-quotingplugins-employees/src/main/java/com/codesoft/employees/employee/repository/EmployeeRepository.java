@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Integer> {
 
   Optional<EmployeeEntity> findByDocumentNumber(final String documentNumber);
+
+  boolean existsByUserId(final Integer userId);
 }

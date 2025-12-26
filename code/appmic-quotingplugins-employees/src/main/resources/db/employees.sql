@@ -40,8 +40,8 @@ ALTER TABLE usuarios
     ADD CONSTRAINT usuarios_username UNIQUE (username);
 -- Insert
 INSERT INTO usuarios (username, password, is_active)
-VALUES ('XP2345', '$2a$12$1sAlBuYjmk0B.4ZS/JQJGeVUwJmbwleirC/CBhqt9yXN3nikfj242', true),
-       ('XP3453', '$2a$12$1sAlBuYjmk0B.4ZS/JQJGeVUwJmbwleirC/CBhqt9yXN3nikfj242', true);
+VALUES ('XP2345', '$2a$12$j39OoQBhNe4uxI4.ZjE4D.Na7TIg49ceToon.fqE79k53hR5S2KVy', true),
+       ('XP3453', '$2a$10$CcWLyhKDFogr8NeW/LAxGe/4AkhYmHcjjheOSmoWnI/ZufXooX6Eq', true);
 -- Query
 SELECT *
 FROM usuarios;
@@ -83,7 +83,10 @@ CREATE TABLE employees
 );
 -- Unique Values
 ALTER TABLE employees
-    ADD CONSTRAINT employees_document_number UNIQUE (document_number);
+    ADD CONSTRAINT employees_document_number UNIQUE (document_number),
+    ADD CONSTRAINT employees_phone_number UNIQUE (phone_number),
+    ADD CONSTRAINT employees_phone_number2 UNIQUE (phone_number2),
+    ADD CONSTRAINT employees_user_id UNIQUE (user_id);
 -- Comments
 COMMENT
     ON TABLE employees IS 'Tabla para almacenar información de los empleados';
@@ -94,9 +97,9 @@ COMMENT
 COMMENT
     ON COLUMN employees.document_number IS 'Numero de documento';
 COMMENT
-    ON COLUMN employees.phone_number IS 'Telefono principal del empleado';
+    ON COLUMN employees.phone_number IS 'Teléfono principal del empleado';
 COMMENT
-    ON COLUMN employees.phone_number2 IS 'Telefono secundario del empleado';
+    ON COLUMN employees.phone_number2 IS 'Teléfono secundario del empleado';
 COMMENT
     ON COLUMN employees.street_address IS 'Dirección de la calle de sus vivienda del empleado';
 COMMENT

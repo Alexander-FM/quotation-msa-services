@@ -24,5 +24,10 @@ public class EmployeeConstants {
 
   public static final int EMPLOYEE_ERROR_CODE = 51;
 
-  public static final String ALREADY_EXISTS_MESSAGE = "Employee already exists in the database";
+  public static final String EMPLOYEE_CONFLICT_MESSAGE =
+    "The employee already exists or violated a restriction that prevented the process from being completed.";
+
+  public static final String USER_NOT_FOUND_MESSAGE = "Associated user not found in database";
+
+  public static final String EMPLOYEE_USER_CONFLICT_MESSAGE = "The user is already associated with another employee.";
 }

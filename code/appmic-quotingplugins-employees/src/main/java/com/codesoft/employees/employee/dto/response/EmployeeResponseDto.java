@@ -1,5 +1,6 @@
 package com.codesoft.employees.employee.dto.response;
 
+import com.codesoft.employees.user.dto.response.UserResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +26,7 @@ public class EmployeeResponseDto {
 
   private String streetAddress;
 
-  private Integer userId;
+  private UserResponseDto userResponseDto;
 
   private Boolean isActive;
 }

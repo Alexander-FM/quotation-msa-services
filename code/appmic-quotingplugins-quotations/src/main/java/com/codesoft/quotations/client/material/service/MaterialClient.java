@@ -1,9 +1,12 @@
 package com.codesoft.quotations.client.material.service;
 
 import com.codesoft.quotations.client.material.dto.MaterialResponseDto;
+import com.codesoft.quotations.quotation.utils.QuotationConstants;
 import com.codesoft.utils.GenericResponse;
 import com.codesoft.utils.GenericResponseUtils;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(name = "${app.external.material-service-url}")
 public interface MaterialClient {
+
+  Logger logger = LoggerFactory.getLogger(MaterialClient.class);
 
   @GetMapping("${app.external.material-service-path}/material/{id}")
   @CircuitBreaker(name = "ms_material", fallbackMethod = "fallbackSearchMaterialById")
@@ -22,8 +27,9 @@ public interface MaterialClient {
     if (t instanceof feign.FeignException.NotFound notFound) {
       throw notFound;
     }
+    logger.warn("Fallback triggered for searchMaterialById with id: {}. Error: {}", id, t.getMessage());
     // Para cualquier otro error (500, Timeout, etc.), sí devolvemos el 503
     return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-      .body(GenericResponseUtils.buildGenericResponseError("Servicio de materiales no disponible temporalmente", null));
+      .body(GenericResponseUtils.buildGenericResponseError(QuotationConstants.MATERIAL_SERVICE_UNAVAILABLE_MESSAGE, null));
   }
 }
