@@ -79,7 +79,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
   @Override
   public EmployeeResponseDto create(final EmployeeRequestDto requestDto) {
-    if (this.employeeRepository.existsByUserId(requestDto.getUserId())) {
+    if (this.employeeRepository.existsByUserIdAndIdNot(requestDto.getUserId(), requestDto.getId())) {
       throw new EmployeeException(EmployeeMessage.EMPLOYEE_USER_CONFLICT);
     }
     try {
