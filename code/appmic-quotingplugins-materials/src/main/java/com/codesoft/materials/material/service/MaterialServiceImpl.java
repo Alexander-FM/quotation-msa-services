@@ -2,6 +2,7 @@ package com.codesoft.materials.material.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.codesoft.materials.material.client.adjustment_factor.dto.AdjustmentFactorResponseDto;
 import com.codesoft.materials.material.client.adjustment_factor.service.AdjustmentFactorClient;
@@ -39,6 +40,12 @@ public class MaterialServiceImpl implements MaterialService {
   }
 
   @Override
+  public List<MaterialResponseDto> findAllById(final Set<Integer> idList) {
+    final List<MaterialEntity> entities = materialRepository.findAllById(idList);
+    return materialFieldsMapper.toDtoList(entities);
+  }
+
+  @Override
   public MaterialResponseDto findById(final Integer id) {
     final Optional<MaterialEntity> entityOptional = this.materialRepository.findById(id);
     return entityOptional.map(this.materialFieldsMapper::toDto)
@@ -48,7 +55,7 @@ public class MaterialServiceImpl implements MaterialService {
   @Override
   public MaterialResponseDto create(final MaterialRequestDto requestDto) {
     try {
-      if(requestDto.getAdjustmentFactorName() != null) {
+      if (requestDto.getAdjustmentFactorName() != null) {
         final AdjustmentFactorResponseDto adjustmentFactor = this.adjustmentFactorClient.searchByName(requestDto.getAdjustmentFactorName());
         requestDto.setAdjustmentFactorName(adjustmentFactor.getName());
         requestDto.setAdjustmentFactorValue(adjustmentFactor.getValue());

@@ -3,8 +3,12 @@ package com.codesoft.quotations.quotation.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.codesoft.exception.BaseException;
 import com.codesoft.quotations.client.customer.dto.CustomerResponseDto;
 import com.codesoft.quotations.client.customer.service.CustomerClient;
 import com.codesoft.quotations.client.employee.dto.EmployeeResponseDto;
@@ -14,6 +18,7 @@ import com.codesoft.quotations.client.material.service.MaterialClient;
 import com.codesoft.quotations.modules.module.entity.ModuleEntity;
 import com.codesoft.quotations.modules.module.repository.ModuleRepository;
 import com.codesoft.quotations.quotation.dto.request.QuotationRequestDto;
+import com.codesoft.quotations.quotation.dto.response.QuotationDetailSubItemResponseDto;
 import com.codesoft.quotations.quotation.dto.response.QuotationResponseDto;
 import com.codesoft.quotations.quotation.entity.QuotationEntity;
 import com.codesoft.quotations.quotation.exception.QuotationException;
@@ -54,14 +59,49 @@ public class QuotationServiceImpl implements QuotationService {
   @Override
   public List<QuotationResponseDto> findAll() {
     final List<QuotationEntity> entities = this.quotationRepository.findAll();
-    return quotationFieldsMapper.toDtoList(entities);
+    final List<QuotationResponseDto> dtoList = this.quotationFieldsMapper.toDtoList(entities);
+
+    Set<String> customerIds = dtoList.stream().map(QuotationResponseDto::getCustomerDocumentNumber).collect(Collectors.toSet());
+    Set<String> employeeIds = dtoList.stream().map(QuotationResponseDto::getEmployeeDocumentNumber).collect(Collectors.toSet());
+    Set<Integer> materialIds = dtoList.stream()
+      .flatMap(q -> q.getDetails().stream())
+      .flatMap(d -> d.getSubItems().stream())
+      .map(QuotationDetailSubItemResponseDto::getMaterialId)
+      .collect(Collectors.toSet());
+
+    Map<String, String> customerMap = fetchAllCustomerByDocumentNumberIn(customerIds).stream()
+      .collect(Collectors.toMap(CustomerResponseDto::getDocumentNumber, CustomerResponseDto::getCompanyName));
+    Map<String, String> employeeMap = fetchEmployeeByDocumentNumberIn(employeeIds).stream()
+      .collect(Collectors.toMap(EmployeeResponseDto::getDocumentNumber, EmployeeResponseDto::getFullName));
+    Map<Integer, MaterialResponseDto> materialMap = fetchAllMaterialsByIds(materialIds).stream()
+      .collect(Collectors.toMap(MaterialResponseDto::getId, m -> m));
+
+    for (QuotationResponseDto dto : dtoList) {
+      dto.setCustomerName(customerMap.getOrDefault(dto.getCustomerDocumentNumber(), "Desconocido"));
+      dto.setEmployeeName(employeeMap.getOrDefault(dto.getEmployeeDocumentNumber(), "Desconocido"));
+
+      dto.getDetails().forEach(d -> d.getSubItems().forEach(si -> {
+        if (materialMap.containsKey(si.getMaterialId())) {
+          si.setMaterial(materialMap.get(si.getMaterialId()));
+        }
+      }));
+    }
+
+    return dtoList;
   }
 
   @Override
-  public QuotationResponseDto findById(Integer id) {
-    final Optional<QuotationEntity> entityOptional = this.quotationRepository.findById(id);
-    return entityOptional.map(this.quotationFieldsMapper::toDto)
-      .orElseThrow(() -> new QuotationException(QuotationMessage.QUOTATION_NOT_FOUND));
+  public QuotationResponseDto findById(final Integer id) {
+    final QuotationEntity entityOptional =
+      this.quotationRepository.findById(id).orElseThrow(() -> new QuotationException(QuotationMessage.QUOTATION_NOT_FOUND));
+    final QuotationResponseDto responseDto = this.quotationFieldsMapper.toDto(entityOptional);
+    responseDto.setCustomerName(this.fetchCustomer(entityOptional.getCustomerDocumentNumber()).getCompanyName());
+    responseDto.setEmployeeName(this.fetchEmployee(entityOptional.getEmployeeDocumentNumber()).getFullName());
+    responseDto.getDetails().forEach(d -> d.getSubItems().forEach(si -> {
+      MaterialResponseDto m = fetchMaterial(si.getMaterialId());
+      si.setMaterial(m);
+    }));
+    return responseDto;
   }
 
   @Override
@@ -158,8 +198,14 @@ public class QuotationServiceImpl implements QuotationService {
         si.setMaterial(m);
       }));
       return response;
-    } catch (final Exception ex) {
+    } catch (final QuotationException ex) {
       log.error("Oh dear! There was an error in the quote. Don't worry, we're working to resolve the issue.: {}", ex.getMessage());
+      throw ex;
+    } catch (final BaseException ex) {
+      log.error("A base exception occurred while processing the quotation: {}", ex.getMessage());
+      throw ex;
+    } catch (final Exception ex) {
+      log.error("An unexpected error occurred while processing the quotation: {}", ex.getMessage());
       throw new QuotationException(QuotationMessage.QUOTATION_INTERNAL_ERROR);
     }
   }
@@ -171,57 +217,91 @@ public class QuotationServiceImpl implements QuotationService {
     this.quotationRepository.deleteById(id);
   }
 
-  private MaterialResponseDto fetchMaterial(final Integer id) {
+  private <T> T callFeign(final java.util.function.Supplier<ResponseEntity<GenericResponse<T>>> supplier,
+    final QuotationMessage notFoundMessage,
+    final QuotationMessage serviceUnavailableMessage,
+    final Object identifier,
+    final String notFoundLog,
+    final String serviceErrorLog) {
     try {
-      ResponseEntity<GenericResponse<MaterialResponseDto>> response = this.materialClient.searchMaterialById(id);
-      // Caso: El Circuit Breaker se activó y el fallback devolvió una respuesta de error
+      final ResponseEntity<GenericResponse<T>> response = supplier.get();
       if (response.getBody() == null || response.getStatusCode().isError()) {
-        log.warn("El servicio de materiales devolvió un error o el fallback se activó para el ID: {}", id);
-        throw new QuotationException(QuotationMessage.MATERIAL_SERVICE_UNAVAILABLE);
+        log.warn(serviceErrorLog, identifier);
+        throw new QuotationException(serviceUnavailableMessage);
       }
       return response.getBody().getBody();
-    } catch (FeignException.NotFound ex) {
-      // Caso: El micro servicio respondió 404 (El material NO existe)
-      log.warn("Material con ID {} no encontrado en el catálogo.", id);
-      throw new QuotationException(QuotationMessage.MATERIAL_NOT_FOUND);
-    } catch (FeignException ex) {
-      // Caso: Errores de conexión, timeout o 500 (Infraestructura)
-      log.error("Error técnico al llamar al micro servicio de materiales: {}", ex.getMessage());
-      throw new QuotationException(QuotationMessage.MATERIAL_SERVICE_UNAVAILABLE);
+    } catch (final FeignException.NotFound ex) {
+      log.warn(notFoundLog, identifier);
+      throw new QuotationException(notFoundMessage);
+    } catch (final FeignException ex) {
+      log.error("{}: {}, {}", serviceErrorLog, ex.getMessage(), identifier);
+      throw new QuotationException(serviceUnavailableMessage);
     }
+  }
+
+  private MaterialResponseDto fetchMaterial(final Integer id) {
+    return callFeign(
+      () -> this.materialClient.searchMaterialById(id),
+      QuotationMessage.MATERIAL_NOT_FOUND,
+      QuotationMessage.MATERIAL_SERVICE_UNAVAILABLE,
+      id,
+      "Material con ID {} no encontrado en el catálogo.",
+      "Error técnico al llamar al micro servicio de materiales"
+    );
   }
 
   private CustomerResponseDto fetchCustomer(final String doc) {
-    try {
-      ResponseEntity<GenericResponse<CustomerResponseDto>> customer = this.customerClient.retrieveByDocumentNumber(doc);
-      if (customer.getBody() == null || customer.getStatusCode().isError()) {
-        log.warn("El servicio de clientes devolvió un error o el fallback se activó para el DOC: {}", doc);
-        throw new QuotationException(QuotationMessage.CUSTOMER_SERVICE_UNAVAILABLE);
-      }
-      return customer.getBody().getBody();
-    } catch (FeignException.NotFound ex) {
-      log.warn("Customer con DOC {} no encontrado en el servicio de clientes.", doc);
-      throw new QuotationException(QuotationMessage.CUSTOMER_NOT_FOUND);
-    } catch (FeignException ex) {
-      log.error("Error técnico al llamar al micro servicio de clientes: {}", ex.getMessage());
-      throw new QuotationException(QuotationMessage.CUSTOMER_SERVICE_UNAVAILABLE);
-    }
+    return callFeign(
+      () -> this.customerClient.retrieveByDocumentNumber(doc),
+      QuotationMessage.CUSTOMER_NOT_FOUND,
+      QuotationMessage.CUSTOMER_SERVICE_UNAVAILABLE,
+      doc,
+      "Customer con DOC {} no encontrado en el servicio de clientes.",
+      "Error técnico al llamar al micro servicio de clientes"
+    );
   }
 
   private EmployeeResponseDto fetchEmployee(final String doc) {
-    try {
-      ResponseEntity<GenericResponse<EmployeeResponseDto>> employee = this.employeeClient.retrieveByDocumentNumber(doc);
-      if (employee.getBody() == null || employee.getStatusCode().isError()) {
-        log.warn("El servicio de empleados devolvió un error o el fallback se activó para el DOC: {}", doc);
-        throw new QuotationException(QuotationMessage.EMPLOYEE_SERVICE_UNAVAILABLE);
-      }
-      return employee.getBody().getBody();
-    } catch (FeignException.NotFound ex) {
-      log.warn("Employee con DOC {} no encontrado en el servicio de empleados.", doc);
-      throw new QuotationException(QuotationMessage.EMPLOYEE_NOT_FOUND);
-    } catch (FeignException ex) {
-      log.error("Error técnico al llamar al micro servicio de empleados: {}", ex.getMessage());
-      throw new QuotationException(QuotationMessage.EMPLOYEE_SERVICE_UNAVAILABLE);
-    }
+    return callFeign(
+      () -> this.employeeClient.retrieveByDocumentNumber(doc),
+      QuotationMessage.EMPLOYEE_NOT_FOUND,
+      QuotationMessage.EMPLOYEE_SERVICE_UNAVAILABLE,
+      doc,
+      "Employee con DOC {} no encontrado en el servicio de empleados.",
+      "Error técnico al llamar al micro servicio de empleados"
+    );
+  }
+
+  private List<MaterialResponseDto> fetchAllMaterialsByIds(final Set<Integer> ids) {
+    return callFeign(
+      () -> this.materialClient.retrieveByIdList(ids),
+      QuotationMessage.MATERIAL_NOT_FOUND,
+      QuotationMessage.MATERIAL_SERVICE_UNAVAILABLE,
+      ids,
+      "Material con ID {} no encontrado en el catálogo.",
+      "Error técnico al llamar al micro servicio de materiales"
+    );
+  }
+
+  private List<CustomerResponseDto> fetchAllCustomerByDocumentNumberIn(final Set<String> docs) {
+    return callFeign(
+      () -> this.customerClient.retrieveAllCustomersByDocumentNumber(docs),
+      QuotationMessage.CUSTOMER_NOT_FOUND,
+      QuotationMessage.CUSTOMER_SERVICE_UNAVAILABLE,
+      docs,
+      "Customer con DOC {} no encontrado en el servicio de clientes.",
+      "Error técnico al llamar al micro servicio de clientes"
+    );
+  }
+
+  private List<EmployeeResponseDto> fetchEmployeeByDocumentNumberIn(final Set<String> docs) {
+    return callFeign(
+      () -> this.employeeClient.retrieveAllEmployeesByDocumentNumber(docs),
+      QuotationMessage.EMPLOYEE_NOT_FOUND,
+      QuotationMessage.EMPLOYEE_SERVICE_UNAVAILABLE,
+      docs,
+      "Employee con DOC {} no encontrado en el servicio de empleados.",
+      "Error técnico al llamar al micro servicio de empleados"
+    );
   }
 }

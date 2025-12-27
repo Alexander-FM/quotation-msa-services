@@ -1,6 +1,7 @@
 package com.codesoft.customers.customer.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import com.codesoft.customers.customer.dto.request.CustomerRequestDto;
 import com.codesoft.customers.customer.dto.response.CustomerResponseDto;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -50,6 +52,14 @@ public class CustomerController {
     final CustomerResponseDto customer = customerService.searchByDocumentNumber(documentNumber);
     return ResponseEntity.status(HttpStatus.OK)
       .body(GenericResponseUtils.buildGenericResponseSuccess(CustomerConstants.FOUND_MESSAGE, customer));
+  }
+
+  @GetMapping("/searchByDocumentNumberIds")
+  public ResponseEntity<GenericResponse<List<CustomerResponseDto>>> retrieveAllCustomersByDocumentNumber(
+    @RequestParam("documentNumberList") final Set<String> documentNumberList) {
+    final List<CustomerResponseDto> customers = customerService.searchAllByDocumentNumber(documentNumberList);
+    return ResponseEntity.status(HttpStatus.OK)
+      .body(GenericResponseUtils.buildGenericResponseSuccess(CustomerConstants.FOUND_MESSAGE, customers));
   }
 
   @PostMapping

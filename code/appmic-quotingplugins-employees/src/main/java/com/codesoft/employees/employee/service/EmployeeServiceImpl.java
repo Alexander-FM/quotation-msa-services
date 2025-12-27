@@ -3,6 +3,7 @@ package com.codesoft.employees.employee.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.codesoft.employees.employee.client.catalog_item.service.CatalogItemClient;
@@ -40,21 +41,13 @@ public class EmployeeServiceImpl implements EmployeeService {
   @Override
   public List<EmployeeResponseDto> findAll() {
     final List<EmployeeEntity> employees = employeeRepository.findAll().stream().toList();
-    if (employees.isEmpty()) {
-      return List.of();
-    }
-    final List<Integer> userIds = employees.stream()
-      .map(EmployeeEntity::getUserId)
-      .distinct()
-      .toList();
-    final Map<Integer, UserResponseDto> userMap = userRepository.findAllById(userIds).stream()
-      .map(userFieldsMapper::toDto)
-      .collect(Collectors.toMap(UserResponseDto::getId, dto -> dto));
-    return employees.stream().map(emp -> {
-      EmployeeResponseDto dto = employeeFieldsMapper.toDto(emp);
-      dto.setUserResponseDto(userMap.get(emp.getUserId()));
-      return dto;
-    }).toList();
+    return getEmployeeResponseDtoList(employees);
+  }
+
+  @Override
+  public List<EmployeeResponseDto> searchAllByDocumentNumber(final Set<String> documentNumberList) {
+    final List<EmployeeEntity> employees = employeeRepository.findAllByDocumentNumber(documentNumberList).stream().toList();
+    return getEmployeeResponseDtoList(employees);
   }
 
   @Override
@@ -110,5 +103,29 @@ public class EmployeeServiceImpl implements EmployeeService {
     log.info("User fetch result for ID {}: {}", userId, entity.isPresent() ? "Found" : "Not Found");
     return entity.map(this.userFieldsMapper::toDto)
       .orElseThrow(() -> new EmployeeException(EmployeeMessage.USER_NOT_FOUND));
+  }
+
+  /**
+   * Mapea una lista de EmployeeEntity a EmployeeResponseDto incluyendo los datos del usuario asociado.
+   *
+   * @param employees lista de entidades de empleados
+   * @return lista de DTOs de respuesta de empleados con datos de usuario
+   */
+  private List<EmployeeResponseDto> getEmployeeResponseDtoList(final List<EmployeeEntity> employees) {
+    if (employees.isEmpty()) {
+      return List.of();
+    }
+    final List<Integer> userIds = employees.stream()
+      .map(EmployeeEntity::getUserId)
+      .distinct()
+      .toList();
+    final Map<Integer, UserResponseDto> userMap = userRepository.findAllById(userIds).stream()
+      .map(userFieldsMapper::toDto)
+      .collect(Collectors.toMap(UserResponseDto::getId, dto -> dto));
+    return employees.stream().map(emp -> {
+      EmployeeResponseDto dto = employeeFieldsMapper.toDto(emp);
+      dto.setUserResponseDto(userMap.get(emp.getUserId()));
+      return dto;
+    }).toList();
   }
 }

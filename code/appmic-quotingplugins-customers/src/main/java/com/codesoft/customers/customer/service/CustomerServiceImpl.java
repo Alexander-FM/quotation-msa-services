@@ -2,6 +2,7 @@ package com.codesoft.customers.customer.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.codesoft.customers.customer.catalog_item.service.CatalogItemClient;
 import com.codesoft.customers.customer.dto.request.CustomerRequestDto;
@@ -28,6 +29,12 @@ public class CustomerServiceImpl implements CustomerService {
   @Override
   public List<CustomerResponseDto> findAll() {
     final List<CustomerEntity> entities = customerRepository.findAll().stream().toList();
+    return customerFieldsMapper.toDtoList(entities);
+  }
+
+  @Override
+  public List<CustomerResponseDto> searchAllByDocumentNumber(final Set<String> idList) {
+    final List<CustomerEntity> entities = customerRepository.findAllByDocumentNumber(idList).stream().toList();
     return customerFieldsMapper.toDtoList(entities);
   }
 

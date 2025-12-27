@@ -1,5 +1,8 @@
 package com.codesoft.quotations.client.material.service;
 
+import java.util.List;
+import java.util.Set;
+
 import com.codesoft.quotations.client.material.dto.MaterialResponseDto;
 import com.codesoft.quotations.quotation.utils.QuotationConstants;
 import com.codesoft.utils.GenericResponse;
@@ -12,8 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "${app.external.material-service-url}")
+@FeignClient(name = "${app.external.material-service-url}", url = "${app.external.material-service-url}")
 public interface MaterialClient {
 
   Logger logger = LoggerFactory.getLogger(MaterialClient.class);
@@ -28,6 +32,23 @@ public interface MaterialClient {
       throw notFound;
     }
     logger.warn("Fallback triggered for searchMaterialById with id: {}. Error: {}", id, t.getMessage());
+    // Para cualquier otro error (500, Timeout, etc.), sí devolvemos el 503
+    return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+      .body(GenericResponseUtils.buildGenericResponseError(QuotationConstants.MATERIAL_SERVICE_UNAVAILABLE_MESSAGE, null));
+  }
+
+  @GetMapping("${app.external.material-service-path}/material/searchMaterialsByIdList")
+  @CircuitBreaker(name = "ms_material", fallbackMethod = "fallbackSearchMaterialsByIdList")
+  ResponseEntity<GenericResponse<List<MaterialResponseDto>>> retrieveByIdList(
+    @RequestParam(value = "idList") final Set<Integer> idList);
+
+  default ResponseEntity<GenericResponse<List<MaterialResponseDto>>> fallbackSearchMaterialsByIdList(final Set<Integer> idList,
+    Throwable t) {
+    // Si la excepción es un 404, la relanzamos para que llegue al catch del Service
+    if (t instanceof feign.FeignException.NotFound notFound) {
+      throw notFound;
+    }
+    logger.warn("Fallback triggered for searchMaterialsById with id: {}. Error: {}", idList, t.getMessage());
     // Para cualquier otro error (500, Timeout, etc.), sí devolvemos el 503
     return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
       .body(GenericResponseUtils.buildGenericResponseError(QuotationConstants.MATERIAL_SERVICE_UNAVAILABLE_MESSAGE, null));

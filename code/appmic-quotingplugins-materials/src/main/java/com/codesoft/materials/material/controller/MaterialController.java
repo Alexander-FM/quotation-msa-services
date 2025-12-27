@@ -1,6 +1,7 @@
 package com.codesoft.materials.material.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import com.codesoft.exception.BaseException;
 import com.codesoft.materials.material.dto.request.MaterialRequestDto;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -42,6 +44,14 @@ public class MaterialController {
     final MaterialResponseDto responseDto = materialService.findById(id);
     return ResponseEntity.status(HttpStatus.OK)
       .body(GenericResponseUtils.buildGenericResponseSuccess(MaterialConstants.FOUND_MESSAGE, responseDto));
+  }
+
+  @GetMapping("/searchMaterialsByIdList")
+  public ResponseEntity<GenericResponse<List<MaterialResponseDto>>> retrieveByIdList(
+    @RequestParam(value = "idList") final Set<Integer> idList) {
+    final List<MaterialResponseDto> responseDtoList = materialService.findAllById(idList);
+    return ResponseEntity.status(HttpStatus.OK)
+      .body(GenericResponseUtils.buildGenericResponseSuccess(MaterialConstants.FOUND_MESSAGE, responseDtoList));
   }
 
   @PostMapping

@@ -1,6 +1,7 @@
 package com.codesoft.employees.employee.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import com.codesoft.employees.employee.dto.request.EmployeeRequestDto;
 import com.codesoft.employees.employee.dto.response.EmployeeResponseDto;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -48,6 +50,14 @@ public class EmployeeController {
   public ResponseEntity<GenericResponse<EmployeeResponseDto>> retrieveByDocumentNumber(
     @PathVariable(value = "documentNumber") final String documentNumber) {
     final EmployeeResponseDto employees = employeeService.searchByDocumentNumber(documentNumber);
+    return ResponseEntity.status(HttpStatus.OK)
+      .body(GenericResponseUtils.buildGenericResponseSuccess(EmployeeConstants.FOUND_MESSAGE, employees));
+  }
+
+  @GetMapping("/searchByDocumentNumberIds")
+  public ResponseEntity<GenericResponse<List<EmployeeResponseDto>>> retrieveAllEmployeesByDocumentNumber(
+    @RequestParam("documentNumberList") final Set<String> documentNumberList) {
+    final List<EmployeeResponseDto> employees = employeeService.searchAllByDocumentNumber(documentNumberList);
     return ResponseEntity.status(HttpStatus.OK)
       .body(GenericResponseUtils.buildGenericResponseSuccess(EmployeeConstants.FOUND_MESSAGE, employees));
   }
